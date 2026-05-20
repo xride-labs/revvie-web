@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,10 +8,11 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Upload, CheckCircle2, Clock, AlertCircle, Loader2 } from 'lucide-react'
+import { Upload, CheckCircle2, Clock, AlertCircle, Loader2, MapPin, Navigation } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
-import { businessApi, type BusinessProfile, type BusinessCategory } from '@/lib/server/business'
+import { businessApi, type BusinessCategory } from '@/lib/server/business'
 import { mapApiError } from '@/lib/errors'
+import { useBusinessContext } from '@/contexts/business-context'
 
 const BRAND_CATEGORIES: { value: BusinessCategory; label: string }[] = [
   { value: 'BRAND', label: 'Brand / Manufacturer' },
@@ -35,12 +36,10 @@ const VERIFICATION_CONFIG: Record<VerificationStatus, { label: string; color: st
 
 export default function BrandSettingsPage() {
   const { success: successToast, error: errorToast } = useToast()
-  const [business, setBusiness] = useState<BusinessProfile | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { business, reload } = useBusinessContext()
   const [isSaving, setIsSaving] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  // Per-field validation errors surfaced inline on the form. Cleared on
-  // every save attempt — a successful save also clears them implicitly.
+  const [locating, setLocating] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [profile, setProfile] = useState({
     displayName: '',
@@ -49,42 +48,35 @@ export default function BrandSettingsPage() {
     email: '',
     phone: '',
     websiteUrl: '',
+    addressLine1: '',
+    addressLine2: '',
     city: '',
+    region: '',
     country: 'India',
     description: '',
+    latitude: '' as string,
+    longitude: '' as string,
   })
 
   useEffect(() => {
-    async function load() {
-      try {
-        const businesses = await businessApi.getMyBusinesses()
-        if (businesses.length > 0) {
-          const b = businesses[0]
-          setBusiness(b)
-          setProfile({
-            displayName: b.displayName ?? '',
-            tagline: b.tagline ?? '',
-            categories: b.categories ?? [],
-            email: b.email ?? '',
-            phone: b.phone ?? '',
-            websiteUrl: b.websiteUrl ?? '',
-            city: b.city ?? '',
-            country: b.country ?? 'India',
-            description: b.description ?? '',
-          })
-        }
-      } catch {
-        errorToast('Failed to load brand profile')
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
-  // errorToast is intentionally excluded: it's a new ref each render and
-  // adding it caused a GET request on every keystroke (re-ran load() each
-  // time the user typed something and triggered a re-render).
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    if (!business) return
+    setProfile({
+      displayName: business.displayName ?? '',
+      tagline: business.tagline ?? '',
+      categories: business.categories ?? [],
+      email: business.email ?? '',
+      phone: business.phone ?? '',
+      websiteUrl: business.websiteUrl ?? '',
+      addressLine1: (business as any).addressLine1 ?? '',
+      addressLine2: (business as any).addressLine2 ?? '',
+      city: business.city ?? '',
+      region: (business as any).region ?? '',
+      country: business.country ?? 'India',
+      description: business.description ?? '',
+      latitude: (business as any).latitude != null ? String((business as any).latitude) : '',
+      longitude: (business as any).longitude != null ? String((business as any).longitude) : '',
+    })
+  }, [business?.id])
 
   const toggleCategory = (cat: BusinessCategory) => {
     setProfile((p) => ({
@@ -95,24 +87,71 @@ export default function BrandSettingsPage() {
     }))
   }
 
+  const detectLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      errorToast('Geolocation is not supported by your browser')
+      return
+    }
+    setLocating(true)
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude
+        const lng = pos.coords.longitude
+        setProfile((p) => ({ ...p, latitude: String(lat), longitude: String(lng) }))
+        // Reverse geocode via Nominatim (free, no key needed)
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
+            { headers: { 'Accept-Language': 'en' } },
+          )
+          if (res.ok) {
+            const data = await res.json()
+            const addr = data.address ?? {}
+            setProfile((p) => ({
+              ...p,
+              city: addr.city || addr.town || addr.village || addr.county || p.city,
+              region: addr.state || p.region,
+              country: addr.country || p.country,
+              addressLine1: addr.road ? `${addr.house_number ? addr.house_number + ' ' : ''}${addr.road}` : p.addressLine1,
+            }))
+          }
+        } catch {
+          // Reverse geocode failed — coordinates still set
+        }
+        setLocating(false)
+        successToast('Location detected', { description: 'Review the address fields and save.' })
+      },
+      () => {
+        setLocating(false)
+        errorToast('Could not detect location. Please enter it manually.')
+      },
+      { timeout: 10000 },
+    )
+  }, [errorToast, successToast])
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!business) return
     setIsSaving(true)
     setFieldErrors({})
     try {
-      const updated = await businessApi.updateBusiness(business.id, {
+      await businessApi.updateBusiness(business.id, {
         displayName: profile.displayName || undefined,
         tagline: profile.tagline || null,
         categories: profile.categories.length > 0 ? profile.categories : undefined,
         email: profile.email || null,
         phone: profile.phone || null,
         websiteUrl: profile.websiteUrl || null,
+        addressLine1: (profile.addressLine1 || null) as any,
+        addressLine2: (profile.addressLine2 || null) as any,
         city: profile.city || null,
+        region: (profile.region || null) as any,
         country: profile.country || null,
+        latitude: profile.latitude ? parseFloat(profile.latitude) : null as any,
+        longitude: profile.longitude ? parseFloat(profile.longitude) : null as any,
         description: profile.description || null,
       })
-      setBusiness(updated)
+      await reload()
       successToast('Brand profile saved')
     } catch (err) {
       const mapped = mapApiError(err)
@@ -127,8 +166,8 @@ export default function BrandSettingsPage() {
     if (!business) return
     setIsSubmitting(true)
     try {
-      const updated = await businessApi.submitBusiness(business.id)
-      setBusiness(updated)
+      await businessApi.submitBusiness(business.id)
+      await reload()
       successToast('Submitted for verification!', { description: 'Admin will review your profile within 2-3 business days.' })
     } catch (err) {
       errorToast(err instanceof Error ? err.message : 'Submission failed')
@@ -137,20 +176,23 @@ export default function BrandSettingsPage() {
     }
   }
 
-  if (loading) {
+  if (!business) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-100">
         <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
       </div>
     )
   }
 
-  const verificationStatus = (business?.verification ?? 'PENDING') as VerificationStatus
+  const verificationStatus = (business.verification ?? 'PENDING') as VerificationStatus
   const vCfg = VERIFICATION_CONFIG[verificationStatus]
   const VIcon = vCfg.icon
+  const canSubmit = verificationStatus === 'PENDING' || verificationStatus === 'REJECTED'
 
-  const canSubmit =
-    verificationStatus === 'PENDING' || verificationStatus === 'REJECTED'
+  const hasCoords = profile.latitude && profile.longitude
+  const mapEmbedUrl = hasCoords
+    ? `https://www.openstreetmap.org/export/embed.html?bbox=${parseFloat(profile.longitude) - 0.005},${parseFloat(profile.latitude) - 0.005},${parseFloat(profile.longitude) + 0.005},${parseFloat(profile.latitude) + 0.005}&layer=mapnik&marker=${profile.latitude},${profile.longitude}`
+    : null
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
@@ -166,11 +208,9 @@ export default function BrandSettingsPage() {
               </div>
             </div>
             {verificationStatus === 'PENDING' && (
-              <Badge variant="outline" className="text-amber-500 border-amber-500/30">
-                Action needed
-              </Badge>
+              <Badge variant="outline" className="text-amber-500 border-amber-500/30">Action needed</Badge>
             )}
-            {verificationStatus === 'REJECTED' && business?.verificationNotes && (
+            {verificationStatus === 'REJECTED' && business.verificationNotes && (
               <p className="text-xs text-destructive max-w-xs text-right">{business.verificationNotes}</p>
             )}
           </div>
@@ -193,9 +233,7 @@ export default function BrandSettingsPage() {
                   onChange={(e) => setProfile({ ...profile, displayName: e.target.value })}
                   aria-invalid={!!fieldErrors.displayName}
                 />
-                {fieldErrors.displayName && (
-                  <p className="text-xs text-destructive">{fieldErrors.displayName}</p>
-                )}
+                {fieldErrors.displayName && <p className="text-xs text-destructive">{fieldErrors.displayName}</p>}
               </div>
 
               <div className="col-span-2 space-y-1.5">
@@ -239,6 +277,7 @@ export default function BrandSettingsPage() {
 
             <Separator />
 
+            {/* Contact */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label>Email</Label>
@@ -249,9 +288,7 @@ export default function BrandSettingsPage() {
                   onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                   aria-invalid={!!fieldErrors.email}
                 />
-                {fieldErrors.email && (
-                  <p className="text-xs text-destructive">{fieldErrors.email}</p>
-                )}
+                {fieldErrors.email && <p className="text-xs text-destructive">{fieldErrors.email}</p>}
               </div>
               <div className="space-y-1.5">
                 <Label>Phone</Label>
@@ -261,9 +298,7 @@ export default function BrandSettingsPage() {
                   onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                   aria-invalid={!!fieldErrors.phone}
                 />
-                {fieldErrors.phone && (
-                  <p className="text-xs text-destructive">{fieldErrors.phone}</p>
-                )}
+                {fieldErrors.phone && <p className="text-xs text-destructive">{fieldErrors.phone}</p>}
               </div>
               <div className="col-span-2 space-y-1.5">
                 <Label>Website</Label>
@@ -273,25 +308,109 @@ export default function BrandSettingsPage() {
                   onChange={(e) => setProfile({ ...profile, websiteUrl: e.target.value })}
                   aria-invalid={!!fieldErrors.websiteUrl}
                 />
-                {fieldErrors.websiteUrl && (
-                  <p className="text-xs text-destructive">{fieldErrors.websiteUrl}</p>
-                )}
+                {fieldErrors.websiteUrl && <p className="text-xs text-destructive">{fieldErrors.websiteUrl}</p>}
               </div>
-              <div className="space-y-1.5">
-                <Label>City</Label>
-                <Input
-                  placeholder="Mumbai"
-                  value={profile.city}
-                  onChange={(e) => setProfile({ ...profile, city: e.target.value })}
-                />
+            </div>
+
+            <Separator />
+
+            {/* Location */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-amber-500" />
+                  Location
+                </Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 h-7 text-xs"
+                  onClick={detectLocation}
+                  disabled={locating}
+                >
+                  {locating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Navigation className="w-3 h-3" />}
+                  {locating ? 'Detecting…' : 'Use My Location'}
+                </Button>
               </div>
-              <div className="space-y-1.5">
-                <Label>Country</Label>
-                <Input
-                  placeholder="India"
-                  value={profile.country}
-                  onChange={(e) => setProfile({ ...profile, country: e.target.value })}
-                />
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2 space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Address Line 1</Label>
+                  <Input
+                    placeholder="Street address, shop number"
+                    value={profile.addressLine1}
+                    onChange={(e) => setProfile({ ...profile, addressLine1: e.target.value })}
+                  />
+                </div>
+                <div className="col-span-2 space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Address Line 2</Label>
+                  <Input
+                    placeholder="Building, area, landmark"
+                    value={profile.addressLine2}
+                    onChange={(e) => setProfile({ ...profile, addressLine2: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">City</Label>
+                  <Input
+                    placeholder="Mumbai"
+                    value={profile.city}
+                    onChange={(e) => setProfile({ ...profile, city: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">State / Region</Label>
+                  <Input
+                    placeholder="Maharashtra"
+                    value={profile.region}
+                    onChange={(e) => setProfile({ ...profile, region: e.target.value })}
+                  />
+                </div>
+                <div className="col-span-2 space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Country</Label>
+                  <Input
+                    placeholder="India"
+                    value={profile.country}
+                    onChange={(e) => setProfile({ ...profile, country: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              {/* Map preview */}
+              {mapEmbedUrl && (
+                <div className="rounded-xl overflow-hidden border border-border" style={{ height: 200 }}>
+                  <iframe
+                    src={mapEmbedUrl}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    title="Brand location"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+
+              {/* Coordinates (auto-filled, editable) */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Latitude</Label>
+                  <Input
+                    placeholder="19.0760"
+                    value={profile.latitude}
+                    onChange={(e) => setProfile({ ...profile, latitude: e.target.value })}
+                    className="font-mono text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Longitude</Label>
+                  <Input
+                    placeholder="72.8777"
+                    value={profile.longitude}
+                    onChange={(e) => setProfile({ ...profile, longitude: e.target.value })}
+                    className="font-mono text-xs"
+                  />
+                </div>
               </div>
             </div>
 

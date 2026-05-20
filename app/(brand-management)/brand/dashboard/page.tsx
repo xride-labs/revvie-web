@@ -20,7 +20,8 @@ import {
   CreditCard,
 } from 'lucide-react'
 import Link from 'next/link'
-import { businessApi, type BusinessProfile, type BusinessAnalytics } from '@/lib/server/business'
+import { businessApi, type BusinessAnalytics } from '@/lib/server/business'
+import { useBusinessContext } from '@/contexts/business-context'
 
 const VERIFICATION_BADGE: Record<string, { label: string; className: string }> = {
   PENDING: { label: 'Pending Verification', className: 'text-amber-500 border-amber-500/30 bg-amber-500/5' },
@@ -33,32 +34,25 @@ export default function BrandDashboardPage() {
   const searchParams = useSearchParams()
   const isOnboarding = searchParams.get('onboarding') === '1'
 
-  const [business, setBusiness] = useState<BusinessProfile | null>(null)
+  const { business, loading: businessLoading } = useBusinessContext()
   const [analytics, setAnalytics] = useState<BusinessAnalytics | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (businessLoading) return
+    if (!business) { setLoading(false); return }
     async function load() {
       try {
-        const businesses = await businessApi.getMyBusinesses()
-        if (businesses.length > 0) {
-          const b = businesses[0]
-          setBusiness(b)
-          try {
-            const a = await businessApi.getBusinessAnalytics(b.id)
-            setAnalytics(a)
-          } catch {
-            // analytics may fail if business is new — ignore
-          }
-        }
+        const a = await businessApi.getBusinessAnalytics(business!.id)
+        setAnalytics(a)
       } catch {
-        // no-op — empty state shown
+        // analytics may not exist yet for new businesses
       } finally {
         setLoading(false)
       }
     }
     load()
-  }, [])
+  }, [business, businessLoading])
 
   const onboardingSteps = [
     { id: 1, label: 'Create your account', done: true },

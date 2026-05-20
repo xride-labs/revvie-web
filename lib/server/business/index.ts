@@ -13,7 +13,13 @@ export type BusinessCategory =
 
 export type BusinessVerificationStatus = 'PENDING' | 'SUBMITTED' | 'APPROVED' | 'REJECTED'
 
-export type AdStatus = 'DRAFT' | 'PENDING_APPROVAL' | 'ACTIVE' | 'PAUSED' | 'COMPLETED' | 'REJECTED'
+export type AdStatus =
+  | 'DRAFT'
+  | 'PENDING_APPROVAL'
+  | 'ACTIVE'
+  | 'PAUSED'
+  | 'COMPLETED'
+  | 'REJECTED'
 
 export type AdSlot =
   | 'HOME_FEED'
@@ -51,6 +57,7 @@ export interface BusinessProfile {
   pricingTier?: 'BASIC' | 'PRO' | 'ENTERPRISE' | null
   brandTier: 'FREE' | 'PRO'
   brandProExpiresAt?: string | null
+  onboardingCompleted: boolean
   verification: BusinessVerificationStatus
   verificationNotes?: string | null
   documents?: BusinessDocument[] | null
@@ -151,6 +158,7 @@ export interface UpdateBusinessInput {
   latitude?: number | null
   longitude?: number | null
   pricingTier?: 'BASIC' | 'PRO' | 'ENTERPRISE' | null
+  onboardingCompleted?: boolean
 }
 
 export interface CreateCampaignInput {
@@ -183,7 +191,9 @@ export interface CreateDiscountInput {
 
 // ─── Business CRUD ──────────────────────────────────────────────────────────
 
-export async function listBusinesses(params?: BusinessListParams): Promise<BusinessListResponse> {
+export async function listBusinesses(
+  params?: BusinessListParams,
+): Promise<BusinessListResponse> {
   return apiAuthenticated.get<BusinessListResponse>('/business', { params })
 }
 
@@ -195,11 +205,16 @@ export async function getBusiness(id: string): Promise<BusinessProfile> {
   return apiAuthenticated.get<BusinessProfile>(`/business/${id}`)
 }
 
-export async function createBusiness(data: CreateBusinessInput): Promise<BusinessProfile> {
+export async function createBusiness(
+  data: CreateBusinessInput,
+): Promise<BusinessProfile> {
   return apiAuthenticated.post<BusinessProfile>('/business', data)
 }
 
-export async function updateBusiness(id: string, data: UpdateBusinessInput): Promise<BusinessProfile> {
+export async function updateBusiness(
+  id: string,
+  data: UpdateBusinessInput,
+): Promise<BusinessProfile> {
   return apiAuthenticated.patch<BusinessProfile>(`/business/${id}`, data)
 }
 
@@ -207,8 +222,13 @@ export async function submitBusiness(id: string): Promise<BusinessProfile> {
   return apiAuthenticated.post<BusinessProfile>(`/business/${id}/submit`)
 }
 
-export async function attachBusinessDocuments(id: string, documents: BusinessDocument[]): Promise<BusinessProfile> {
-  return apiAuthenticated.post<BusinessProfile>(`/business/${id}/documents`, { documents })
+export async function attachBusinessDocuments(
+  id: string,
+  documents: BusinessDocument[],
+): Promise<BusinessProfile> {
+  return apiAuthenticated.post<BusinessProfile>(`/business/${id}/documents`, {
+    documents,
+  })
 }
 
 // ─── Analytics ──────────────────────────────────────────────────────────────
@@ -234,8 +254,14 @@ export interface MarketplaceListing {
   createdAt: string
 }
 
-export async function getBusinessListings(id: string, page = 1, limit = 20): Promise<BusinessListingsResponse> {
-  return apiAuthenticated.get<BusinessListingsResponse>(`/business/${id}/listings`, { params: { page, limit } })
+export async function getBusinessListings(
+  id: string,
+  page = 1,
+  limit = 20,
+): Promise<BusinessListingsResponse> {
+  return apiAuthenticated.get<BusinessListingsResponse>(`/business/${id}/listings`, {
+    params: { page, limit },
+  })
 }
 
 // ─── Campaigns ──────────────────────────────────────────────────────────────
@@ -244,15 +270,28 @@ export async function getCampaigns(businessId: string): Promise<AdCampaign[]> {
   return apiAuthenticated.get<AdCampaign[]>(`/business/${businessId}/campaigns`)
 }
 
-export async function createCampaign(businessId: string, data: CreateCampaignInput): Promise<AdCampaign> {
+export async function createCampaign(
+  businessId: string,
+  data: CreateCampaignInput,
+): Promise<AdCampaign> {
   return apiAuthenticated.post<AdCampaign>(`/business/${businessId}/campaigns`, data)
 }
 
-export async function updateCampaign(businessId: string, campaignId: string, data: Partial<CreateCampaignInput>): Promise<AdCampaign> {
-  return apiAuthenticated.patch<AdCampaign>(`/business/${businessId}/campaigns/${campaignId}`, data)
+export async function updateCampaign(
+  businessId: string,
+  campaignId: string,
+  data: Partial<CreateCampaignInput>,
+): Promise<AdCampaign> {
+  return apiAuthenticated.patch<AdCampaign>(
+    `/business/${businessId}/campaigns/${campaignId}`,
+    data,
+  )
 }
 
-export async function deleteCampaign(businessId: string, campaignId: string): Promise<void> {
+export async function deleteCampaign(
+  businessId: string,
+  campaignId: string,
+): Promise<void> {
   return apiAuthenticated.delete<void>(`/business/${businessId}/campaigns/${campaignId}`)
 }
 
@@ -262,26 +301,45 @@ export async function getDiscounts(businessId: string): Promise<Discount[]> {
   return apiAuthenticated.get<Discount[]>(`/business/${businessId}/discounts`)
 }
 
-export async function createDiscount(businessId: string, data: CreateDiscountInput): Promise<Discount> {
+export async function createDiscount(
+  businessId: string,
+  data: CreateDiscountInput,
+): Promise<Discount> {
   return apiAuthenticated.post<Discount>(`/business/${businessId}/discounts`, data)
 }
 
-export async function updateDiscount(businessId: string, discountId: string, data: Partial<CreateDiscountInput>): Promise<Discount> {
-  return apiAuthenticated.patch<Discount>(`/business/${businessId}/discounts/${discountId}`, data)
+export async function updateDiscount(
+  businessId: string,
+  discountId: string,
+  data: Partial<CreateDiscountInput>,
+): Promise<Discount> {
+  return apiAuthenticated.patch<Discount>(
+    `/business/${businessId}/discounts/${discountId}`,
+    data,
+  )
 }
 
-export async function deleteDiscount(businessId: string, discountId: string): Promise<void> {
+export async function deleteDiscount(
+  businessId: string,
+  discountId: string,
+): Promise<void> {
   return apiAuthenticated.delete<void>(`/business/${businessId}/discounts/${discountId}`)
 }
 
 // ─── Brand Billing ───────────────────────────────────────────────────────────
 
-export async function getBrandBillingStatus(businessId: string): Promise<BrandBillingStatus> {
+export async function getBrandBillingStatus(
+  businessId: string,
+): Promise<BrandBillingStatus> {
   return apiAuthenticated.get<BrandBillingStatus>(`/payments/brand-status/${businessId}`)
 }
 
-export async function createBrandCheckout(businessId: string): Promise<{ checkoutUrl: string }> {
-  return apiAuthenticated.post<{ checkoutUrl: string }>('/payments/brand-checkout', { businessId })
+export async function createBrandCheckout(
+  businessId: string,
+): Promise<{ checkoutUrl: string }> {
+  return apiAuthenticated.post<{ checkoutUrl: string }>('/payments/brand-checkout', {
+    businessId,
+  })
 }
 
 // ─── Brand Team ──────────────────────────────────────────────────────────────
@@ -295,7 +353,12 @@ export interface BrandTeamMember {
   role: BrandMemberRole
   invitedBy?: string | null
   joinedAt: string
-  user: { id: string; name?: string | null; email?: string | null; avatar?: string | null }
+  user: {
+    id: string
+    name?: string | null
+    email?: string | null
+    avatar?: string | null
+  }
 }
 
 export async function getTeamMembers(businessId: string): Promise<BrandTeamMember[]> {
@@ -307,7 +370,10 @@ export async function inviteTeamMember(
   email: string,
   role: Exclude<BrandMemberRole, 'OWNER'> = 'MEMBER',
 ): Promise<BrandTeamMember> {
-  return apiAuthenticated.post<BrandTeamMember>(`/business/${businessId}/members`, { email, role })
+  return apiAuthenticated.post<BrandTeamMember>(`/business/${businessId}/members`, {
+    email,
+    role,
+  })
 }
 
 export async function updateTeamMemberRole(
@@ -315,10 +381,16 @@ export async function updateTeamMemberRole(
   userId: string,
   role: Exclude<BrandMemberRole, 'OWNER'>,
 ): Promise<BrandTeamMember> {
-  return apiAuthenticated.patch<BrandTeamMember>(`/business/${businessId}/members/${userId}/role`, { role })
+  return apiAuthenticated.patch<BrandTeamMember>(
+    `/business/${businessId}/members/${userId}/role`,
+    { role },
+  )
 }
 
-export async function removeTeamMember(businessId: string, userId: string): Promise<void> {
+export async function removeTeamMember(
+  businessId: string,
+  userId: string,
+): Promise<void> {
   return apiAuthenticated.delete<void>(`/business/${businessId}/members/${userId}`)
 }
 
@@ -363,7 +435,10 @@ export async function getServices(businessId: string): Promise<ServiceListing[]>
   return apiAuthenticated.get<ServiceListing[]>(`/business/${businessId}/services`)
 }
 
-export async function createService(businessId: string, data: CreateServiceInput): Promise<ServiceListing> {
+export async function createService(
+  businessId: string,
+  data: CreateServiceInput,
+): Promise<ServiceListing> {
   return apiAuthenticated.post<ServiceListing>(`/business/${businessId}/services`, data)
 }
 
@@ -372,10 +447,16 @@ export async function updateService(
   serviceId: string,
   data: Partial<CreateServiceInput>,
 ): Promise<ServiceListing> {
-  return apiAuthenticated.patch<ServiceListing>(`/business/${businessId}/services/${serviceId}`, data)
+  return apiAuthenticated.patch<ServiceListing>(
+    `/business/${businessId}/services/${serviceId}`,
+    data,
+  )
 }
 
-export async function deleteService(businessId: string, serviceId: string): Promise<void> {
+export async function deleteService(
+  businessId: string,
+  serviceId: string,
+): Promise<void> {
   return apiAuthenticated.delete<void>(`/business/${businessId}/services/${serviceId}`)
 }
 
@@ -390,7 +471,12 @@ export interface BusinessInquiry {
   subject: string
   message: string
   status: InquiryStatus
-  fromUser: { id: string; name?: string | null; email?: string | null; avatar?: string | null }
+  fromUser: {
+    id: string
+    name?: string | null
+    email?: string | null
+    avatar?: string | null
+  }
   createdAt: string
   updatedAt: string
 }
@@ -411,7 +497,100 @@ export async function updateInquiryStatus(
   inquiryId: string,
   status: InquiryStatus,
 ): Promise<BusinessInquiry> {
-  return apiAuthenticated.patch<BusinessInquiry>(`/business/${businessId}/inquiries/${inquiryId}`, { status })
+  return apiAuthenticated.patch<BusinessInquiry>(
+    `/business/${businessId}/inquiries/${inquiryId}`,
+    { status },
+  )
+}
+
+// ─── Brand Products (Phase 9) ────────────────────────────────────────────────
+
+export type BrandProductCategory =
+  | 'MOTORCYCLE'
+  | 'GEAR'
+  | 'HELMET'
+  | 'JACKET'
+  | 'GLOVES'
+  | 'BOOTS'
+  | 'PANTS'
+  | 'PARTS'
+  | 'ACCESSORIES'
+  | 'ELECTRONICS'
+  | 'TOOLS'
+  | 'LUBRICANTS'
+  | 'TYRES'
+  | 'LIGHTING'
+  | 'APPAREL'
+  | 'MEMORABILIA'
+  | 'OTHER'
+
+export type ProductAvailability =
+  | 'IN_STOCK'
+  | 'OUT_OF_STOCK'
+  | 'PRE_ORDER'
+  | 'DISCONTINUED'
+
+export interface BrandProduct {
+  id: string
+  businessId: string
+  title: string
+  description?: string | null
+  sku?: string | null
+  category: BrandProductCategory
+  price?: number | null
+  currency: string
+  images: string[]
+  availability: ProductAvailability
+  tags: string[]
+  specs?: Record<string, unknown> | null
+  isActive: boolean
+  isFeatured: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateBrandProductInput {
+  title: string
+  description?: string | null
+  sku?: string | null
+  category?: BrandProductCategory
+  price?: number | null
+  currency?: string
+  images?: string[]
+  availability?: ProductAvailability
+  tags?: string[]
+  specs?: Record<string, unknown> | null
+  isActive?: boolean
+  isFeatured?: boolean
+}
+
+export async function getBrandProducts(businessId: string): Promise<BrandProduct[]> {
+  return apiAuthenticated.get<BrandProduct[]>(`/business/${businessId}/products`)
+}
+
+export async function createBrandProduct(
+  businessId: string,
+  data: CreateBrandProductInput,
+): Promise<BrandProduct> {
+  return apiAuthenticated.post<BrandProduct>(`/business/${businessId}/products`, data)
+}
+
+export async function updateBrandProduct(
+  businessId: string,
+  productId: string,
+  data: Partial<CreateBrandProductInput>,
+): Promise<BrandProduct> {
+  return apiAuthenticated.patch<BrandProduct>(
+    `/business/${businessId}/products/${productId}`,
+    data,
+  )
+}
+
+export async function deleteBrandProduct(
+  businessId: string,
+  productId: string,
+): Promise<void> {
+  return apiAuthenticated.delete<void>(`/business/${businessId}/products/${productId}`)
 }
 
 export const businessApi = {
@@ -445,4 +624,8 @@ export const businessApi = {
   getInquiries,
   sendInquiry,
   updateInquiryStatus,
+  getBrandProducts,
+  createBrandProduct,
+  updateBrandProduct,
+  deleteBrandProduct,
 }

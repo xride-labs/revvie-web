@@ -19,14 +19,25 @@ import {
   MessageCircle,
   Users,
   Wrench,
+  ChevronDown,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Badge } from '@/components/ui/badge'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useAuth, hasAnyRole } from '@/lib/use-auth'
 import { signOut } from '@/lib/auth-client'
 import { useEffect } from 'react'
 import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { useBusinessContext } from '@/contexts/business-context'
+
+const ONBOARD_PATH = '/brand/onboard'
 
 const navigation = [
   { name: 'Dashboard', href: '/brand/dashboard', icon: LayoutDashboard },
@@ -42,22 +53,45 @@ const navigation = [
   { name: 'Settings', href: '/brand/settings', icon: Settings },
 ]
 
+const VERIFICATION_BADGE: Record<string, string> = {
+  PENDING: 'text-amber-400',
+  SUBMITTED: 'text-blue-400',
+  APPROVED: 'text-green-400',
+  REJECTED: 'text-destructive',
+}
+
 export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const { user, hasSession, isPending, error } = useAuth()
+  const { business, businesses, loading: businessLoading, selectBusiness } = useBusinessContext()
 
   const hasBrandAccess = hasAnyRole(user, 'BRAND_OWNER', 'BRAND_ADMIN', 'BRAND_MODERATOR', 'ADMIN', 'CO_ADMIN')
   const isAdmin = hasAnyRole(user, 'ADMIN', 'CO_ADMIN')
+  const isOnboardPath = pathname === ONBOARD_PATH
+  const hasOnboardedBusiness = businesses.some((b) => b.onboardingCompleted)
 
   useEffect(() => {
-    if (isPending) return
+    if (isPending || businessLoading) return
     if (!hasSession) { router.push('/login'); return }
     if (!user) return
-    if (!hasBrandAccess) { router.push('/login'); return }
-  }, [user, hasSession, isPending, router, hasBrandAccess, error])
 
-  if (isPending || (hasSession && !user)) {
+    // Allow onboard page without brand role (user is creating their first business)
+    if (isOnboardPath) return
+
+    // If user has a session but no brand role and no business yet → send to onboarding
+    if (!hasBrandAccess && !businessLoading) {
+      router.push(ONBOARD_PATH)
+      return
+    }
+
+    // If user has brand role but no onboarded business yet → send to onboarding
+    if (!businessLoading && !hasOnboardedBusiness && hasBrandAccess) {
+      router.push(ONBOARD_PATH)
+    }
+  }, [user, hasSession, isPending, businessLoading, businesses, hasBrandAccess, hasOnboardedBusiness, isOnboardPath, router, error])
+
+  if (isPending || (hasSession && !user) || businessLoading) {
     return (
       <BoneyardLoadingState
         name="brand-portal-layout-shell"
@@ -84,25 +118,70 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
     )
   }
 
-  if (!user || !hasBrandAccess) return null
+  // Onboard path renders without the sidebar shell
+  if (isOnboardPath) {
+    return <>{children}</>
+  }
+
+  if (!user) return null
 
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:w-72 lg:flex-col border-r border-border bg-card">
-        {/* Logo */}
-        <div className="flex h-16 items-center gap-2 px-6 border-b border-border">
-          <div className="w-10 h-10 bg-linear-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-            <Store className="w-5 h-5 text-white" />
+        {/* Logo + Business Selector */}
+        <div className="flex h-16 items-center gap-2 px-4 border-b border-border">
+          <div className="w-9 h-9 bg-linear-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.3)] shrink-0">
+            <Store className="w-4 h-4 text-white" />
           </div>
-          <div>
-            <span className="text-sm font-bold text-foreground uppercase tracking-wide">Brand Portal</span>
-            <p className="text-[10px] text-muted-foreground">Zoomies for Business</p>
-          </div>
+          {businesses.length > 1 ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex-1 min-w-0 flex items-center gap-1 text-left hover:opacity-80 transition-opacity">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold truncate">{business?.displayName ?? 'Brand Portal'}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {VERIFICATION_BADGE[business?.verification ?? 'PENDING'] ? (
+                        <span className={VERIFICATION_BADGE[business?.verification ?? 'PENDING']}>
+                          {business?.verification === 'APPROVED' ? '✓ Verified' :
+                           business?.verification === 'SUBMITTED' ? '⏳ Under Review' :
+                           business?.verification === 'REJECTED' ? '✗ Rejected' : 'Pending'}
+                        </span>
+                      ) : null}
+                    </p>
+                  </div>
+                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-64">
+                {businesses.map((b) => (
+                  <DropdownMenuItem
+                    key={b.id}
+                    onClick={() => selectBusiness(b.id)}
+                    className={cn('flex items-center gap-2', b.id === business?.id && 'bg-muted')}
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+                      <Store className="w-3.5 h-3.5 text-amber-500" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{b.displayName}</p>
+                      <p className="text-xs text-muted-foreground">{b.verification}</p>
+                    </div>
+                    {b.id === business?.id && <Badge variant="secondary" className="text-[10px] px-1.5">Active</Badge>}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold truncate">{business?.displayName ?? 'Brand Portal'}</p>
+              <p className="text-[10px] text-muted-foreground">Zoomies for Business</p>
+            </div>
+          )}
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-1">
+        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
           {navigation.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/brand/dashboard' && pathname.startsWith(item.href))
             return (
@@ -116,7 +195,7 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted',
                 )}
               >
-                <item.icon className="w-5 h-5" />
+                <item.icon className="w-5 h-5 shrink-0" />
                 {item.name}
               </Link>
             )
@@ -126,11 +205,7 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
         {/* Actions */}
         <div className="p-4 border-t border-border space-y-2">
           {isAdmin && (
-            <Button
-              className="w-full justify-start gap-2"
-              variant="outline"
-              onClick={() => router.push('/admin')}
-            >
+            <Button className="w-full justify-start gap-2" variant="outline" onClick={() => router.push('/admin')}>
               <Shield className="w-4 h-4" />
               Admin Portal
             </Button>

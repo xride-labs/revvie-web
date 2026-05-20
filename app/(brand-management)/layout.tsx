@@ -1,5 +1,10 @@
 import { BrandPortalLayout } from '@/components/brand/brand-portal-layout'
+import { BusinessProvider } from '@/contexts/business-context'
 
 export default function BrandManagementLayout({ children }: { children: React.ReactNode }) {
-  return <BrandPortalLayout>{children}</BrandPortalLayout>
+  return (
+    <BusinessProvider>
+      <BrandPortalLayout>{children}</BrandPortalLayout>
+    </BusinessProvider>
+  )
 }

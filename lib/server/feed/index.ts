@@ -20,6 +20,15 @@ export interface CreatePostData {
   content: string
   type?: PostType
   images?: string[]
+  clubId?: string
+  isAnnouncement?: boolean
+  isPinned?: boolean
+  expiresAt?: string | null
+}
+
+export interface GetFeedParams {
+  page?: number
+  clubId?: string
 }
 
 export interface CreateReportData {
@@ -34,10 +43,14 @@ export interface CreateReportData {
 // ============ Feed API ============
 
 /**
- * Get feed posts
+ * Get feed posts — optionally scoped to a club
  */
-export async function getFeed(page = 1): Promise<{ posts: Post[]; hasMore: boolean }> {
-  return apiAuthenticated.get<{ posts: Post[]; hasMore: boolean }>(`/feed?page=${page}`)
+export async function getFeed(params: GetFeedParams | number = 1): Promise<{ posts: Post[]; hasMore: boolean }> {
+  const page = typeof params === 'number' ? params : (params.page ?? 1)
+  const clubId = typeof params === 'object' ? params.clubId : undefined
+  const qs = new URLSearchParams({ page: String(page) })
+  if (clubId) qs.set('clubId', clubId)
+  return apiAuthenticated.get<{ posts: Post[]; hasMore: boolean }>(`/feed?${qs}`)
 }
 
 /**

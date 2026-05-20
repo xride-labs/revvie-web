@@ -1,4 +1,5 @@
 import { AppLayout } from '@/components/app/app-layout'
+import { ClubProvider } from '@/contexts/club-context'
 
 export default function ClubManagementLayout({
   children,
@@ -6,6 +7,8 @@ export default function ClubManagementLayout({
   children: React.ReactNode
 }) {
   return (
-    <AppLayout>{children}</AppLayout>
+    <ClubProvider>
+      <AppLayout>{children}</AppLayout>
+    </ClubProvider>
   )
 }
