@@ -197,7 +197,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold truncate">{activeClub?.name ?? 'Select Club'}</p>
-                      <p className="text-[10px] text-muted-foreground">{activeClub?.memberCount ?? 0} members</p>
+                      <p className="text-[10px] text-muted-foreground">{activeClub?.membersCount ?? 0} members</p>
                     </div>
                     <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                   </button>
@@ -216,7 +216,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium truncate">{c.name}</p>
-                        <p className="text-xs text-muted-foreground">{c.memberCount ?? 0} members</p>
+                        <p className="text-xs text-muted-foreground">{c.membersCount ?? 0} members</p>
                       </div>
                       {c.id === activeClub?.id && (
                         <Badge variant="secondary" className="text-[10px] px-1.5">Active</Badge>
@@ -236,7 +236,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold truncate">{activeClub?.name}</p>
-                  <p className="text-[10px] text-muted-foreground">{activeClub?.memberCount ?? 0} members</p>
+                  <p className="text-[10px] text-muted-foreground">{activeClub?.membersCount ?? 0} members</p>
                 </div>
               </div>
             )}
