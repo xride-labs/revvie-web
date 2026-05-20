@@ -145,8 +145,9 @@ export default function SignupPage() {
                 href="/"
                 className="inline-flex items-center justify-center gap-2 mb-4"
               >
-                <div className="w-12 h-12 bg-linear-to-br from-brand-red-light to-brand-red rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(200,55,55,0.3)]">
-                  <span className="text-white font-bold text-2xl">⚡</span>
+                <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center shadow-[0_0_20px_rgba(200,55,55,0.3)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/zoomies-logo.png" alt="Zoomies" className="w-full h-full object-cover" />
                 </div>
               </Link>
               <h1 className="text-2xl font-bold text-white uppercase tracking-wide">

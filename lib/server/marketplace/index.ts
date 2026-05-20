@@ -147,6 +147,14 @@ export async function markAsSold(listingId: string): Promise<{ listing: Listing 
   })
 }
 
+/**
+ * Register the current user as interested in a listing. The seller sees this
+ * in their listing's interest list. Idempotent server-side (upsert).
+ */
+export async function expressInterest(listingId: string): Promise<void> {
+  return apiAuthenticated.post<void>(`/marketplace/${listingId}/interests`)
+}
+
 // Export all as marketplaceApi object
 export const marketplaceApi = {
   getListings,
@@ -159,4 +167,5 @@ export const marketplaceApi = {
   saveListing,
   unsaveListing,
   markAsSold,
+  expressInterest,
 }

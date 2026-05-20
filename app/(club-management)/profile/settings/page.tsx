@@ -32,6 +32,9 @@ import {
 } from '@/components/ui/dialog'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { ChevronLeft, AlertTriangle, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
+import { apiAuthenticated } from '@/lib/server/base'
+import { signOut } from '@/lib/auth-client'
 
 export default function ProfileSettingsPage() {
   const router = useRouter()
@@ -60,10 +63,19 @@ export default function ProfileSettingsPage() {
     temperatureUnit: 'fahrenheit',
   })
 
-  const handleDeleteAccount = () => {
-    if (deleteConfirmText === 'DELETE') {
-      console.log('Deleting account...')
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== 'DELETE' || isDeleting) return
+    setIsDeleting(true)
+    try {
+      await apiAuthenticated.delete('/account/me')
+      toast.success('Your account has been permanently deleted')
+      await signOut().catch(() => {})
       router.push('/')
+    } catch {
+      toast.error('Could not delete your account. Please contact support.')
+      setIsDeleting(false)
     }
   }
 
@@ -414,10 +426,10 @@ export default function ProfileSettingsPage() {
             </Button>
             <Button
               variant="destructive"
-              disabled={deleteConfirmText !== 'DELETE'}
+              disabled={deleteConfirmText !== 'DELETE' || isDeleting}
               onClick={handleDeleteAccount}
             >
-              Delete Forever
+              {isDeleting ? 'Deleting…' : 'Delete Forever'}
             </Button>
           </DialogFooter>
         </DialogContent>

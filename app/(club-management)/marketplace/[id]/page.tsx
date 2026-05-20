@@ -83,7 +83,8 @@ interface Listing {
 export default function ListingDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const { error: errorToast, loading: loadingToast, dismiss: dismissToast } = useToast()
+  const { success: successToast, error: errorToast, loading: loadingToast, dismiss: dismissToast } = useToast()
+  const [isContacting, setIsContacting] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false)
@@ -136,10 +137,23 @@ export default function ListingDetailPage() {
     })
   }
 
-  const handleSendMessage = () => {
-    console.log('Sending message:', message)
-    setIsContactDialogOpen(false)
-    setMessage('')
+  const handleSendMessage = async () => {
+    if (isContacting) return
+    setIsContacting(true)
+    try {
+      await marketplaceApi.expressInterest(params.id as string)
+      successToast('Seller notified', {
+        description: 'They can see your interest and will reach out.',
+      })
+      setIsContactDialogOpen(false)
+      setMessage('')
+    } catch (err) {
+      errorToast('Could not contact the seller', {
+        description: err instanceof Error ? err.message : 'Please try again.',
+      })
+    } finally {
+      setIsContacting(false)
+    }
   }
 
   if (loading) {

@@ -4,7 +4,6 @@ const PUBLIC_FILE = /\.[^/]+$/
 
 function isWebDisabled(): boolean {
   const raw = process.env.WEB_DISABLED ?? process.env.NEXT_PUBLIC_WEB_DISABLED
-  console.log('WEB_DISABLED:', raw)
   const value = raw
     ?.trim()
     .replace(/^['\"]|['\"]$/g, '')

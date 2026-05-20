@@ -703,6 +703,82 @@ export async function declineRideParticipant(participantId: string): Promise<voi
   )
 }
 
+// ============ Ad Campaign Moderation ============
+
+export type AdCampaignStatus =
+  | 'DRAFT'
+  | 'PENDING_APPROVAL'
+  | 'ACTIVE'
+  | 'PAUSED'
+  | 'COMPLETED'
+  | 'REJECTED'
+
+export interface AdminAdCampaign {
+  id: string
+  businessId: string
+  title: string
+  ctaLabel: string
+  ctaUrl: string | null
+  imageUrl: string
+  startsAt: string
+  endsAt: string
+  budgetPaise: number
+  status: AdCampaignStatus
+  impressionCount: number
+  clickCount: number
+  reviewNotes: string | null
+  createdAt: string
+  business: { id: string; displayName: string; slug: string; logoUrl: string | null }
+}
+
+export interface AdminDiscount {
+  id: string
+  businessId: string
+  code: string | null
+  title: string
+  description: string | null
+  imageUrl: string | null
+  percentOff: number | null
+  amountOffPaise: number | null
+  validFrom: string
+  validUntil: string
+  isFeatured: boolean
+  createdAt: string
+  business: { id: string; displayName: string; slug: string; logoUrl: string | null }
+}
+
+export async function getAdCampaigns(
+  params: { status?: AdCampaignStatus; page?: number; limit?: number } = {},
+): Promise<PaginatedData<AdminAdCampaign>> {
+  const q = new URLSearchParams()
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null) q.append(k, String(v))
+  })
+  return apiAuthenticated.get<PaginatedData<AdminAdCampaign>>(`/admin/ad-campaigns?${q}`)
+}
+
+export async function approveAdCampaign(id: string, notes?: string): Promise<void> {
+  return apiAuthenticated.post<void>(`/admin/ad-campaigns/${id}/approve`, { notes })
+}
+
+export async function rejectAdCampaign(id: string, notes?: string): Promise<void> {
+  return apiAuthenticated.post<void>(`/admin/ad-campaigns/${id}/reject`, { notes })
+}
+
+export async function getAdminDiscounts(
+  params: { page?: number; limit?: number } = {},
+): Promise<PaginatedData<AdminDiscount>> {
+  const q = new URLSearchParams()
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null) q.append(k, String(v))
+  })
+  return apiAuthenticated.get<PaginatedData<AdminDiscount>>(`/admin/discounts?${q}`)
+}
+
+export async function deleteAdminDiscount(id: string): Promise<void> {
+  return apiAuthenticated.delete<void>(`/admin/discounts/${id}`)
+}
+
 // Export all as adminApi object
 export const adminApi = {
   getStats,
@@ -734,6 +810,11 @@ export const adminApi = {
   rejectClubRequest,
   acceptRideParticipant,
   declineRideParticipant,
+  getAdCampaigns,
+  approveAdCampaign,
+  rejectAdCampaign,
+  getAdminDiscounts,
+  deleteAdminDiscount,
   getSettings,
   updateSettings,
 }

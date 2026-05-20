@@ -26,13 +26,25 @@ import {
   Clock,
   Building2,
   Store,
+  Megaphone,
+  Percent,
+  Trash2,
+  ExternalLink,
 } from 'lucide-react'
-import { adminApi, type AdminApprovalsData, type PendingBusiness, type PendingBusinessesData } from '@/lib/server/admin'
+import {
+  adminApi,
+  type AdminApprovalsData,
+  type PendingBusiness,
+  type AdminAdCampaign,
+  type AdminDiscount,
+} from '@/lib/server/admin'
 import { toast } from 'sonner'
 
 export default function AdminApprovalsPage() {
   const [data, setData] = useState<AdminApprovalsData | null>(null)
   const [businesses, setBusinesses] = useState<PendingBusiness[]>([])
+  const [adCampaigns, setAdCampaigns] = useState<AdminAdCampaign[]>([])
+  const [discounts, setDiscounts] = useState<AdminDiscount[]>([])
   const [loading, setLoading] = useState(true)
   const [actioningId, setActioningId] = useState<string | null>(null)
   const [rejectNotes, setRejectNotes] = useState<Record<string, string>>({})
@@ -40,12 +52,16 @@ export default function AdminApprovalsPage() {
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const [approvals, biz] = await Promise.all([
+      const [approvals, biz, ads, discs] = await Promise.all([
         adminApi.getApprovals(),
         adminApi.getBusinessSubmissions(),
+        adminApi.getAdCampaigns({ status: 'PENDING_APPROVAL', limit: 50 }),
+        adminApi.getAdminDiscounts({ limit: 50 }),
       ])
       setData(approvals)
       setBusinesses(biz.items)
+      setAdCampaigns(ads.items)
+      setDiscounts(discs.items)
     } catch {
       toast.error('Failed to load pending approvals')
     } finally {
@@ -116,9 +132,21 @@ export default function AdminApprovalsPage() {
     setActioningId(null)
   }
 
+  const approveAllAdCampaigns = async () => {
+    if (!adCampaigns.length) return
+    setActioningId('bulk-ads')
+    let done = 0
+    for (const ad of adCampaigns) {
+      try { await adminApi.approveAdCampaign(ad.id); done++ } catch {}
+    }
+    toast.success(`Approved ${done} ad campaigns`)
+    await load()
+    setActioningId(null)
+  }
+
   const totalPending = (data
     ? data.pendingClubs.length + data.pendingClubRequests.length + data.pendingRideRequests.length
-    : 0) + businesses.length
+    : 0) + businesses.length + adCampaigns.length
 
   if (loading && !data) {
     return (
@@ -191,6 +219,24 @@ export default function AdminApprovalsPage() {
             {(data?.pendingRideRequests.length ?? 0) > 0 && (
               <Badge variant="destructive" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
                 {data!.pendingRideRequests.length}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="ad-campaigns" className="gap-2">
+            <Megaphone className="w-4 h-4" />
+            Ad Campaigns
+            {adCampaigns.length > 0 && (
+              <Badge variant="destructive" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {adCampaigns.length}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="discounts" className="gap-2">
+            <Percent className="w-4 h-4" />
+            Discounts
+            {discounts.length > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {discounts.length}
               </Badge>
             )}
           </TabsTrigger>
@@ -442,6 +488,146 @@ export default function AdminApprovalsPage() {
                 ))}
               </div>
             </>
+          )}
+        </TabsContent>
+
+        {/* ── Ad campaign approvals ── */}
+        <TabsContent value="ad-campaigns" className="mt-4 space-y-4">
+          {adCampaigns.length === 0 ? (
+            <EmptyState icon={<Megaphone className="w-8 h-8" />} label="No ad campaigns awaiting approval" />
+          ) : (
+            <>
+              <div className="flex justify-end">
+                <Button
+                  size="sm"
+                  onClick={approveAllAdCampaigns}
+                  disabled={actioningId === 'bulk-ads'}
+                  className="gap-2 bg-green-600 hover:bg-green-700"
+                >
+                  {actioningId === 'bulk-ads' ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCheck className="w-4 h-4" />}
+                  Approve All ({adCampaigns.length})
+                </Button>
+              </div>
+              <div className="space-y-3">
+                {adCampaigns.map((ad) => (
+                  <Card key={ad.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-4">
+                        {ad.imageUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={ad.imageUrl} alt={ad.title} className="w-16 h-16 rounded-lg object-cover shrink-0" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-semibold text-sm">{ad.title}</p>
+                            <Badge variant="outline" className="text-[10px] h-4 px-1">{ad.ctaLabel}</Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            By {ad.business.displayName}
+                            {' · ₹'}{(ad.budgetPaise / 100).toLocaleString()} budget
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            <Clock className="w-3 h-3 inline mr-1" />
+                            {new Date(ad.startsAt).toLocaleDateString()} – {new Date(ad.endsAt).toLocaleDateString()}
+                          </p>
+                          <div className="mt-2">
+                            <Textarea
+                              placeholder="Rejection notes (optional)"
+                              className="text-xs h-14 resize-none"
+                              value={rejectNotes[ad.id] ?? ''}
+                              onChange={(e) => setRejectNotes((prev) => ({ ...prev, [ad.id]: e.target.value }))}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2 shrink-0">
+                          <ActionButton
+                            id={ad.id}
+                            activeId={actioningId}
+                            variant="approve"
+                            onClick={() =>
+                              act(() => adminApi.approveAdCampaign(ad.id, rejectNotes[ad.id] || undefined), ad.id, `${ad.title} approved`)
+                            }
+                          />
+                          <ActionButton
+                            id={`reject-${ad.id}`}
+                            activeId={actioningId}
+                            variant="reject"
+                            onClick={() =>
+                              act(
+                                () => adminApi.rejectAdCampaign(ad.id, rejectNotes[ad.id] || undefined),
+                                `reject-${ad.id}`,
+                                `${ad.title} rejected`,
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
+        </TabsContent>
+
+        {/* ── Discount moderation ── */}
+        <TabsContent value="discounts" className="mt-4 space-y-4">
+          {discounts.length === 0 ? (
+            <EmptyState icon={<Percent className="w-8 h-8" />} label="No active discounts" />
+          ) : (
+            <div className="space-y-3">
+              {discounts.map((d) => (
+                <Card key={d.id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
+                        <Percent className="w-5 h-5 text-muted-foreground" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-semibold text-sm truncate">{d.title}</p>
+                          {d.code && (
+                            <Badge variant="outline" className="text-[10px] h-4 px-1 font-mono">{d.code}</Badge>
+                          )}
+                          {d.isFeatured && (
+                            <Badge variant="secondary" className="text-[10px] h-4 px-1">Featured</Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {d.percentOff != null
+                            ? `${d.percentOff}% off`
+                            : d.amountOffPaise != null
+                              ? `₹${(d.amountOffPaise / 100).toLocaleString()} off`
+                              : 'Discount'}
+                          {' · by '}{d.business.displayName}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          <Clock className="w-3 h-3 inline mr-1" />
+                          {new Date(d.validFrom).toLocaleDateString()} – {new Date(d.validUntil).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <Button size="sm" variant="outline" asChild className="h-8 px-3 gap-1">
+                          <a href={`/b/${d.businessId}`} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="w-3 h-3" /> Brand
+                          </a>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={!!actioningId}
+                          onClick={() => act(() => adminApi.deleteAdminDiscount(d.id), d.id, 'Discount removed')}
+                          className="gap-1 border-red-200 text-red-600 hover:bg-red-50 h-8 px-3"
+                        >
+                          {actioningId === d.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           )}
         </TabsContent>
       </Tabs>

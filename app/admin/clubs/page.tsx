@@ -363,14 +363,6 @@ export default function AdminClubsPage() {
                                 setIsVerifyDialogOpen(true)
                               }),
                             ]),
-                          CRUDActionBuilders.custom(
-                            'view-members',
-                            'View Members',
-                            () => {
-                              // TODO: Implement members view
-                            },
-                            { icon: <Users className="h-4 w-4" /> }
-                          ),
                           CRUDActionBuilders.delete(
                             () => handleDeleteClub(club),
                             false,

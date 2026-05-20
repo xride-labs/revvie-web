@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, ArrowLeft, Mail } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { authClient, resolveAuthCallbackURL } from '@/lib/auth-client'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -20,8 +21,14 @@ export default function ForgotPasswordPage() {
     setError('')
 
     try {
-      // TODO: Call backend API
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const { error: resetError } = await authClient.requestPasswordReset({
+        email: email.trim(),
+        redirectTo: resolveAuthCallbackURL('/reset-password'),
+      })
+      if (resetError) {
+        setError(resetError.message || 'Could not send reset email. Please try again.')
+        return
+      }
       setIsSubmitted(true)
     } catch {
       setError('Something went wrong. Please try again.')
@@ -61,8 +68,9 @@ export default function ForgotPasswordPage() {
                 href="/"
                 className="inline-flex items-center justify-center gap-2 mb-4"
               >
-                <div className="w-12 h-12 bg-linear-to-br from-brand-red-light to-brand-red rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(200,55,55,0.3)]">
-                  <span className="text-white font-bold text-2xl">⚡</span>
+                <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center shadow-[0_0_20px_rgba(200,55,55,0.3)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/zoomies-logo.png" alt="Zoomies" className="w-full h-full object-cover" />
                 </div>
               </Link>
 

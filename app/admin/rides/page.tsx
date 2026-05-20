@@ -323,26 +323,6 @@ export default function AdminRidesPage() {
                               setSelectedRide(ride)
                               setIsViewDialogOpen(true)
                             }),
-                            CRUDActionBuilders.custom(
-                              'view-participants',
-                              'View Participants',
-                              () => {
-                                // TODO: Implement participants view
-                              },
-                              { icon: <Users className="h-4 w-4" /> }
-                            ),
-                            ...(ride.status === 'IN_PROGRESS'
-                              ? [
-                                CRUDActionBuilders.custom(
-                                  'track-live',
-                                  'Track Live',
-                                  () => {
-                                    // TODO: Implement live tracking
-                                  },
-                                  { icon: <MapPin className="h-4 w-4" /> }
-                                ),
-                              ]
-                              : []),
                             ...(ride.status !== 'CANCELLED' && ride.status !== 'COMPLETED'
                               ? [
                                 CRUDActionBuilders.custom(

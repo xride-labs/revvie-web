@@ -20,8 +20,6 @@ export async function GET() {
     )
   }
 
-  console.log('GOOGLE_FORM_RESPONSES_URL:', responsesUrl)
-
   return NextResponse.json(
     {
       googleForm: {

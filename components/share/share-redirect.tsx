@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowDownToLine, Smartphone, Loader2 } from 'lucide-react'
 
-export type ShareKind = 'ride' | 'listing' | 'club' | 'invite'
+export type ShareKind = 'ride' | 'listing' | 'club' | 'invite' | 'profile'
 
 interface ShareRedirectProps {
   kind: ShareKind
@@ -16,12 +16,13 @@ interface ShareRedirectProps {
   meta?: Array<{ label: string; value: string }>
 }
 
-const SEGMENT: Record<ShareKind, string> = { ride: 'r', listing: 'm', club: 'c', invite: 'i' }
+const SEGMENT: Record<ShareKind, string> = { ride: 'r', listing: 'm', club: 'c', invite: 'i', profile: 'u' }
 const COPY: Record<ShareKind, { emoji: string; noun: string }> = {
   ride:    { emoji: '🏍️', noun: 'ride' },
   listing: { emoji: '🛒', noun: 'listing' },
   club:    { emoji: '👥', noun: 'club' },
   invite:  { emoji: '⚡', noun: 'invite' },
+  profile: { emoji: '🏍️', noun: 'profile' },
 }
 
 const APP_SCHEME  = 'zoomies'
