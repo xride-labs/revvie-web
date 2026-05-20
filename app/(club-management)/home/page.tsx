@@ -299,7 +299,7 @@ export default function FeedPage() {
         <div>
           <h2 className="font-bold text-lg">{activeClub?.name ?? 'Club Feed'}</h2>
           <p className="text-xs text-muted-foreground">
-            {activeClub ? `${activeClub.memberCount ?? 0} members` : 'Select a club'}
+            {activeClub ? `${activeClub.membersCount ?? 0} members` : 'Select a club'}
           </p>
         </div>
         <Button onClick={() => setCreateOpen(true)} className="gap-2 rounded-full" size="sm">
