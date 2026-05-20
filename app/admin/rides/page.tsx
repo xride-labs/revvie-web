@@ -263,12 +263,12 @@ export default function AdminRidesPage() {
                   const StatusIcon = statusIcons[ride.status as keyof typeof statusIcons]
                   return (
                     <TableRow key={ride.id}>
-                      <TableCell>
+                      <TableCell className="max-w-[220px]">
                         <div>
-                          <p className="font-medium">{ride.title}</p>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            {ride.startLocation} → {ride.endLocation}
+                          <p className="font-medium truncate">{ride.title}</p>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 truncate">
+                            <MapPin className="w-3 h-3 shrink-0" />
+                            <span className="truncate">{ride.startLocation}{ride.endLocation ? ` → ${ride.endLocation}` : ''}</span>
                           </p>
                         </div>
                       </TableCell>

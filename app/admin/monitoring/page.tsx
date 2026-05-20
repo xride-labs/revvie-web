@@ -11,14 +11,11 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
-  Activity,
   AlertCircle,
   CheckCircle2,
   ExternalLink,
   RefreshCw,
   Server,
-  Shield,
-  Zap,
   Bug,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -201,9 +198,9 @@ export default function AdminMonitoringPage() {
       </div>
 
       {/* Sentry */}
-      <div>
-        <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">Error Tracking — Sentry</h3>
-        {hasSentry ? (
+      {hasSentry && (
+        <div>
+          <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">Error Tracking — Sentry</h3>
           <Card>
             <CardContent className="p-4 flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-950 flex items-center justify-center shrink-0">
@@ -227,92 +224,8 @@ export default function AdminMonitoringPage() {
               )}
             </CardContent>
           </Card>
-        ) : (
-          <Card className="border-dashed">
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Bug className="w-5 h-5 text-violet-500" />
-                Set up Sentry (free, 5k errors/month)
-              </CardTitle>
-              <CardDescription>
-                Replaces Prometheus + Grafana for early-stage monitoring — zero infra, instant errors.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <ol className="space-y-3 text-sm">
-                <li className="flex gap-3">
-                  <StepBadge n={1} />
-                  <div>
-                    <p className="font-medium">Create a free account</p>
-                    <a href="https://sentry.io/signup/" target="_blank" rel="noreferrer" className="text-xs text-violet-600 hover:underline flex items-center gap-1">
-                      sentry.io/signup <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-                </li>
-                <li className="flex gap-3">
-                  <StepBadge n={2} />
-                  <div>
-                    <p className="font-medium">Install SDKs</p>
-                    <code className="text-xs bg-muted px-2 py-1 rounded block mt-1">
-                      bun add @sentry/nextjs @sentry/react-native
-                    </code>
-                  </div>
-                </li>
-                <li className="flex gap-3">
-                  <StepBadge n={3} />
-                  <div>
-                    <p className="font-medium">Add env vars</p>
-                    <code className="text-xs bg-muted px-2 py-1 rounded block mt-1 leading-relaxed">
-                      NEXT_PUBLIC_SENTRY_DSN=https://...@sentry.io/...<br />
-                      NEXT_PUBLIC_SENTRY_ORG=your-org<br />
-                      NEXT_PUBLIC_SENTRY_PROJECT=zoomies-web
-                    </code>
-                  </div>
-                </li>
-                <li className="flex gap-3">
-                  <StepBadge n={4} />
-                  <div>
-                    <p className="font-medium">Run Sentry wizard (auto-configures Next.js)</p>
-                    <code className="text-xs bg-muted px-2 py-1 rounded block mt-1">
-                      npx @sentry/wizard@latest -i nextjs
-                    </code>
-                  </div>
-                </li>
-              </ol>
-
-              <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/30 p-3 text-xs flex gap-2">
-                <Zap className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                <span className="text-amber-800 dark:text-amber-200">
-                  Free tier covers 5,000 errors + 10,000 performance transactions per month —
-                  more than enough for beta. No Docker, no dashboards to run.
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-
-      {/* Deprecation notice */}
-      <Card className="border-dashed opacity-60">
-        <CardContent className="p-4 flex items-center gap-3">
-          <Shield className="w-5 h-5 text-muted-foreground shrink-0" />
-          <div>
-            <p className="font-medium text-sm text-muted-foreground">Prometheus &amp; Grafana removed</p>
-            <p className="text-xs text-muted-foreground">
-              Too heavy for early-stage. Sentry covers errors + performance at zero ops cost.
-              Add Prometheus back when you hit 10k+ DAU and need custom metrics.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      )}
     </div>
-  )
-}
-
-function StepBadge({ n }: { n: number }) {
-  return (
-    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-600 text-[11px] font-bold text-white mt-0.5">
-      {n}
-    </span>
   )
 }

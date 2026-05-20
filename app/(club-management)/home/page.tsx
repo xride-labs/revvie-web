@@ -6,8 +6,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
+import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import {
@@ -118,14 +118,14 @@ interface CreatePostDialogProps {
 
 function CreatePostDialog({ open, onOpenChange, clubId, isClubAdmin, onCreated }: CreatePostDialogProps) {
   const [content, setContent] = useState('')
-  const [isAnnouncement, setIsAnnouncement] = useState(false)
+  const [isAnnouncement, setIsAnnouncement] = useState(isClubAdmin)
   const [isPinned, setIsPinned] = useState(false)
   const [expiresIn, setExpiresIn] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   const reset = () => {
     setContent('')
-    setIsAnnouncement(false)
+    setIsAnnouncement(isClubAdmin)
     setIsPinned(false)
     setExpiresIn('')
   }
@@ -170,13 +170,22 @@ function CreatePostDialog({ open, onOpenChange, clubId, isClubAdmin, onCreated }
         </DialogHeader>
 
         <div className="space-y-4">
-          <Textarea
-            placeholder={isAnnouncement ? "Write your club announcement…" : "What's happening in the club?"}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={4}
-            className="resize-none"
-          />
+          {isAnnouncement ? (
+            <RichTextEditor
+              value={content}
+              onChange={setContent}
+              placeholder="Write your club announcement…"
+              minHeight="120px"
+            />
+          ) : (
+            <textarea
+              placeholder="What's happening in the club?"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows={4}
+              className="w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            />
+          )}
 
           {isClubAdmin && (
             <div className="space-y-3 p-3 rounded-xl bg-muted/50 border border-border">
@@ -401,7 +410,7 @@ export default function FeedPage() {
                   <Link href={`/profile/${post.author.username}`} className="flex items-start gap-3">
                     <Avatar className="w-10 h-10">
                       <AvatarFallback className="bg-linear-to-br from-primary to-amber-500 text-white font-semibold">
-                        {post.author.name.split(' ').map((n) => n[0]).join('')}
+                        {(post.author.name ?? post.author.username ?? '?').split(' ').map((n) => n[0]).join('')}
                       </AvatarFallback>
                     </Avatar>
                     <div>
@@ -416,7 +425,7 @@ export default function FeedPage() {
                         <span>•</span>
                         <span>{formatTimeAgo(post.createdAt)}</span>
                       </div>
-                      {post.author.clubs.length > 0 && (
+                      {(post.author.clubs?.length ?? 0) > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
                           {post.author.clubs.slice(0, 2).map((club) => (
                             <Badge key={club.id} variant="outline" className="text-[10px] px-1.5 py-0">
@@ -438,7 +447,14 @@ export default function FeedPage() {
                 </div>
 
                 {/* Content */}
-                <p className="text-sm mb-3 whitespace-pre-wrap">{post.content}</p>
+                {post.isAnnouncement && post.content.startsWith('<') ? (
+                  <div
+                    className="text-sm mb-3 prose prose-sm dark:prose-invert max-w-none"
+                    dangerouslySetInnerHTML={{ __html: post.content }}
+                  />
+                ) : (
+                  <p className="text-sm mb-3 whitespace-pre-wrap">{post.content}</p>
+                )}
 
                 {/* Image placeholder */}
                 {post.images?.length === 0 && post.type === 'content' && (

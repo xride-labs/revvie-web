@@ -324,6 +324,7 @@ export interface AdminSettings {
   siteUrl: string
   supportEmail: string
   timezone: string
+  defaultCurrency: string
   maintenanceMode: boolean
   allowRegistration: boolean
   marketplaceEnabled: boolean
@@ -665,6 +666,18 @@ export async function getBusinessSubmissions(): Promise<PendingBusinessesData> {
   return apiAuthenticated.get<PendingBusinessesData>('/admin/businesses?status=SUBMITTED&limit=50')
 }
 
+export async function getAllBusinesses(params: {
+  page?: number; limit?: number; status?: string; search?: string
+} = {}): Promise<PendingBusinessesData> {
+  const q = new URLSearchParams()
+  Object.entries(params).forEach(([k, v]) => { if (v !== undefined && v !== null && v !== '') q.append(k, String(v)) })
+  return apiAuthenticated.get<PendingBusinessesData>(`/admin/businesses?${q}`)
+}
+
+export async function deleteBusiness(id: string): Promise<void> {
+  return apiAuthenticated.delete<void>(`/admin/businesses/${id}`)
+}
+
 export async function approveBusinessSubmission(businessId: string): Promise<void> {
   return apiAuthenticated.patch<void>(`/admin/businesses/${businessId}`, {
     verification: 'APPROVED',
@@ -779,6 +792,26 @@ export async function deleteAdminDiscount(id: string): Promise<void> {
   return apiAuthenticated.delete<void>(`/admin/discounts/${id}`)
 }
 
+export async function bulkVerifyClubs(ids: string[]): Promise<{ updated: number }> {
+  return apiAuthenticated.post<{ updated: number }>('/admin/bulk/clubs/verify', { ids })
+}
+
+export async function bulkApproveClubRequests(ids: string[]): Promise<{ updated: number }> {
+  return apiAuthenticated.post<{ updated: number }>('/admin/bulk/club-join-requests/approve', { ids })
+}
+
+export async function bulkAcceptRideParticipants(ids: string[]): Promise<{ updated: number }> {
+  return apiAuthenticated.post<{ updated: number }>('/admin/bulk/ride-participants/accept', { ids })
+}
+
+export async function bulkApproveBusinesses(ids: string[]): Promise<{ updated: number }> {
+  return apiAuthenticated.post<{ updated: number }>('/admin/bulk/businesses/approve', { ids })
+}
+
+export async function bulkApproveAdCampaigns(ids: string[]): Promise<{ updated: number }> {
+  return apiAuthenticated.post<{ updated: number }>('/admin/bulk/ad-campaigns/approve', { ids })
+}
+
 // Export all as adminApi object
 export const adminApi = {
   getStats,
@@ -817,4 +850,11 @@ export const adminApi = {
   deleteAdminDiscount,
   getSettings,
   updateSettings,
+  getAllBusinesses,
+  deleteBusiness,
+  bulkVerifyClubs,
+  bulkApproveClubRequests,
+  bulkAcceptRideParticipants,
+  bulkApproveBusinesses,
+  bulkApproveAdCampaigns,
 }

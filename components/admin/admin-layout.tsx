@@ -22,6 +22,8 @@ import {
   Search,
   Activity,
   CheckSquare,
+  Store,
+  UserCog,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -43,7 +45,9 @@ const adminNavigation: AdminNavItem[] = [
   { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Clubs', href: '/admin/clubs', icon: Shield },
   { name: 'Rides', href: '/admin/rides', icon: MapPin },
+  { name: 'Brands', href: '/admin/brands', icon: Store },
   { name: 'Marketplace', href: '/admin/marketplace', icon: ShoppingBag },
+  { name: 'Team', href: '/admin/team', icon: UserCog },
   { name: 'Notifications', href: '/admin/notifications', icon: Bell },
   { name: 'Reports', href: '/admin/reports', icon: Flag },
   { name: 'Monitoring', href: '/admin/monitoring', icon: Activity },

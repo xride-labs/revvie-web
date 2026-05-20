@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import currencyCodes from 'currency-codes'
 import {
   Card,
   CardContent,
@@ -21,18 +22,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Bell,
-  Shield,
   Globe,
-  Mail,
-  Palette,
   Save,
   RotateCcw,
 } from 'lucide-react'
 import { adminApi, type AdminSettings } from '@/lib/server/admin'
 import { toast } from 'sonner'
+
+const CURRENCY_LIST = currencyCodes.data
+  .map((c) => ({ code: c.code, name: c.currency }))
+  .sort((a, b) => {
+    if (a.code === 'INR') return -1
+    if (b.code === 'INR') return 1
+    if (a.code === 'USD') return -1
+    if (b.code === 'USD') return 1
+    return a.name.localeCompare(b.name)
+  })
+
+const TIMEZONES = [
+  { value: 'Asia/Kolkata',       label: 'Asia/Kolkata (IST, UTC+5:30)' },
+  { value: 'Asia/Dubai',         label: 'Asia/Dubai (GST, UTC+4)' },
+  { value: 'Asia/Singapore',     label: 'Asia/Singapore (SGT, UTC+8)' },
+  { value: 'Asia/Tokyo',         label: 'Asia/Tokyo (JST, UTC+9)' },
+  { value: 'Europe/London',      label: 'Europe/London (GMT/BST)' },
+  { value: 'Europe/Paris',       label: 'Europe/Paris (CET, UTC+1)' },
+  { value: 'America/New_York',   label: 'America/New York (EST, UTC-5)' },
+  { value: 'America/Chicago',    label: 'America/Chicago (CST, UTC-6)' },
+  { value: 'America/Denver',     label: 'America/Denver (MST, UTC-7)' },
+  { value: 'America/Los_Angeles','label': 'America/Los Angeles (PST, UTC-8)' },
+  { value: 'Australia/Sydney',   label: 'Australia/Sydney (AEST, UTC+10)' },
+  { value: 'Pacific/Auckland',   label: 'Pacific/Auckland (NZST, UTC+12)' },
+  { value: 'UTC',                label: 'UTC' },
+]
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<AdminSettings | null>(null)
@@ -113,12 +136,9 @@ export default function AdminSettingsPage() {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="general" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5 lg:w-150">
+        <TabsList className="grid w-full grid-cols-2 lg:w-72">
           <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="email">Email</TabsTrigger>
-          <TabsTrigger value="appearance">Appearance</TabsTrigger>
         </TabsList>
 
         {/* General Settings */}
@@ -167,16 +187,27 @@ export default function AdminSettingsPage() {
                       <SelectValue placeholder="Select timezone" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="America/Phoenix">
-                        America/Phoenix (MST)
-                      </SelectItem>
-                      <SelectItem value="America/Los_Angeles">
-                        America/Los Angeles (PST)
-                      </SelectItem>
-                      <SelectItem value="America/New_York">
-                        America/New York (EST)
-                      </SelectItem>
-                      <SelectItem value="Asia/Kolkata">Asia/Kolkata (IST)</SelectItem>
+                      {TIMEZONES.map((tz) => (
+                        <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="defaultCurrency">Default Currency</Label>
+                  <Select
+                    value={settings.defaultCurrency}
+                    onValueChange={(value) => updateSetting('defaultCurrency', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select currency" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60">
+                      {CURRENCY_LIST.map((c) => (
+                        <SelectItem key={c.code} value={c.code}>
+                          {c.code} — {c.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -234,133 +265,6 @@ export default function AdminSettingsPage() {
                       checked={settings.clubCreationEnabled}
                       onCheckedChange={(checked) => updateSetting('clubCreationEnabled', checked)}
                     />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Security Settings */}
-        <TabsContent value="security">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="w-5 h-5" />
-                Security Settings
-              </CardTitle>
-              <CardDescription>
-                Manage security and authentication settings
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Two-Factor Authentication</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Require 2FA for admin accounts
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.requireAdmin2FA}
-                    onCheckedChange={(checked) => updateSetting('requireAdmin2FA', checked)}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Session Timeout</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Auto logout after inactivity
-                    </p>
-                  </div>
-                  <Select
-                    value={String(settings.sessionTimeoutMinutes)}
-                    onValueChange={(value) =>
-                      updateSetting('sessionTimeoutMinutes', Number(value))
-                    }
-                  >
-                    <SelectTrigger className="w-45">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="15">15 minutes</SelectItem>
-                      <SelectItem value="30">30 minutes</SelectItem>
-                      <SelectItem value="60">1 hour</SelectItem>
-                      <SelectItem value="120">2 hours</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Password Requirements</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Minimum password strength
-                    </p>
-                  </div>
-                  <Select
-                    value={settings.passwordStrength}
-                    onValueChange={(value) =>
-                      updateSetting('passwordStrength', value as AdminSettings['passwordStrength'])
-                    }
-                  >
-                    <SelectTrigger className="w-45">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="basic">Basic (8+ chars)</SelectItem>
-                      <SelectItem value="medium">Medium (+ numbers)</SelectItem>
-                      <SelectItem value="strong">Strong (+ symbols)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Login Attempts</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Max failed attempts before lockout
-                    </p>
-                  </div>
-                  <Select
-                    value={String(settings.loginAttempts)}
-                    onValueChange={(value) =>
-                      updateSetting('loginAttempts', Number(value))
-                    }
-                  >
-                    <SelectTrigger className="w-45">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="3">3 attempts</SelectItem>
-                      <SelectItem value="5">5 attempts</SelectItem>
-                      <SelectItem value="10">10 attempts</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-4">
-                <h4 className="font-medium">OAuth Providers</h4>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label>Google Sign-In</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Allow sign in with Google
-                      </p>
-                    </div>
-                    <Switch checked disabled />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label>Phone OTP</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Allow sign in with phone OTP
-                      </p>
-                    </div>
-                    <Switch checked disabled />
                   </div>
                 </div>
               </div>
@@ -449,162 +353,6 @@ export default function AdminSettingsPage() {
           </Card>
         </TabsContent>
 
-        {/* Email Settings */}
-        <TabsContent value="email">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Mail className="w-5 h-5" />
-                Email Settings
-              </CardTitle>
-              <CardDescription>Configure email delivery settings</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="smtpHost">SMTP Host</Label>
-                  <Input
-                    id="smtpHost"
-                    value={settings.smtpHost}
-                    onChange={(event) => updateSetting('smtpHost', event.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="smtpPort">SMTP Port</Label>
-                  <Input
-                    id="smtpPort"
-                    value={String(settings.smtpPort)}
-                    onChange={(event) =>
-                      updateSetting('smtpPort', Number(event.target.value || 0))
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="smtpUser">SMTP Username</Label>
-                  <Input
-                    id="smtpUser"
-                    value={settings.smtpUser}
-                    onChange={(event) => updateSetting('smtpUser', event.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="smtpPass">SMTP Password</Label>
-                  <Input
-                    id="smtpPass"
-                    type="password"
-                    value={settings.smtpPass}
-                    onChange={(event) => updateSetting('smtpPass', event.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="fromEmail">From Email</Label>
-                  <Input
-                    id="fromEmail"
-                    value={settings.fromEmail}
-                    onChange={(event) => updateSetting('fromEmail', event.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="fromName">From Name</Label>
-                  <Input
-                    id="fromName"
-                    value={settings.fromName}
-                    onChange={(event) => updateSetting('fromName', event.target.value)}
-                  />
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-4">
-                <h4 className="font-medium">Email Templates</h4>
-                <div className="space-y-2">
-                  <Label htmlFor="welcomeEmail">Welcome Email Subject</Label>
-                  <Input
-                    id="welcomeEmail"
-                    value={settings.welcomeEmailSubject}
-                    onChange={(event) =>
-                      updateSetting('welcomeEmailSubject', event.target.value)
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="welcomeBody">Welcome Email Body</Label>
-                  <Textarea
-                    id="welcomeBody"
-                    rows={4}
-                    value={settings.welcomeEmailBody}
-                    onChange={(event) => updateSetting('welcomeEmailBody', event.target.value)}
-                  />
-                </div>
-              </div>
-
-              <Button variant="outline">Send Test Email</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Appearance Settings */}
-        <TabsContent value="appearance">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="w-5 h-5" />
-                Appearance Settings
-              </CardTitle>
-              <CardDescription>Customize the look and feel</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Primary Color</Label>
-                  <div className="flex gap-2">
-                    {['#f97316', '#ef4444', '#22c55e', '#3b82f6', '#8b5cf6'].map(
-                      (color) => (
-                        <button
-                          key={color}
-                          className={`w-10 h-10 rounded-lg border-2 transition-colors ${
-                            settings.primaryColor === color
-                              ? 'border-foreground'
-                              : 'border-transparent hover:border-foreground/20'
-                          }`}
-                          style={{ backgroundColor: color }}
-                          onClick={() => updateSetting('primaryColor', color)}
-                        />
-                      ),
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Dark Mode</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Enable dark mode by default
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.darkModeDefault}
-                    onCheckedChange={(checked) => updateSetting('darkModeDefault', checked)}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Compact Mode</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Use smaller spacing and fonts
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.compactMode}
-                    onCheckedChange={(checked) => updateSetting('compactMode', checked)}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
 
       {/* Save Actions */}

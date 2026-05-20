@@ -37,6 +37,11 @@ import {
   type PendingBusiness,
   type AdminAdCampaign,
   type AdminDiscount,
+  bulkVerifyClubs,
+  bulkApproveClubRequests,
+  bulkAcceptRideParticipants,
+  bulkApproveBusinesses,
+  bulkApproveAdCampaigns,
 } from '@/lib/server/admin'
 import { toast } from 'sonner'
 
@@ -84,65 +89,33 @@ export default function AdminApprovalsPage() {
     }
   }
 
-  const approveAllClubs = async () => {
-    if (!data?.pendingClubs.length) return
-    setActioningId('bulk-clubs')
-    let done = 0
-    for (const club of data.pendingClubs) {
-      try { await adminApi.verifyClub(club.id); done++ } catch {}
+  const bulkAction = async (key: string, fn: () => Promise<{ updated: number }>, label: string) => {
+    setActioningId(key)
+    try {
+      const { updated } = await fn()
+      toast.success(`${label}: ${updated} done`)
+      await load()
+    } catch {
+      toast.error('Bulk action failed — try again')
+    } finally {
+      setActioningId(null)
     }
-    toast.success(`Verified ${done} clubs`)
-    await load()
-    setActioningId(null)
   }
 
-  const approveAllClubRequests = async () => {
-    if (!data?.pendingClubRequests.length) return
-    setActioningId('bulk-club-requests')
-    let done = 0
-    for (const req of data.pendingClubRequests) {
-      try { await adminApi.approveClubRequest(req.id); done++ } catch {}
-    }
-    toast.success(`Approved ${done} club join requests`)
-    await load()
-    setActioningId(null)
-  }
+  const approveAllClubs = () =>
+    bulkAction('bulk-clubs', () => bulkVerifyClubs(data!.pendingClubs.map((c) => c.id)), 'Clubs verified')
 
-  const approveAllRideRequests = async () => {
-    if (!data?.pendingRideRequests.length) return
-    setActioningId('bulk-ride-requests')
-    let done = 0
-    for (const req of data.pendingRideRequests) {
-      try { await adminApi.acceptRideParticipant(req.id); done++ } catch {}
-    }
-    toast.success(`Accepted ${done} ride participants`)
-    await load()
-    setActioningId(null)
-  }
+  const approveAllClubRequests = () =>
+    bulkAction('bulk-club-requests', () => bulkApproveClubRequests(data!.pendingClubRequests.map((r) => r.id)), 'Club join requests approved')
 
-  const approveAllBusinesses = async () => {
-    if (!businesses.length) return
-    setActioningId('bulk-businesses')
-    let done = 0
-    for (const biz of businesses) {
-      try { await adminApi.approveBusinessSubmission(biz.id); done++ } catch {}
-    }
-    toast.success(`Approved ${done} business submissions`)
-    await load()
-    setActioningId(null)
-  }
+  const approveAllRideRequests = () =>
+    bulkAction('bulk-ride-requests', () => bulkAcceptRideParticipants(data!.pendingRideRequests.map((r) => r.id)), 'Ride participants accepted')
 
-  const approveAllAdCampaigns = async () => {
-    if (!adCampaigns.length) return
-    setActioningId('bulk-ads')
-    let done = 0
-    for (const ad of adCampaigns) {
-      try { await adminApi.approveAdCampaign(ad.id); done++ } catch {}
-    }
-    toast.success(`Approved ${done} ad campaigns`)
-    await load()
-    setActioningId(null)
-  }
+  const approveAllBusinesses = () =>
+    bulkAction('bulk-businesses', () => bulkApproveBusinesses(businesses.map((b) => b.id)), 'Business submissions approved')
+
+  const approveAllAdCampaigns = () =>
+    bulkAction('bulk-ads', () => bulkApproveAdCampaigns(adCampaigns.map((a) => a.id)), 'Ad campaigns approved')
 
   const totalPending = (data
     ? data.pendingClubs.length + data.pendingClubRequests.length + data.pendingRideRequests.length

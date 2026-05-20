@@ -27,9 +27,45 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Bell, CheckCircle, Clock, Mail } from 'lucide-react'
+import {
+  Bell,
+  CheckCircle,
+  Clock,
+  Mail,
+  MapPin,
+  Users,
+  MessageSquare,
+  ShoppingBag,
+  Heart,
+  UserPlus,
+  Megaphone,
+  CalendarCheck,
+  AlertTriangle,
+  type LucideIcon,
+} from 'lucide-react'
 import { adminApi, type AdminNotificationRecord } from '@/lib/server/admin'
 import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+
+const TYPE_ICON: Record<string, { icon: LucideIcon; color: string }> = {
+  RIDE_INVITE:          { icon: MapPin,        color: 'text-blue-500' },
+  RIDE_JOIN_REQUEST:    { icon: MapPin,        color: 'text-amber-500' },
+  RIDE_JOIN_ACCEPTED:   { icon: CalendarCheck, color: 'text-green-500' },
+  RIDE_REMINDER:        { icon: Clock,         color: 'text-blue-400' },
+  RIDE_CANCELLED:       { icon: AlertTriangle, color: 'text-red-500' },
+  CLUB_INVITE:          { icon: Users,         color: 'text-purple-500' },
+  CLUB_JOIN_REQUEST:    { icon: Users,         color: 'text-amber-500' },
+  CLUB_JOIN_ACCEPTED:   { icon: Users,         color: 'text-green-500' },
+  CLUB_ANNOUNCEMENT:    { icon: Megaphone,     color: 'text-amber-500' },
+  MARKETPLACE_MESSAGE:  { icon: ShoppingBag,   color: 'text-indigo-500' },
+  LISTING_SOLD:         { icon: ShoppingBag,   color: 'text-green-500' },
+  LISTING_OFFER:        { icon: ShoppingBag,   color: 'text-blue-500' },
+  LISTING_INTERESTED:   { icon: ShoppingBag,   color: 'text-amber-500' },
+  MESSAGE:              { icon: MessageSquare, color: 'text-cyan-500' },
+  FOLLOW:               { icon: UserPlus,      color: 'text-violet-500' },
+  COMMENT:              { icon: MessageSquare, color: 'text-slate-500' },
+  LIKE:                 { icon: Heart,         color: 'text-red-500' },
+  FRIEND_REQUEST:       { icon: UserPlus,      color: 'text-pink-500' },
+}
 
 const TYPE_OPTIONS = [
   'RIDE_INVITE',
@@ -276,7 +312,16 @@ export default function AdminNotificationsPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{notification.type}</Badge>
+                        {(() => {
+                          const meta = TYPE_ICON[notification.type] ?? { icon: Bell, color: 'text-muted-foreground' }
+                          const TypeIcon = meta.icon
+                          return (
+                            <span className="flex items-center gap-1.5">
+                              <TypeIcon className={`w-3.5 h-3.5 shrink-0 ${meta.color}`} />
+                              <Badge variant="outline" className="text-[10px]">{notification.type.replace(/_/g, ' ')}</Badge>
+                            </span>
+                          )
+                        })()}
                       </TableCell>
                       <TableCell>
                         <Badge variant={notification.isRead ? 'secondary' : 'default'}>
