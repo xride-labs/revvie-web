@@ -29,7 +29,7 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 type AdminNavItem = {
   name: string
@@ -156,32 +156,29 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   if (isPending || (hasSession && !user)) {
     return (
-      <BoneyardLoadingState
-        name="admin-layout-shell"
-        fallback={
-          <div className="min-h-screen bg-background flex">
-            <aside className="hidden lg:flex lg:w-64 lg:flex-col border-r border-border bg-card">
-              <div className="flex h-16 items-center gap-2 px-6 border-b border-border">
-                <Skeleton className="w-10 h-10 rounded-xl" />
-                <Skeleton className="h-6 w-24" />
-              </div>
-              <div className="flex-1 p-4 space-y-2">
-                {[...Array(7)].map((_, i) => (
-                  <Skeleton key={i} className="h-10 w-full rounded-lg" />
-                ))}
-              </div>
-            </aside>
-            <main className="flex-1 p-6">
-              <Skeleton className="h-10 w-48 mb-6" />
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {[...Array(4)].map((_, i) => (
-                  <Skeleton key={i} className="h-32 rounded-xl" />
-                ))}
-              </div>
-            </main>
-          </div>
-        }
-      />
+      <PhantomLoader loading>
+        <div className="min-h-screen bg-background flex">
+          <aside className="hidden lg:flex lg:w-64 lg:flex-col border-r border-border bg-card">
+            <div className="flex h-16 items-center gap-2 px-6 border-b border-border">
+              <Skeleton className="w-10 h-10 rounded-xl" />
+              <Skeleton className="h-6 w-24" />
+            </div>
+            <div className="flex-1 p-4 space-y-2">
+              {[...Array(7)].map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full rounded-lg" />
+              ))}
+            </div>
+          </aside>
+          <main className="flex-1 p-6">
+            <Skeleton className="h-10 w-48 mb-6" />
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {[...Array(4)].map((_, i) => (
+                <Skeleton key={i} className="h-32 rounded-xl" />
+              ))}
+            </div>
+          </main>
+        </div>
+      </PhantomLoader>
     )
   }
 

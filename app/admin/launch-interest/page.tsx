@@ -15,7 +15,7 @@ import {
   FileSpreadsheet,
   RefreshCw,
 } from 'lucide-react'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 interface LaunchInterestResponse {
   googleForm: {
@@ -88,14 +88,21 @@ export default function AdminLaunchInterestPage() {
 
   if (isLoading) {
     return (
-      <BoneyardLoadingState
-        name="admin-launch-interest-loading"
-        fallback={
-          <div className="flex items-center justify-center h-64">
-            <RefreshCw className="w-6 h-6 animate-spin text-muted-foreground" />
+      <PhantomLoader loading>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <div className="h-7 w-48 bg-muted rounded" />
+              <div className="h-4 w-80 bg-muted rounded" />
+            </div>
+            <div className="h-9 w-28 bg-muted rounded-lg" />
           </div>
-        }
-      />
+          <div className="rounded-xl border bg-card p-5">
+            <div className="h-4 w-32 bg-muted rounded mb-4" />
+            <div className="h-96 bg-muted rounded-lg" />
+          </div>
+        </div>
+      </PhantomLoader>
     )
   }
 

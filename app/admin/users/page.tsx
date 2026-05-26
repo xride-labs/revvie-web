@@ -39,7 +39,7 @@ import {
 import { Search, UserPlus, Loader2, CheckCircle, XCircle, Eye, Edit, Trash2 } from 'lucide-react'
 import { useAdminUsers } from '@/store/features/admin'
 import { useAuth, hasAnyRole } from '@/lib/use-auth'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 import { adminApi, type AdminUserDetails } from '@/lib/server/admin'
 
 const ROLE_OPTIONS = ['ADMIN', 'CO_ADMIN', 'CLUB_OWNER', 'RIDER'] as const
@@ -358,15 +358,24 @@ export default function AdminUsersPage() {
                             <TableBody>
                                 {isLoading ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="py-8">
-                                            <BoneyardLoadingState
-                                                name="admin-users-table-loading"
-                                                fallback={
-                                                    <div className="text-center">
-                                                        <Loader2 className="w-6 h-6 animate-spin mx-auto" />
-                                                    </div>
-                                                }
-                                            />
+                                        <TableCell colSpan={6} className="py-0">
+                                            <PhantomLoader loading>
+                                                <div className="divide-y">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <div key={i} className="flex items-center gap-4 px-4 py-3">
+                                                            <div className="w-8 h-8 rounded-full bg-muted" />
+                                                            <div className="flex-1 space-y-1">
+                                                                <div className="h-4 w-32 bg-muted rounded" />
+                                                                <div className="h-3 w-48 bg-muted rounded" />
+                                                            </div>
+                                                            <div className="h-5 w-16 bg-muted rounded" />
+                                                            <div className="h-4 w-12 bg-muted rounded" />
+                                                            <div className="h-4 w-20 bg-muted rounded" />
+                                                            <div className="h-8 w-24 bg-muted rounded" />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </PhantomLoader>
                                         </TableCell>
                                     </TableRow>
                                 ) : error ? (

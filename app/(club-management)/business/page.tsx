@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Plus, Store, ExternalLink } from 'lucide-react'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 const CATEGORY_LABELS: Record<string, string> = {
   BRAND: 'Motorcycle Brand',
@@ -61,10 +61,28 @@ export default function BusinessPortalPage() {
 
   if (loading) {
     return (
-      <BoneyardLoadingState
-        name="business-portal-loading"
-        fallback={<div className="flex justify-center py-20">Loading…</div>}
-      />
+      <PhantomLoader loading>
+        <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
+          <div className="flex items-center justify-between mb-6">
+            <div className="space-y-2">
+              <div className="h-7 w-48 bg-muted rounded" />
+              <div className="h-4 w-72 bg-muted rounded" />
+            </div>
+            <div className="h-9 w-36 bg-muted rounded-lg" />
+          </div>
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="rounded-xl border bg-card p-5">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-muted rounded-xl" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-5 w-40 bg-muted rounded" />
+                  <div className="h-4 w-28 bg-muted rounded" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </PhantomLoader>
     )
   }
 

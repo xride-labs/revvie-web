@@ -39,7 +39,7 @@ import {
 import { useAuth, hasAnyRole } from '@/lib/use-auth'
 import { signOut } from '@/lib/auth-client'
 import { useEffect } from 'react'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 import { useBusinessContext } from '@/contexts/business-context'
 import type { BusinessCategory } from '@/lib/server/business'
 
@@ -144,28 +144,25 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
 
   if (isPending || (hasSession && !user) || businessLoading) {
     return (
-      <BoneyardLoadingState
-        name="brand-portal-layout-shell"
-        fallback={
-          <div className="min-h-screen bg-background flex">
-            <aside className="hidden lg:flex lg:w-72 lg:flex-col border-r border-border bg-card">
-              <div className="flex h-16 items-center gap-2 px-6 border-b border-border">
-                <Skeleton className="w-10 h-10 rounded-xl" />
-                <Skeleton className="h-6 w-24" />
-              </div>
-              <div className="flex-1 p-4 space-y-2">
-                {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-2xl" />)}
-              </div>
-            </aside>
-            <main className="flex-1 p-6">
-              <Skeleton className="h-10 w-48 mb-6" />
-              <div className="grid gap-4 md:grid-cols-3">
-                {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-40 rounded-xl" />)}
-              </div>
-            </main>
-          </div>
-        }
-      />
+      <PhantomLoader loading>
+        <div className="min-h-screen bg-background flex">
+          <aside className="hidden lg:flex lg:w-72 lg:flex-col border-r border-border bg-card">
+            <div className="flex h-16 items-center gap-2 px-6 border-b border-border">
+              <Skeleton className="w-10 h-10 rounded-xl" />
+              <Skeleton className="h-6 w-24" />
+            </div>
+            <div className="flex-1 p-4 space-y-2">
+              {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-2xl" />)}
+            </div>
+          </aside>
+          <main className="flex-1 p-6">
+            <Skeleton className="h-10 w-48 mb-6" />
+            <div className="grid gap-4 md:grid-cols-3">
+              {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-40 rounded-xl" />)}
+            </div>
+          </main>
+        </div>
+      </PhantomLoader>
     )
   }
 

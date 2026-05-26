@@ -41,7 +41,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import Link from 'next/link'
 import { useToast } from '@/hooks/use-toast'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 interface Seller {
   id: string
@@ -158,14 +158,33 @@ export default function ListingDetailPage() {
 
   if (loading) {
     return (
-      <BoneyardLoadingState
-        name="marketplace-listing-detail-loading"
-        fallback={
-          <div className="min-h-screen flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <PhantomLoader loading>
+        <div className="min-h-screen pb-24">
+          <div className="h-14 bg-muted border-b" />
+          <div className="aspect-4/3 bg-muted" />
+          <div className="px-4 py-4 space-y-4">
+            <div className="h-7 w-3/4 bg-muted rounded" />
+            <div className="h-9 w-32 bg-muted rounded" />
+            <div className="flex gap-3">
+              <div className="h-5 w-20 bg-muted rounded" />
+              <div className="h-5 w-24 bg-muted rounded" />
+            </div>
+            <div className="h-px bg-muted" />
+            <div className="h-4 w-full bg-muted rounded" />
+            <div className="h-4 w-5/6 bg-muted rounded" />
+            <div className="h-4 w-4/5 bg-muted rounded" />
+            <div className="rounded-xl border bg-card p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-14 h-14 rounded-full bg-muted" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-32 bg-muted rounded" />
+                  <div className="h-3 w-20 bg-muted rounded" />
+                </div>
+              </div>
+            </div>
           </div>
-        }
-      />
+        </div>
+      </PhantomLoader>
     )
   }
 

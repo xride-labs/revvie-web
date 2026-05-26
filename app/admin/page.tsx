@@ -52,7 +52,7 @@ import {
 } from 'recharts'
 import { useAdminDashboard } from '@/store/features/admin'
 import { adminApi } from '@/lib/server/admin'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 const PIE_COLORS = ['#2563eb', '#16a34a', '#d97706', '#dc2626', '#7c3aed', '#0891b2']
 
@@ -127,14 +127,31 @@ export default function AdminDashboardPage() {
 
   if (isLoading && !stats) {
     return (
-      <BoneyardLoadingState
-        name="admin-dashboard-loading"
-        fallback={
-          <div className="flex items-center justify-center h-64">
-            <Loader2 className="w-8 h-8 animate-spin" />
+      <PhantomLoader loading>
+        <div className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="rounded-xl border bg-card p-5">
+                <div className="w-9 h-9 bg-muted rounded-lg mb-4" />
+                <div className="h-7 w-20 bg-muted rounded mb-1" />
+                <div className="h-4 w-28 bg-muted rounded" />
+              </div>
+            ))}
           </div>
-        }
-      />
+          <div className="rounded-xl border bg-card p-5">
+            <div className="h-5 w-40 bg-muted rounded mb-2" />
+            <div className="h-80 bg-muted rounded-lg" />
+          </div>
+          <div className="grid gap-6 lg:grid-cols-3">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="rounded-xl border bg-card p-5">
+                <div className="h-4 w-32 bg-muted rounded mb-4" />
+                <div className="h-48 bg-muted rounded-lg" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </PhantomLoader>
     )
   }
 

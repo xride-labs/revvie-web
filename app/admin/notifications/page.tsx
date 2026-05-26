@@ -44,7 +44,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { adminApi, type AdminNotificationRecord } from '@/lib/server/admin'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 const TYPE_ICON: Record<string, { icon: LucideIcon; color: string }> = {
   RIDE_INVITE:          { icon: MapPin,        color: 'text-blue-500' },
@@ -265,11 +265,23 @@ export default function AdminNotificationsPage() {
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="py-8">
-                      <BoneyardLoadingState
-                        name="admin-notifications-loading"
-                        fallback={<div className="text-center text-sm">Loading...</div>}
-                      />
+                    <TableCell colSpan={5} className="py-0">
+                      <PhantomLoader loading>
+                        <div className="divide-y">
+                          {[...Array(5)].map((_, i) => (
+                            <div key={i} className="flex items-center gap-4 px-4 py-3">
+                              <div className="w-8 h-8 rounded-full bg-muted" />
+                              <div className="flex-1 space-y-1">
+                                <div className="h-4 w-40 bg-muted rounded" />
+                                <div className="h-3 w-56 bg-muted rounded" />
+                              </div>
+                              <div className="h-5 w-20 bg-muted rounded" />
+                              <div className="h-5 w-16 bg-muted rounded" />
+                              <div className="h-4 w-24 bg-muted rounded" />
+                            </div>
+                          ))}
+                        </div>
+                      </PhantomLoader>
                     </TableCell>
                   </TableRow>
                 ) : error ? (

@@ -47,7 +47,7 @@ import { userApi, mediaApi } from '@/lib/services'
 import { fileToDataUrl } from '@/lib/media-utils'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 interface UserProfile {
   id: string
@@ -209,14 +209,26 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <BoneyardLoadingState
-        name="profile-view-loading"
-        fallback={
-          <div className="flex justify-center py-24">
-            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      <PhantomLoader loading>
+        <div className="min-h-screen">
+          <div className="h-32 md:h-48 bg-muted" />
+          <div className="px-4 lg:px-6 -mt-16 relative z-10">
+            <div className="w-28 h-28 rounded-full bg-muted border-4 border-background" />
+            <div className="mt-4 space-y-2">
+              <div className="h-7 w-40 bg-muted rounded" />
+              <div className="h-4 w-28 bg-muted rounded" />
+              <div className="flex gap-4 mt-2">
+                <div className="h-4 w-24 bg-muted rounded" />
+                <div className="h-4 w-24 bg-muted rounded" />
+              </div>
+            </div>
           </div>
-        }
-      />
+          <div className="px-4 lg:px-6 mt-6 grid gap-6 md:grid-cols-2">
+            <div className="h-48 bg-muted rounded-xl" />
+            <div className="h-48 bg-muted rounded-xl" />
+          </div>
+        </div>
+      </PhantomLoader>
     )
   }
 

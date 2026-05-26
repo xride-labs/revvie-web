@@ -69,7 +69,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { useToast } from '@/hooks/use-toast'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 interface ClubSettings {
   id: string
@@ -384,14 +384,27 @@ export default function ClubManagePage() {
 
   if (loading) {
     return (
-      <BoneyardLoadingState
-        name="club-manage-loading"
-        fallback={
-          <div className="min-h-screen flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <PhantomLoader loading>
+        <div className="min-h-screen p-4 lg:p-6 space-y-6">
+          <div className="flex items-center gap-4">
+            <div className="w-9 h-9 bg-muted rounded-lg" />
+            <div className="space-y-1">
+              <div className="h-7 w-40 bg-muted rounded" />
+              <div className="h-4 w-28 bg-muted rounded" />
+            </div>
           </div>
-        }
-      />
+          <div className="flex gap-2">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-10 w-28 bg-muted rounded-lg" />
+            ))}
+          </div>
+          <div className="rounded-xl border bg-card p-6 space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-12 w-full bg-muted rounded" />
+            ))}
+          </div>
+        </div>
+      </PhantomLoader>
     )
   }
 

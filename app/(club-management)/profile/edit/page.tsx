@@ -19,7 +19,7 @@ import { ChevronLeft, Camera, Loader2 } from 'lucide-react'
 import { mediaApi } from '@/lib/services'
 import { fileToDataUrl } from '@/lib/media-utils'
 import { useToast } from '@/hooks/use-toast'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 interface ProfileData {
   name: string
@@ -163,14 +163,24 @@ export default function EditProfilePage() {
 
   if (loading) {
     return (
-      <BoneyardLoadingState
-        name="profile-edit-loading"
-        fallback={
-          <div className="min-h-screen flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <PhantomLoader loading>
+        <div className="min-h-screen p-4 lg:p-6 max-w-2xl mx-auto space-y-6">
+          <div className="flex items-center gap-4">
+            <div className="w-9 h-9 bg-muted rounded-lg" />
+            <div className="space-y-1">
+              <div className="h-7 w-36 bg-muted rounded" />
+              <div className="h-4 w-48 bg-muted rounded" />
+            </div>
           </div>
-        }
-      />
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="rounded-xl border bg-card p-5 space-y-4">
+              <div className="h-5 w-32 bg-muted rounded" />
+              <div className="h-10 w-full bg-muted rounded" />
+              <div className="h-10 w-full bg-muted rounded" />
+            </div>
+          ))}
+        </div>
+      </PhantomLoader>
     )
   }
 

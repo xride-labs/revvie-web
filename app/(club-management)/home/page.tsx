@@ -38,7 +38,7 @@ import Link from 'next/link'
 import { feedApi } from '@/lib/services'
 import { useClubContext } from '@/contexts/club-context'
 import { useAuth, hasAnyRole } from '@/lib/use-auth'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 import { cn } from '@/lib/utils'
 
 interface FeedPost {
@@ -350,14 +350,25 @@ export default function FeedPage() {
       {/* Posts Feed */}
       <div className="space-y-6">
         {loading ? (
-          <BoneyardLoadingState
-            name="club-feed-loading"
-            fallback={
-              <div className="flex justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-              </div>
-            }
-          />
+          <PhantomLoader loading>
+            <div className="space-y-6">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="rounded-xl border bg-card p-4 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-muted" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-32 bg-muted rounded" />
+                      <div className="h-3 w-24 bg-muted rounded" />
+                    </div>
+                  </div>
+                  <div className="h-4 w-full bg-muted rounded" />
+                  <div className="h-4 w-3/4 bg-muted rounded" />
+                  <div className="h-36 w-full bg-muted rounded-lg" />
+                  <div className="h-8 w-full bg-muted rounded" />
+                </div>
+              ))}
+            </div>
+          </PhantomLoader>
         ) : posts.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">

@@ -54,7 +54,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 interface ClubOwner {
   id: string
@@ -310,14 +310,33 @@ export default function ClubDetailPage() {
 
   if (loading) {
     return (
-      <BoneyardLoadingState
-        name="club-detail-loading"
-        fallback={
-          <div className="min-h-screen flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <PhantomLoader loading>
+        <div className="min-h-screen">
+          <div className="h-48 md:h-64 bg-muted" />
+          <div className="px-4 lg:px-6 -mt-16 relative z-10">
+            <div className="w-32 h-32 rounded-full bg-muted border-4 border-background" />
+            <div className="mt-4 space-y-2">
+              <div className="h-8 w-48 bg-muted rounded" />
+              <div className="h-4 w-64 bg-muted rounded" />
+            </div>
           </div>
-        }
-      />
+          <div className="px-4 lg:px-6 mt-6 grid grid-cols-3 md:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="rounded-xl border bg-card p-4">
+                <div className="h-8 w-12 bg-muted rounded mx-auto mb-1" />
+                <div className="h-3 w-16 bg-muted rounded mx-auto" />
+              </div>
+            ))}
+          </div>
+          <div className="px-4 lg:px-6 mt-6">
+            <div className="h-10 w-full bg-muted rounded" />
+            <div className="mt-6 grid gap-6 md:grid-cols-2">
+              <div className="h-48 bg-muted rounded-xl" />
+              <div className="h-48 bg-muted rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </PhantomLoader>
     )
   }
 

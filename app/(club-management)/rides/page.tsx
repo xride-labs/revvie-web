@@ -19,7 +19,7 @@ import {
 import Link from 'next/link'
 import { useRides } from '@/store/features/rides'
 import { Ride } from '@/store/slices/ridesSlice'
-import { BoneyardLoadingState } from '@/components/loading/boneyard-loading-state'
+import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 function formatDate(dateString: string) {
   const date = new Date(dateString)
@@ -125,14 +125,25 @@ export default function RidesPage() {
       </div>
 
       {isLoading ? (
-        <BoneyardLoadingState
-          name="club-rides-loading"
-          fallback={
-            <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-            </div>
-          }
-        />
+        <PhantomLoader loading>
+          <div className="space-y-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="rounded-xl border bg-card p-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 bg-muted rounded-lg" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-5 w-40 bg-muted rounded" />
+                    <div className="h-4 w-24 bg-muted rounded" />
+                    <div className="flex gap-3">
+                      <div className="h-3 w-20 bg-muted rounded" />
+                      <div className="h-3 w-24 bg-muted rounded" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </PhantomLoader>
       ) : (
         activeTab === 'upcoming' && (
           <div className="space-y-4">
