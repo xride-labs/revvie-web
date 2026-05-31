@@ -195,7 +195,7 @@ export default function BrandBillingPage() {
       {isPro && (
         <p className="text-center text-sm text-muted-foreground">
           To cancel or manage your subscription, contact{' '}
-          <a href="mailto:support@zoomies.app" className="text-amber-400 hover:underline">support@zoomies.app</a>
+          <a href="mailto:support@revvie.app" className="text-amber-400 hover:underline">support@revvie.app</a>
         </p>
       )}
     </div>

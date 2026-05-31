@@ -31,10 +31,10 @@ async function fetchClubPreview(id: string): Promise<ClubPreview | null> {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
   const club = await fetchClubPreview(id)
-  const title = club ? `Join ${club.name} on Zoomies` : 'Join a club on Zoomies'
+  const title = club ? `Join ${club.name} on Revvie` : 'Join a club on Revvie'
   const description = club
     ? `${club.memberCount} member${club.memberCount !== 1 ? 's' : ''}${club.location ? ` · ${club.location}` : ''}${club.description ? ` — ${club.description}` : ''}`
-    : "Someone shared a club with you. Open the Zoomies app to see members, rides, and request to join."
+    : "Someone shared a club with you. Open the Revvie app to see members, rides, and request to join."
   return {
     title,
     description,
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       type: 'website',
-      url: `https://zoomies.xride-labs.in/c/${id}`,
+      url: `https://revvie.xride-labs.in/c/${id}`,
       ...(club?.image ? { images: [{ url: club.image }] } : {}),
     },
     twitter: { card: 'summary_large_image', title, description },
@@ -54,8 +54,8 @@ export default async function ClubSharePage({ params }: PageProps) {
   const club = await fetchClubPreview(id)
   const title = club ? `You're invited to ${club.name}` : "You're invited to a club"
   const description = club
-    ? `${club.memberCount} member${club.memberCount !== 1 ? 's' : ''}${club.location ? ` · Based in ${club.location}` : ''}. Open Zoomies to see members, upcoming rides, and request to join.`
-    : 'Open Zoomies to see members, upcoming rides, and request to join the club.'
+    ? `${club.memberCount} member${club.memberCount !== 1 ? 's' : ''}${club.location ? ` · Based in ${club.location}` : ''}. Open Revvie to see members, upcoming rides, and request to join.`
+    : 'Open Revvie to see members, upcoming rides, and request to join the club.'
   return (
     <ShareRedirect
       kind="club"

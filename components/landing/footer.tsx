@@ -36,14 +36,14 @@ export function Footer() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 mb-8">
             <Image
-              src="/assets/zoomies_logo_icon.png"
-              alt="Zoomies"
+              src="/assets/revvie_logo_icon.png"
+              alt="Revvie"
               width={48}
               height={48}
               className="w-12 h-12"
             />
             <span className="text-3xl font-bold text-white uppercase tracking-wider">
-              Zoomies
+              Revvie
             </span>
           </Link>
 
@@ -79,7 +79,7 @@ export function Footer() {
 
           {/* Copyright */}
           <p className="text-text-secondary/30 text-sm">
-            © 2026 Zoomies. All rights reserved.
+            © 2026 Revvie. All rights reserved.
           </p>
         </motion.div>
       </div>

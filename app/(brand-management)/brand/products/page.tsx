@@ -152,7 +152,7 @@ const TYPE_COPY: Record<
     addLabel: 'Add Product',
     emptyTitle: 'Build your catalogue',
     emptyBody:
-      "Add your brand's products — helmets, jackets, bikes — to the Zoomies marketplace.",
+      "Add your brand's products — helmets, jackets, bikes — to the Revvie marketplace.",
   },
   GEAR_SELLER: {
     title: 'Gear Inventory',
@@ -194,7 +194,7 @@ const TYPE_COPY: Record<
     subtitle: 'Your multi-category product listings',
     addLabel: 'Add Listing',
     emptyTitle: 'No listings yet',
-    emptyBody: 'Add products across categories to start selling on Zoomies.',
+    emptyBody: 'Add products across categories to start selling on Revvie.',
   },
   CONSULTATION: {
     title: 'Products & Resources',

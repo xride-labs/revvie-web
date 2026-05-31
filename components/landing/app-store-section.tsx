@@ -81,7 +81,7 @@ export function AppStoreSection() {
             variants={itemVariants}
             className="text-lg text-muted-foreground max-w-2xl mx-auto"
           >
-            Get the Zoomies app and stay connected with your riding community anytime,
+            Get the Revvie app and stay connected with your riding community anytime,
             anywhere.
           </motion.p>
         </motion.div>

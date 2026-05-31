@@ -72,7 +72,7 @@ export default function BrandRegisterPage() {
     setStep('brand')
   }
 
-  const PENDING_KEY = 'zoomies_pending_brand'
+  const PENDING_KEY = 'revvie_pending_brand'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -171,7 +171,7 @@ export default function BrandRegisterPage() {
                 Register Your Brand
               </h1>
               <p className="text-text-secondary text-sm mt-2">
-                Sell on Zoomies marketplace &amp; reach riders
+                Sell on Revvie marketplace &amp; reach riders
               </p>
             </div>
 

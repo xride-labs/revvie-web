@@ -19,7 +19,7 @@ import {
 import { sendEmailOtp, signInWithEmailOtp } from '@/lib/server/auth'
 import { businessApi } from '@/lib/server/business'
 
-const PENDING_BRAND_KEY = 'zoomies_pending_brand'
+const PENDING_BRAND_KEY = 'revvie_pending_brand'
 
 type LoginTab = 'club' | 'brand' | 'admin'
 type AuthMode = 'password' | 'otp'
@@ -45,7 +45,7 @@ const TAB_CONFIG: Record<LoginTab, {
     registerHref: '/signup',
     registerLabel: 'Register your club',
     accentClass: 'from-teal to-teal/70',
-    placeholder: 'club@zoomies.com',
+    placeholder: 'club@revvie.com',
   },
   brand: {
     label: 'Brand Owner',
@@ -67,7 +67,7 @@ const TAB_CONFIG: Record<LoginTab, {
     registerHref: '',
     registerLabel: '',
     accentClass: 'from-brand-red-light to-brand-red',
-    placeholder: 'admin@zoomies.com',
+    placeholder: 'admin@revvie.com',
   },
 }
 
@@ -314,14 +314,14 @@ export default function LoginPage() {
               <Link href="/" className="inline-flex items-center justify-center gap-2 mb-4">
                 <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center shadow-[0_0_20px_rgba(200,55,55,0.3)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/zoomies-logo.png" alt="Zoomies" className="w-full h-full object-cover" />
+                  <img src="/revvie-logo.png" alt="Revvie" className="w-full h-full object-cover" />
                 </div>
               </Link>
               <h1 className="text-2xl font-bold text-white uppercase tracking-wide">
                 Welcome back
               </h1>
               <p className="text-text-secondary text-sm mt-2">
-                Sign in to the Zoomies portal
+                Sign in to the Revvie portal
               </p>
             </div>
 
@@ -592,7 +592,7 @@ export default function LoginPage() {
 
             <p className="text-center text-xs text-text-secondary/40 mt-4">
               Riders? Download the{' '}
-              <span className="font-medium text-neon-green">Zoomies mobile app</span>{' '}
+              <span className="font-medium text-neon-green">Revvie mobile app</span>{' '}
               instead.
             </p>
           </div>

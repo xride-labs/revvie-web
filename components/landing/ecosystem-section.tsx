@@ -390,7 +390,7 @@ export function EcosystemSection() {
                       </div>
                       <div className="flex-1 flex justify-center">
                         <div className="px-4 py-1 rounded-lg bg-[#1a1a1a] text-[9px] text-text-secondary/50 font-mono">
-                          dashboard.zoomies.app
+                          dashboard.revvie.app
                         </div>
                       </div>
                     </div>

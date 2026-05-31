@@ -202,7 +202,7 @@ export default function LaunchPage() {
 
                         <div className="space-y-5">
                             <h1 className="font-[var(--font-josefin)] text-4xl uppercase leading-[1.02] tracking-[-0.03em] md:text-6xl lg:text-7xl">
-                                Zoomies is almost ready for the road.
+                                Revvie is almost ready for the road.
                             </h1>
                             <p className="max-w-2xl text-base leading-relaxed text-white/78 md:text-lg">
                                 We are tuning the full platform for launch. Until then, every route leads here.

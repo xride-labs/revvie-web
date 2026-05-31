@@ -142,7 +142,7 @@ const TYPE_ACTIONS: Partial<Record<BusinessCategory, ActionConfig>> & { default:
   MARKETPLACE_SELLER: {
     primary: {
       title: 'List an Item',
-      description: 'Post used gear, bikes, or parts on the Zoomies marketplace for riders to buy.',
+      description: 'Post used gear, bikes, or parts on the Revvie marketplace for riders to buy.',
       href: '/brand/marketplace/create',
       label: 'List Item',
       icon: ShoppingCart,
@@ -278,7 +278,7 @@ export default function BrandDashboardPage() {
               <div className="flex-1">
                 <h2 className="font-bold text-lg mb-1">Welcome to your Brand Portal</h2>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Complete setup to start reaching thousands of riders on Zoomies.
+                  Complete setup to start reaching thousands of riders on Revvie.
                 </p>
                 <div className="space-y-2">
                   {onboardingSteps.map((step) => (

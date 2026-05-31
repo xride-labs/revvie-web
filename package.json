@@ -1,5 +1,5 @@
 {
-  "name": "zoomies",
+  "name": "revvie",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -17,8 +17,8 @@
     "validate": "bun run lint && bun run type-check && bun run format:check",
     "clean": "rm -rf .next node_modules dist",
     "reinstall": "bun run clean && bun install",
-    "docker:build": "docker build -t zoomies-app .",
-    "docker:run": "docker run -p 3000:3000 zoomies-app",
+    "docker:build": "docker build -t revvie-app .",
+    "docker:run": "docker run -p 3000:3000 revvie-app",
     "docker:dev": "docker compose up --build"
   },
   "lint-staged": {

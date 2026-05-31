@@ -10,7 +10,7 @@ const josefinSans = Josefin_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'Zoomies - Ride Together, Build Your Tribe',
+  title: 'Revvie - Ride Together, Build Your Tribe',
   description:
     'A social platform for bikers where you discover clubs through people and participate in organized rides like clan wars.',
   keywords: [
@@ -22,9 +22,9 @@ export const metadata: Metadata = {
     'community',
     'marketplace',
   ],
-  authors: [{ name: 'Zoomies Team' }],
+  authors: [{ name: 'Revvie Team' }],
   openGraph: {
-    title: 'Zoomies - Ride Together, Build Your Tribe',
+    title: 'Revvie - Ride Together, Build Your Tribe',
     description:
       'A social platform for bikers where you discover clubs through people and participate in organized rides like clan wars.',
     type: 'website',

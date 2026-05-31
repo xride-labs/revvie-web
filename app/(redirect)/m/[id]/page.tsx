@@ -36,10 +36,10 @@ function formatPrice(price: number, currency: string) {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
   const listing = await fetchListingPreview(id)
-  const title = listing ? listing.title : 'A listing on Zoomies Marketplace'
+  const title = listing ? listing.title : 'A listing on Revvie Marketplace'
   const description = listing
-    ? `${formatPrice(listing.price, listing.currency)}${listing.condition ? ` · ${listing.condition}` : ''}${listing.category ? ` · ${listing.category}` : ''} — Open Zoomies to see photos and message the seller.`
-    : 'Someone shared a marketplace listing with you. Open the Zoomies app to see photos, price, and message the seller.'
+    ? `${formatPrice(listing.price, listing.currency)}${listing.condition ? ` · ${listing.condition}` : ''}${listing.category ? ` · ${listing.category}` : ''} — Open Revvie to see photos and message the seller.`
+    : 'Someone shared a marketplace listing with you. Open the Revvie app to see photos, price, and message the seller.'
   return {
     title,
     description,
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       type: 'website',
-      url: `https://zoomies.xride-labs.in/m/${id}`,
+      url: `https://revvie.xride-labs.in/m/${id}`,
       ...(listing?.image ? { images: [{ url: listing.image }] } : {}),
     },
     twitter: { card: 'summary_large_image', title, description },
@@ -59,8 +59,8 @@ export default async function ListingSharePage({ params }: PageProps) {
   const listing = await fetchListingPreview(id)
   const title = listing ? listing.title : 'Check out this listing'
   const description = listing
-    ? `${formatPrice(listing.price, listing.currency)}${listing.condition ? ` · ${listing.condition}` : ''} — Open Zoomies to see photos and chat with the seller.`
-    : 'A rider shared a marketplace listing with you. Open Zoomies to see photos, price, and chat with the seller.'
+    ? `${formatPrice(listing.price, listing.currency)}${listing.condition ? ` · ${listing.condition}` : ''} — Open Revvie to see photos and chat with the seller.`
+    : 'A rider shared a marketplace listing with you. Open Revvie to see photos, price, and chat with the seller.'
   return (
     <ShareRedirect
       kind="listing"

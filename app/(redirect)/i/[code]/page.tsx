@@ -7,9 +7,9 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { code } = await params
-  const title = `@${code} invited you to Zoomies`
+  const title = `@${code} invited you to Revvie`
   const description =
-    'Join the Zoomies community of riders. Discover clubs, organize rides, and shop the marketplace.'
+    'Join the Revvie community of riders. Discover clubs, organize rides, and shop the marketplace.'
   return {
     title,
     description,
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       type: 'website',
-      url: `https://zoomies.xride-labs.in/i/${code}`,
+      url: `https://revvie.xride-labs.in/i/${code}`,
     },
     twitter: { card: 'summary_large_image', title, description },
   }
@@ -29,7 +29,7 @@ export default async function InviteSharePage({ params }: PageProps) {
     <ShareRedirect
       kind="invite"
       id={code}
-      title={`@${code} invited you to Zoomies`}
+      title={`@${code} invited you to Revvie`}
       description="Join a community of riders building their tribe on the road. Clubs, rides, marketplace — all in one app."
       meta={[{ label: 'Invited by', value: `@${code}` }]}
     />

@@ -265,7 +265,7 @@ export default function AdminTeamPage() {
                 value={addEmail}
                 onChange={(e) => setAddEmail(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">Must already have an account on Zoomies</p>
+              <p className="text-xs text-muted-foreground">Must already have an account on Revvie</p>
             </div>
             <div className="space-y-1.5">
               <Label>Permission Level</Label>

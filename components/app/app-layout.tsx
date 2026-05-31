@@ -175,7 +175,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <span className="text-white font-bold text-base">⚡</span>
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-bold uppercase tracking-wide leading-tight">Zoomies</p>
+                <p className="text-sm font-bold uppercase tracking-wide leading-tight">Revvie</p>
                 <p className="text-[10px] text-muted-foreground">Club Portal</p>
               </div>
             </>
@@ -344,7 +344,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               <div className="w-8 h-8 bg-linear-to-br from-brand-red-light to-brand-red rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold text-lg">⚡</span>
               </div>
-              <span className="text-lg font-bold text-foreground">Zoomies</span>
+              <span className="text-lg font-bold text-foreground">Revvie</span>
             </Link>
 
             {/* Page Title - Desktop */}
@@ -354,7 +354,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                   (n) =>
                     pathname === n.href ||
                     (n.href !== '/home' && pathname.startsWith(n.href)),
-                )?.name || 'Zoomies'}
+                )?.name || 'Revvie'}
               </h1>
             </div>
 

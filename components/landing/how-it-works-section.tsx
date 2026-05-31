@@ -175,8 +175,8 @@ export function HowItWorksSection() {
                           )}
                           {step.image === 'clubs' && (
                             <Image
-                              src="/assets/zoomies_logo_icon.png"
-                              alt="/assets/zoomies_logo_icon"
+                              src="/assets/revvie_logo_icon.png"
+                              alt="/assets/revvie_logo_icon"
                               width={96}
                               height={96}
                             />

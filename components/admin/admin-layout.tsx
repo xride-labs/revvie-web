@@ -200,7 +200,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <Shield className="w-5 h-5 text-white" />
           </div>
           <div>
-            <span className="text-lg font-bold text-foreground">Zoomies</span>
+            <span className="text-lg font-bold text-foreground">Revvie</span>
             <Badge variant="destructive" className="ml-2 text-[10px]">
               Admin
             </Badge>

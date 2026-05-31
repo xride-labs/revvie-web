@@ -25,9 +25,9 @@ const COPY: Record<ShareKind, { emoji: string; noun: string }> = {
   profile: { emoji: '🏍️', noun: 'profile' },
 }
 
-const APP_SCHEME  = 'zoomies'
-const APP_PACKAGE = 'com.zoomies.app'
-const DOWNLOAD_URL = 'https://zoomies.xride-labs.in/download'
+const APP_SCHEME  = 'revvie'
+const APP_PACKAGE = 'com.revvie.app'
+const DOWNLOAD_URL = 'https://revvie.xride-labs.in/download'
 
 /** Chrome on Android: opens app directly if installed, else falls back to DOWNLOAD_URL. No dialog. */
 function intentUrl(path: string) {
@@ -96,7 +96,7 @@ export function ShareRedirect({ kind, id, title, description, imageUrl, meta }: 
 
           <div className="p-6">
             <p className="text-xs uppercase tracking-[0.2em] text-white/50 font-medium">
-              Shared on Zoomies
+              Shared on Revvie
             </p>
             <h1 className="mt-2 text-2xl font-bold leading-tight">{title}</h1>
             {description && (
@@ -119,7 +119,7 @@ export function ShareRedirect({ kind, id, title, description, imageUrl, meta }: 
               {phase === 'redirecting' && (
                 <div className="flex items-center justify-center gap-3 py-4 text-white/50">
                   <Loader2 size={18} className="animate-spin text-brand-teal" />
-                  <span className="text-sm font-medium">Opening Zoomies…</span>
+                  <span className="text-sm font-medium">Opening Revvie…</span>
                 </div>
               )}
 
@@ -130,14 +130,14 @@ export function ShareRedirect({ kind, id, title, description, imageUrl, meta }: 
                     className="flex items-center justify-center gap-2 rounded-2xl bg-brand-teal text-canvas font-semibold py-3.5 transition-all hover:scale-[1.02] hover:bg-brand-teal/90"
                   >
                     <Smartphone size={18} />
-                    Open in Zoomies
+                    Open in Revvie
                   </a>
                   <Link
                     href="/download"
                     className="flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 text-white font-semibold py-3.5 transition-all hover:bg-white/10"
                   >
                     <ArrowDownToLine size={18} />
-                    Download Zoomies
+                    Download Revvie
                   </Link>
                   <p className="mt-1 text-center text-xs text-white/40">
                     Don't have the app yet? Download it to view this {copy.noun}.
@@ -148,14 +148,14 @@ export function ShareRedirect({ kind, id, title, description, imageUrl, meta }: 
               {phase === 'non-android' && (
                 <div className="flex flex-col gap-3">
                   <p className="text-sm text-white/60 text-center leading-relaxed">
-                    Zoomies is available on Android. Open this link on your Android phone to join.
+                    Revvie is available on Android. Open this link on your Android phone to join.
                   </p>
                   <Link
                     href="/download"
                     className="flex items-center justify-center gap-2 rounded-2xl bg-brand-teal text-canvas font-semibold py-3.5 transition-all hover:scale-[1.02] hover:bg-brand-teal/90"
                   >
                     <ArrowDownToLine size={18} />
-                    Download Zoomies
+                    Download Revvie
                   </Link>
                 </div>
               )}
@@ -168,7 +168,7 @@ export function ShareRedirect({ kind, id, title, description, imageUrl, meta }: 
             href="/"
             className="text-xs text-white/40 hover:text-white/70 transition-colors inline-flex items-center gap-1"
           >
-            Back to zoomies.xride-labs.in
+            Back to revvie.xride-labs.in
           </Link>
         </div>
       </motion.div>

@@ -31,7 +31,7 @@ export default function BrandMarketplacePage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold">Marketplace Listings</h2>
-          <p className="text-sm text-muted-foreground mt-1">Manage your active listings on the Zoomies marketplace</p>
+          <p className="text-sm text-muted-foreground mt-1">Manage your active listings on the Revvie marketplace</p>
         </div>
         <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
           <Link href="/brand/products/create">
@@ -50,7 +50,7 @@ export default function BrandMarketplacePage() {
             <ShoppingBag className="w-14 h-14 text-muted-foreground/30 mx-auto mb-4" />
             <h3 className="font-semibold text-lg mb-2">No active listings</h3>
             <p className="text-muted-foreground text-sm max-w-xs mx-auto mb-6">
-              Create a product listing to appear on the Zoomies marketplace and reach riders across India.
+              Create a product listing to appear on the Revvie marketplace and reach riders across India.
             </p>
             <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
               <Link href="/brand/products/create">

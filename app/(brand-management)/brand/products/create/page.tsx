@@ -115,7 +115,7 @@ export default function CreateProductPage() {
         </Button>
         <div>
           <h2 className="text-2xl font-bold">Add Product</h2>
-          <p className="text-sm text-muted-foreground">List a product on the Zoomies marketplace</p>
+          <p className="text-sm text-muted-foreground">List a product on the Revvie marketplace</p>
         </div>
       </div>
 

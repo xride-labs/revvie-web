@@ -222,7 +222,7 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
           ) : (
             <div className="min-w-0 flex-1">
               <p className="text-sm font-bold truncate">{business?.displayName ?? 'Brand Portal'}</p>
-              <p className="text-[10px] text-muted-foreground">{catMeta.label} · Zoomies</p>
+              <p className="text-[10px] text-muted-foreground">{catMeta.label} · Revvie</p>
             </div>
           )}
         </div>

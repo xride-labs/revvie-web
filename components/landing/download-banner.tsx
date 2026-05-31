@@ -38,7 +38,7 @@ export function DownloadBanner() {
               Don&apos;t just watch. <span className="text-white/90">Ride.</span>
             </h2>
             <p className="landing-copy mt-0 max-w-lg text-white/80">
-              Download Zoomies and join thousands of riders building their legacy on the
+              Download Revvie and join thousands of riders building their legacy on the
               road.
             </p>
           </motion.div>

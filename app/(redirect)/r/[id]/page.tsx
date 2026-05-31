@@ -31,10 +31,10 @@ async function fetchRidePreview(id: string): Promise<RidePreview | null> {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
   const ride = await fetchRidePreview(id)
-  const title = ride ? ride.title : 'A ride on Zoomies'
+  const title = ride ? ride.title : 'A ride on Revvie'
   const description = ride
-    ? `Starting from ${ride.startLocation} · ${ride.participantCount} rider${ride.participantCount !== 1 ? 's' : ''} joined. Open Zoomies to join.`
-    : 'Someone shared a ride with you. Open the Zoomies app to see details and join.'
+    ? `Starting from ${ride.startLocation} · ${ride.participantCount} rider${ride.participantCount !== 1 ? 's' : ''} joined. Open Revvie to join.`
+    : 'Someone shared a ride with you. Open the Revvie app to see details and join.'
   return {
     title,
     description,
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       type: 'website',
-      url: `https://zoomies.xride-labs.in/r/${id}`,
+      url: `https://revvie.xride-labs.in/r/${id}`,
       ...(ride?.bannerImage ? { images: [{ url: ride.bannerImage }] } : {}),
     },
     twitter: { card: 'summary_large_image', title, description },
@@ -52,10 +52,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function RideSharePage({ params }: PageProps) {
   const { id } = await params
   const ride = await fetchRidePreview(id)
-  const title = ride ? ride.title : 'A ride on Zoomies'
+  const title = ride ? ride.title : 'A ride on Revvie'
   const description = ride
     ? `Starting from ${ride.startLocation} · ${ride.participantCount} rider${ride.participantCount !== 1 ? 's' : ''} joined.`
-    : 'Someone shared a ride with you. Open the Zoomies app to see details and join.'
+    : 'Someone shared a ride with you. Open the Revvie app to see details and join.'
   return (
     <ShareRedirect
       kind="ride"

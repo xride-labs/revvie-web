@@ -181,7 +181,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                     We&apos;ll Be in Touch
                   </h3>
                   <p className="text-text-secondary mb-8">
-                    Thank you for your interest in Zoomies. Our team will reach out within
+                    Thank you for your interest in Revvie. Our team will reach out within
                     48 hours.
                   </p>
                   <button
@@ -196,7 +196,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 <>
                   <div className="mb-8">
                     <h3 className="text-2xl font-bold text-white uppercase tracking-wide mb-2">
-                      Invest in Zoomies
+                      Invest in Revvie
                     </h3>
                     <p className="text-text-secondary text-sm">
                       Fill in your details and our team will get back to you.

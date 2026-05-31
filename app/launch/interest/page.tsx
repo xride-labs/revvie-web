@@ -51,7 +51,7 @@ export default function LaunchInterestPage() {
 
           <div className="mt-5 overflow-hidden rounded-2xl border border-white/12 bg-black/35">
             <iframe
-              title="Zoomies launch interest form"
+              title="Revvie launch interest form"
               src={embedUrl}
               className="h-[80vh] min-h-[760px] w-full border-0"
               loading="lazy"

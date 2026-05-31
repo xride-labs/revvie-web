@@ -7,9 +7,9 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
-  const title = 'View this rider on Zoomies'
+  const title = 'View this rider on Revvie'
   const description =
-    'Someone shared their rider profile with you. Open Zoomies to see their garage, rides, and connect.'
+    'Someone shared their rider profile with you. Open Revvie to see their garage, rides, and connect.'
   return {
     title,
     description,
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       type: 'profile',
-      url: `https://zoomies.xride-labs.in/u/${id}`,
+      url: `https://revvie.xride-labs.in/u/${id}`,
     },
     twitter: { card: 'summary_large_image', title, description },
   }
@@ -30,7 +30,7 @@ export default async function ProfileSharePage({ params }: PageProps) {
       kind="profile"
       id={id}
       title="A rider wants to connect"
-      description="Open Zoomies to view their profile, see their bikes and rides, and send a connection or message request."
+      description="Open Revvie to view their profile, see their bikes and rides, and send a connection or message request."
     />
   )
 }

@@ -213,7 +213,7 @@ export default function BrandOnboardPage() {
         </div>
         <div>
           <p className="text-sm font-bold">Brand Portal Setup</p>
-          <p className="text-xs text-muted-foreground">Zoomies for Business</p>
+          <p className="text-xs text-muted-foreground">Revvie for Business</p>
         </div>
         <div className="ml-auto text-xs text-muted-foreground">
           {step !== 'done' && `Step ${stepIndex + 1} of ${STEPS.length - 1}`}
@@ -330,7 +330,7 @@ export default function BrandOnboardPage() {
               <motion.div key="info" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.25 }}>
                 <div className="mb-6">
                   <h1 className="text-2xl font-bold">Tell us about your brand</h1>
-                  <p className="text-muted-foreground text-sm mt-1">This is how riders will discover and recognise you on Zoomies.</p>
+                  <p className="text-muted-foreground text-sm mt-1">This is how riders will discover and recognise you on Revvie.</p>
                 </div>
                 <Card>
                   <CardContent className="p-6 space-y-4">

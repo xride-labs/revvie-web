@@ -65,14 +65,14 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <Image
-              src="/assets/zoomies_logo_icon.png"
-              alt="Zoomies"
+              src="/assets/revvie_logo_icon.png"
+              alt="Revvie"
               width={44}
               height={44}
               className="w-11 h-11"
             />
             <span className="text-2xl font-bold text-white tracking-wide uppercase">
-              Zoomies
+              Revvie
             </span>
           </Link>
 

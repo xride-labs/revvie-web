@@ -218,7 +218,7 @@ export default function BrandTeamPage() {
           <DialogHeader>
             <DialogTitle>Invite Team Member</DialogTitle>
             <DialogDescription>
-              They must already have a Zoomies account.
+              They must already have a Revvie account.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-2">

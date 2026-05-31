@@ -3,15 +3,15 @@ import Link from 'next/link'
 import { DownloadClient } from './download-client'
 
 export const metadata: Metadata = {
-  title: 'Download Zoomies',
+  title: 'Download Revvie',
   description:
-    "Get the Zoomies app for Android. Discover clubs, organize rides, and shop the bikers' marketplace.",
+    "Get the Revvie app for Android. Discover clubs, organize rides, and shop the bikers' marketplace.",
   openGraph: {
-    title: 'Download Zoomies',
+    title: 'Download Revvie',
     description:
-      "Get the Zoomies app for Android. Discover clubs, organize rides, and shop the bikers' marketplace.",
+      "Get the Revvie app for Android. Discover clubs, organize rides, and shop the bikers' marketplace.",
     type: 'website',
-    url: 'https://zoomies.xride-labs.in/download',
+    url: 'https://revvie.xride-labs.in/download',
   },
 }
 
@@ -19,10 +19,10 @@ export const metadata: Metadata = {
  * Drop signed APKs into web/public/downloads/ and update the constants below.
  * The latest APK is what the "Download for Android" button serves.
  *
- *   - Place the latest signed APK at: web/public/downloads/zoomies-latest.apk
+ *   - Place the latest signed APK at: web/public/downloads/revvie-latest.apk
  *   - When ready to publish on Play Store / App Store, set the URLs below.
  */
-const APK_HREF = '/downloads/zoomies-latest.apk'
+const APK_HREF = '/downloads/revvie-latest.apk'
 const PLAY_STORE_URL: string | null = null
 const APP_STORE_URL: string | null = null
 
@@ -39,13 +39,13 @@ export default function DownloadPage() {
 
         <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.03] p-8 sm:p-12">
           <p className="text-xs uppercase tracking-[0.2em] text-brand-teal font-semibold">
-            Get Zoomies
+            Get Revvie
           </p>
           <h1 className="mt-3 text-4xl sm:text-5xl font-bold leading-tight">
             Download for Android
           </h1>
           <p className="mt-4 text-white/70 text-base leading-relaxed max-w-xl">
-            Zoomies is in beta. Install the latest signed APK below — Play Store and App
+            Revvie is in beta. Install the latest signed APK below — Play Store and App
             Store releases are on the way.
           </p>
 
@@ -73,7 +73,7 @@ export default function DownloadPage() {
                 <span className="text-white/80">Settings → Apps</span>.
               </li>
               <li>Open the downloaded APK and tap Install.</li>
-              <li>Launch Zoomies and sign in.</li>
+              <li>Launch Revvie and sign in.</li>
             </ol>
           </div>
         </div>
