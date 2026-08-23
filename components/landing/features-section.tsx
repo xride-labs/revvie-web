@@ -125,16 +125,16 @@ export function FeaturesSection() {
               >
                 <motion.div
                   className={`
-                    relative overflow-hidden rounded-3xl bg-[#333333]/80 backdrop-blur-md
-                    border border-[#444444]/50 p-5 sm:p-6
-                    shadow-atmospheric transition-all duration-500 hover:border-teal/50
+                    relative overflow-hidden rounded-3xl bg-surface
+                    border-2 border-border p-5 sm:p-6
+                    transition-all duration-300 hover:border-brand-teal
                     h-full ${isHero
                       ? 'min-h-[26rem] sm:min-h-[30rem] lg:min-h-0'
                       : 'min-h-[16rem] sm:min-h-[18rem] lg:min-h-0'}
                   `}
                   whileHover={{
-                    scale: 1.02,
-                    boxShadow: '0 0 40px rgba(55, 200, 195, 0.2)',
+                    scale: 1.01,
+                    boxShadow: '6px 6px 0px rgba(55, 200, 195, 1)',
                   }}
                   transition={{ duration: 0.3 }}
                 >
@@ -185,9 +185,9 @@ export function FeaturesSection() {
                   {isHero && (
                     <div className="mt-5 sm:mt-6 relative hidden sm:block">
                       <div className="absolute inset-0 bg-linear-to-t from-surface to-transparent z-10" />
-                      <div className="relative h-36 bg-[#1a1a1a] rounded-2xl overflow-hidden">
+                      <div className="relative h-36 bg-canvas border-2 border-border rounded-2xl overflow-hidden">
                         {/* Map mockup */}
-                        <div className="absolute inset-0 opacity-60">
+                        <div className="absolute inset-0 opacity-40">
                           <svg className="w-full h-full" viewBox="0 0 400 160">
                             {/* Grid lines */}
                             {[...Array(8)].map((_, i) => (
@@ -253,7 +253,7 @@ export function FeaturesSection() {
                           ))}
                         </div>
                         {/* Status badge */}
-                        <div className="absolute bottom-3 left-3 z-20 flex items-center gap-2 bg-[#333333]/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                        <div className="absolute bottom-3 left-3 z-20 flex items-center gap-2 bg-surface border-2 border-border px-3 py-1.5 rounded-full">
                           <div className="w-2 h-2 rounded-full bg-[#77ff00] animate-pulse" />
                           <span className="text-xs text-white font-medium">
                             12 Riders Live

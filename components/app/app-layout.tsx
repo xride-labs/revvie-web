@@ -161,7 +161,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         <div className="flex h-16 items-center gap-3 px-4 border-b border-border">
           {activeClub ? (
             <>
-              <div className="w-9 h-9 bg-linear-to-br from-brand-red-light to-brand-red rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(200,55,55,0.25)] shrink-0 text-white font-bold text-sm">
+              <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shrink-0 text-white font-bold text-sm">
                 {activeClub.name.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
@@ -171,7 +171,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             </>
           ) : (
             <>
-              <div className="w-9 h-9 bg-linear-to-br from-brand-red-light to-brand-red rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(200,55,55,0.3)] shrink-0">
+              <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shrink-0">
                 <span className="text-white font-bold text-base">⚡</span>
               </div>
               <div className="min-w-0">
@@ -284,6 +284,14 @@ export function AppLayout({ children }: AppLayoutProps) {
               Create Club
             </Link>
           </Button>
+          {/* My Business — previously only reachable via a deep-link redirect.
+              Surfaced here so owners can manage their businesses from the portal. */}
+          <Button asChild className="w-full justify-start gap-2" variant="outline">
+            <Link href="/business">
+              <Store className="w-4 h-4" />
+              My Business
+            </Link>
+          </Button>
           {hasBrandAccess && (
             <Button
               className="w-full justify-start gap-2"
@@ -337,11 +345,11 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Main Content */}
       <div className="lg:pl-72">
         {/* Top Header - Mobile & Desktop */}
-        <header className="sticky top-0 z-40 h-16 bg-background/80 backdrop-blur-md border-b border-border">
+        <header className="sticky top-0 z-40 h-16 bg-background border-b-2 border-border">
           <div className="flex items-center justify-between h-full px-4 lg:px-6">
             {/* Mobile Logo */}
             <Link href="/home" className="flex items-center gap-2 lg:hidden">
-              <div className="w-8 h-8 bg-linear-to-br from-brand-red-light to-brand-red rounded-xl flex items-center justify-center">
+              <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold text-lg">⚡</span>
               </div>
               <span className="text-lg font-bold text-foreground">Revvie</span>

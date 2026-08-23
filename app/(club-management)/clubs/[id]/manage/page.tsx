@@ -44,6 +44,10 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Checkbox } from '@/components/ui/checkbox'
+import { useBulkSelection } from '@/hooks/use-bulk-selection'
+import { BulkActionBar } from '@/components/bulk-action-bar'
+import { performClubManagerBulkAction } from '@/lib/server/admin'
 import {
   ChevronLeft,
   Settings,
@@ -280,6 +284,38 @@ export default function ClubManagePage() {
       })
     } finally {
       dismissToast(loadingToastId)
+    }
+  }
+
+  // ── Bulk approve/reject of join requests (club-manager scope) ──────────────
+  const reqSel = useBulkSelection()
+  const [bulkBusy, setBulkBusy] = useState<'approve' | 'reject' | null>(null)
+
+  const runBulkRequests = async (action: 'approve' | 'reject') => {
+    if (!clubSettings || reqSel.count === 0) return
+    const ids = reqSel.selectedIds
+    setBulkBusy(action)
+    const tid = loadingToast(
+      `${action === 'approve' ? 'Approving' : 'Rejecting'} ${ids.length} request${ids.length === 1 ? '' : 's'}...`,
+    )
+    try {
+      const result = await performClubManagerBulkAction({
+        module: 'club-member-requests',
+        action,
+        ids,
+      })
+      setPendingRequests((prev) => prev.filter((r) => !ids.includes(r.id)))
+      reqSel.clear()
+      successToast(
+        `${result.processed} request${result.processed === 1 ? '' : 's'} ${action === 'approve' ? 'approved' : 'rejected'}`,
+      )
+    } catch (err) {
+      errorToast(`Bulk ${action} failed`, {
+        description: err instanceof Error ? err.message : 'Please try again.',
+      })
+    } finally {
+      dismissToast(tid)
+      setBulkBusy(null)
     }
   }
 
@@ -579,12 +615,31 @@ export default function ClubManagePage() {
                 </div>
               ) : (
                 <ScrollArea className="h-100">
+                  {/* Select-all → enables bulk approve/reject via the action bar */}
+                  <div className="flex items-center gap-2 mb-3 px-1">
+                    <Checkbox
+                      checked={reqSel.allSelected(pendingRequests.map((r) => r.id))}
+                      onCheckedChange={() =>
+                        reqSel.toggleAll(pendingRequests.map((r) => r.id))
+                      }
+                      aria-label="Select all requests"
+                    />
+                    <span className="text-xs text-muted-foreground">
+                      Select all ({pendingRequests.length})
+                    </span>
+                  </div>
                   <div className="space-y-4">
                     {pendingRequests.map((request) => (
                       <div
                         key={request.id}
                         className="flex items-start gap-4 p-4 border rounded-lg"
                       >
+                        <Checkbox
+                          checked={reqSel.isSelected(request.id)}
+                          onCheckedChange={() => reqSel.toggle(request.id)}
+                          className="mt-1"
+                          aria-label={`Select ${request.user.name}`}
+                        />
                         <Avatar>
                           <AvatarFallback>
                             {request.user.name
@@ -635,6 +690,27 @@ export default function ClubManagePage() {
               )}
             </CardContent>
           </Card>
+
+          <BulkActionBar
+            count={reqSel.count}
+            busyKey={bulkBusy}
+            onClear={reqSel.clear}
+            actions={[
+              {
+                key: 'approve',
+                label: 'Approve',
+                icon: <Check className="h-4 w-4" />,
+                onClick: () => runBulkRequests('approve'),
+              },
+              {
+                key: 'reject',
+                label: 'Reject',
+                variant: 'outline',
+                icon: <X className="h-4 w-4" />,
+                onClick: () => runBulkRequests('reject'),
+              },
+            ]}
+          />
         </TabsContent>
 
         {/* Settings Tab */}

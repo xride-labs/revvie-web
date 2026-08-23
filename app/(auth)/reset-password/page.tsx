@@ -61,36 +61,37 @@ function ResetPasswordInner() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-canvas relative overflow-hidden p-4">
+      {/* Background decorations */}
       <motion.div
-        className="absolute top-20 left-10 w-72 h-72 bg-teal/8 rounded-full blur-3xl"
+        className="absolute top-20 left-10 w-72 h-72 bg-brand-red-light/6 rounded-full blur-3xl pointer-events-none"
         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 8, repeat: Infinity }}
       />
       <motion.div
-        className="absolute bottom-20 right-10 w-96 h-96 bg-brand-red-light/10 rounded-full blur-3xl"
+        className="absolute bottom-20 right-10 w-96 h-96 bg-neon-green/5 rounded-full blur-3xl pointer-events-none"
         animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 10, repeat: Infinity }}
       />
 
       <motion.div
         className="w-full max-w-md relative z-10"
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 22 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.5 }}
       >
-        <div className="rounded-3xl bg-surface/80 backdrop-blur-xl border border-[#444444]/50 shadow-atmospheric overflow-hidden">
-          <div className="h-1 bg-linear-to-r from-teal via-neon-green to-brand-red-light" />
+        <div className="rounded-3xl bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/[0.07] shadow-atmospheric overflow-hidden">
+          <div className="h-px bg-linear-to-r from-transparent via-brand-red-light/50 to-transparent" />
 
           <div className="p-8">
             <div className="text-center mb-8">
-              <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center shadow-[0_0_20px_rgba(200,55,55,0.3)] mx-auto mb-4">
+              <div className="w-11 h-11 rounded-xl overflow-hidden border border-border shadow-[0_0_18px_rgba(229,0,0,0.2)] mx-auto mb-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/revvie-logo.png" alt="Revvie" className="w-full h-full object-cover" />
               </div>
-              <h1 className="text-2xl font-bold text-white uppercase tracking-wide">
+              <h1 className="text-xl font-bold text-white uppercase tracking-widest">
                 {done ? 'Password reset' : 'Set a new password'}
               </h1>
-              <p className="text-text-secondary text-sm mt-2">
+              <p className="text-text-secondary/60 text-sm mt-2">
                 {done
                   ? 'Redirecting you to sign in…'
                   : 'Choose a strong password for your account'}
@@ -99,19 +100,19 @@ function ResetPasswordInner() {
 
             {invalidLink ? (
               <div className="space-y-4 text-center">
-                <div className="w-16 h-16 bg-brand-red/15 rounded-full flex items-center justify-center mx-auto">
-                  <AlertCircle className="w-8 h-8 text-brand-red-light" />
+                <div className="w-14 h-14 bg-brand-red/10 border border-brand-red/20 rounded-full flex items-center justify-center mx-auto">
+                  <AlertCircle className="w-7 h-7 text-brand-red-light" />
                 </div>
-                <p className="text-sm text-text-secondary">
+                <p className="text-sm text-text-secondary/60">
                   This reset link is invalid or has expired. Request a new one.
                 </p>
                 <Link href="/forgot-password">
-                  <Button className="w-full h-12 rounded-2xl bg-linear-to-r from-brand-red-light to-brand-red text-white font-bold uppercase tracking-wide text-sm">
+                  <Button className="w-full h-11 rounded-xl bg-linear-to-r from-brand-red-light to-brand-red text-white font-bold uppercase tracking-widest text-xs hover:opacity-90 transition-all">
                     Request new link
                   </Button>
                 </Link>
                 <Link href="/login">
-                  <Button variant="ghost" className="w-full h-12 rounded-2xl text-text-secondary hover:text-white hover:bg-[#1a1a1a]">
+                  <Button variant="ghost" className="w-full h-11 rounded-xl text-text-secondary/50 hover:text-white hover:bg-[#111] transition-colors">
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to login
                   </Button>
@@ -124,13 +125,15 @@ function ResetPasswordInner() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
-                  <div className="bg-brand-red/15 text-brand-red-light text-sm p-3 rounded-2xl text-center border border-brand-red/20">
+                  <div className="bg-brand-red/10 text-brand-red-light text-sm p-3 rounded-xl text-center border border-brand-red/20">
                     {error}
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-text-secondary text-sm">New password</Label>
+                <div className="space-y-1.5">
+                  <Label htmlFor="password" className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase">
+                    New password
+                  </Label>
                   <div className="relative">
                     <Input
                       id="password"
@@ -140,11 +143,11 @@ function ResetPasswordInner() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       disabled={isLoading}
-                      className="h-12 rounded-2xl bg-[#1a1a1a] border-[#444444]/50 text-white placeholder:text-text-secondary/40 pr-10"
+                      className="h-11 rounded-xl bg-[#0d0d0d] border border-white/10 text-white placeholder:text-white/20 focus:border-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 pr-10 transition-colors"
                     />
                     <button
                       type="button"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary/50 hover:text-white"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary/40 hover:text-text-secondary transition-colors"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -153,17 +156,19 @@ function ResetPasswordInner() {
                   <div className="space-y-1 pt-1">
                     {requirements.map((req) => (
                       <div key={req.label} className="flex items-center gap-2">
-                        <div className={`w-4 h-4 rounded-full flex items-center justify-center ${req.met ? 'bg-neon-green' : 'bg-[#333]'}`}>
+                        <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${req.met ? 'bg-neon-green' : 'bg-[#222]'}`}>
                           {req.met && <Check className="w-2.5 h-2.5 text-black" />}
                         </div>
-                        <span className={`text-xs ${req.met ? 'text-neon-green' : 'text-text-secondary/50'}`}>{req.label}</span>
+                        <span className={`text-xs ${req.met ? 'text-neon-green' : 'text-text-secondary/40'}`}>{req.label}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="confirm" className="text-text-secondary text-sm">Confirm password</Label>
+                <div className="space-y-1.5">
+                  <Label htmlFor="confirm" className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase">
+                    Confirm password
+                  </Label>
                   <Input
                     id="confirm"
                     type="password"
@@ -172,13 +177,15 @@ function ResetPasswordInner() {
                     onChange={(e) => setConfirm(e.target.value)}
                     required
                     disabled={isLoading}
-                    className={`h-12 rounded-2xl bg-[#1a1a1a] border-[#444444]/50 text-white placeholder:text-text-secondary/40 ${matches ? 'border-neon-green/50' : ''}`}
+                    className={`h-11 rounded-xl bg-[#0d0d0d] border text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors ${
+                      matches ? 'border-neon-green/30' : 'border-white/10 focus:border-white/20'
+                    }`}
                   />
                 </div>
 
                 <Button
                   type="submit"
-                  className="w-full h-12 rounded-2xl bg-linear-to-r from-brand-red-light to-brand-red text-white font-bold uppercase tracking-wide text-sm hover:shadow-[0_10px_30px_rgba(200,55,55,0.3)] transition-shadow"
+                  className="w-full h-11 rounded-xl bg-linear-to-r from-brand-red-light to-brand-red text-white font-bold uppercase tracking-widest text-xs hover:opacity-90 transition-all"
                   disabled={isLoading || !isValid || !matches}
                 >
                   {isLoading ? (
@@ -189,7 +196,7 @@ function ResetPasswordInner() {
                 </Button>
 
                 <Link href="/login">
-                  <Button variant="ghost" className="w-full h-12 rounded-2xl text-text-secondary hover:text-white hover:bg-[#1a1a1a]">
+                  <Button variant="ghost" className="w-full h-11 rounded-xl text-text-secondary/50 hover:text-white hover:bg-[#111] transition-colors">
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to login
                   </Button>

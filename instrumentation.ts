@@ -1,11 +1,13 @@
-import * as Sentry from '@sentry/nextjs'
+// `import type` is erased at compile time — webpack never bundles @sentry/nextjs
+// (and its transitive chain: @sentry/node → @prisma/instrumentation →
+// @opentelemetry/instrumentation) in dev. The actual module is loaded lazily
+// via dynamic import() only in production when it's actually needed.
+import type * as Sentry from '@sentry/nextjs'
 
 const isProd = process.env.NODE_ENV === 'production'
 
 export async function register() {
-  if (!isProd) {
-    return
-  }
+  if (!isProd) return
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     await import('./sentry.server.config')
   }
@@ -14,15 +16,14 @@ export async function register() {
   }
 }
 
-export function onRequestError(
+export async function onRequestError(
   error: unknown,
   request: Parameters<typeof Sentry.captureRequestError>[1],
   context: Parameters<typeof Sentry.captureRequestError>[2],
 ) {
-  if (!isProd) {
-    return
-  }
-  Sentry.captureRequestError(error, request, context)
+  if (!isProd) return
+  const { captureRequestError } = await import('@sentry/nextjs')
+  captureRequestError(error, request, context)
 }
 
 // export const onRouterTransitionStart = (url: string) => {

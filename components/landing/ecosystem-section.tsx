@@ -56,7 +56,7 @@ export function EcosystemSection() {
         </motion.div>
 
         <motion.div
-          className="mb-8 sm:mb-10 mx-auto max-w-3xl rounded-2xl border border-[#444444]/60 bg-surface/55 p-2.5 backdrop-blur-md"
+          className="mb-8 sm:mb-10 mx-auto max-w-3xl rounded-2xl border-2 border-border bg-surface p-2.5"
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -95,18 +95,18 @@ export function EcosystemSection() {
             transition={{ duration: 0.7 }}
           >
             <motion.div
-              className="relative overflow-hidden rounded-3xl bg-surface/60 backdrop-blur-md border border-[#444444]/50 p-5 sm:p-7 lg:p-8 min-h-112 sm:min-h-128 lg:min-h-136 flex flex-col transition-all duration-500"
+              className="relative overflow-hidden rounded-3xl bg-surface border-2 border-border p-5 sm:p-7 lg:p-8 min-h-112 sm:min-h-128 lg:min-h-136 flex flex-col transition-all duration-300"
               animate={{
                 opacity: hovered === 'partner' ? 0.45 : 1,
-                scale: hovered === 'rider' ? 1.02 : 1,
+                scale: hovered === 'rider' ? 1.01 : 1,
                 borderColor:
                   hovered === 'rider'
-                    ? 'rgba(119, 255, 0, 0.4)'
-                    : 'rgba(68, 68, 68, 0.5)',
+                    ? 'rgba(119, 255, 0, 0.6)'
+                    : 'rgba(34, 34, 34, 1)',
               }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.3 }}
               whileHover={{
-                boxShadow: '0 0 60px rgba(119, 255, 0, 0.12)',
+                boxShadow: '6px 6px 0px rgba(119, 255, 0, 0.8)',
               }}
             >
               {/* Neon green corner glow */}
@@ -148,9 +148,9 @@ export function EcosystemSection() {
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   {/* Phone frame */}
-                  <div className="absolute inset-0 bg-[#1a1a1a] rounded-[2.5rem] shadow-[0_30px_80px_rgba(0,0,0,0.6)] border border-[#333333] overflow-hidden">
+                  <div className="absolute inset-0 bg-surface rounded-[2.5rem] shadow-[8px_8px_0px_#4db300] border-2 border-border overflow-hidden">
                     {/* Notch */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-[#1a1a1a] rounded-b-2xl z-10" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-surface rounded-b-2xl z-10" />
 
                     {/* Screen content – Ride Tracking */}
                     <div className="absolute inset-1.5 bg-canvas rounded-4xl overflow-hidden">
@@ -166,7 +166,7 @@ export function EcosystemSection() {
                       </div>
 
                       {/* Map area */}
-                      <div className="mx-3 h-32 sm:h-44 bg-[#1a1a1a] rounded-2xl overflow-hidden relative">
+                      <div className="mx-3 h-32 sm:h-44 bg-canvas border-2 border-border rounded-2xl overflow-hidden relative">
                         {/* Grid lines */}
                         <svg
                           className="absolute inset-0 w-full h-full opacity-30"
@@ -225,7 +225,7 @@ export function EcosystemSection() {
                           />
                         ))}
                         {/* Live badge */}
-                        <div className="absolute bottom-2 left-2 flex items-center gap-1.5 bg-[#333333]/90 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                        <div className="absolute bottom-2 left-2 flex items-center gap-1.5 bg-surface border-2 border-border px-2.5 py-1 rounded-full">
                           <div className="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse" />
                           <span className="text-[9px] text-white font-semibold">
                             8 Riders Live
@@ -235,7 +235,7 @@ export function EcosystemSection() {
 
                       {/* Ride info cards */}
                       <div className="px-3 pt-3 space-y-2">
-                        <div className="bg-[#1a1a1a] rounded-xl p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3">
+                        <div className="bg-canvas border-2 border-border rounded-xl p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3">
                           <div className="w-8 h-8 rounded-full bg-neon-green/15 flex items-center justify-center">
                             <MapPin className="w-4 h-4 text-neon-green" />
                           </div>
@@ -249,7 +249,7 @@ export function EcosystemSection() {
                           </div>
                           <div className="text-[9px] text-neon-green font-bold">LIVE</div>
                         </div>
-                        <div className="bg-[#1a1a1a] rounded-xl p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3">
+                        <div className="bg-canvas border-2 border-border rounded-xl p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3">
                           <div className="w-8 h-8 rounded-full bg-brand-red-light/15 flex items-center justify-center">
                             <Users className="w-4 h-4 text-brand-red-light" />
                           </div>
@@ -289,7 +289,7 @@ export function EcosystemSection() {
               <div className="relative flex flex-col sm:flex-row gap-3">
                 <a
                   href="#download"
-                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-linear-to-r from-brand-red-light to-brand-red text-white font-bold uppercase tracking-wide text-xs sm:text-sm shadow-[0_15px_40px_rgba(200,55,55,0.3)] hover:shadow-[0_20px_50px_rgba(200,55,55,0.4)] hover:scale-[1.02] transition-all duration-300"
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-primary border-2 border-primary text-white font-bold uppercase tracking-wide text-xs sm:text-sm shadow-[4px_4px_0px_#850000] hover:translate-y-1 hover:translate-x-1 hover:shadow-none transition-all duration-300"
                 >
                   {/* Apple icon */}
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -299,7 +299,7 @@ export function EcosystemSection() {
                 </a>
                 <a
                   href="#download"
-                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-linear-to-r from-brand-red-light to-brand-red text-white font-bold uppercase tracking-wide text-xs sm:text-sm shadow-[0_15px_40px_rgba(200,55,55,0.3)] hover:shadow-[0_20px_50px_rgba(200,55,55,0.4)] hover:scale-[1.02] transition-all duration-300"
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-primary border-2 border-primary text-white font-bold uppercase tracking-wide text-xs sm:text-sm shadow-[4px_4px_0px_#850000] hover:translate-y-1 hover:translate-x-1 hover:shadow-none transition-all duration-300"
                 >
                   {/* Android icon */}
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -322,18 +322,18 @@ export function EcosystemSection() {
             transition={{ duration: 0.7, delay: 0.15 }}
           >
             <motion.div
-              className="relative overflow-hidden rounded-3xl bg-surface/60 backdrop-blur-md border border-[#444444]/50 p-5 sm:p-7 lg:p-8 min-h-112 sm:min-h-128 lg:min-h-136 flex flex-col transition-all duration-500"
+              className="relative overflow-hidden rounded-3xl bg-surface border-2 border-border p-5 sm:p-7 lg:p-8 min-h-112 sm:min-h-128 lg:min-h-136 flex flex-col transition-all duration-300"
               animate={{
                 opacity: hovered === 'rider' ? 0.45 : 1,
-                scale: hovered === 'partner' ? 1.02 : 1,
+                scale: hovered === 'partner' ? 1.01 : 1,
                 borderColor:
                   hovered === 'partner'
-                    ? 'rgba(55, 200, 195, 0.4)'
-                    : 'rgba(68, 68, 68, 0.5)',
+                    ? 'rgba(55, 200, 195, 0.6)'
+                    : 'rgba(34, 34, 34, 1)',
               }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.3 }}
               whileHover={{
-                boxShadow: '0 0 60px rgba(55, 200, 195, 0.12)',
+                boxShadow: '6px 6px 0px rgba(55, 200, 195, 0.8)',
               }}
             >
               {/* Teal corner glow */}
@@ -380,16 +380,16 @@ export function EcosystemSection() {
                   }}
                 >
                   {/* Laptop frame */}
-                  <div className="relative bg-[#1a1a1a] rounded-2xl border border-[#333333] shadow-[0_30px_80px_rgba(0,0,0,0.6)] overflow-hidden">
+                  <div className="relative bg-surface rounded-2xl border-2 border-border shadow-[8px_8px_0px_#1a8a86] overflow-hidden">
                     {/* Browser chrome */}
-                    <div className="flex items-center gap-2 px-4 py-2.5 bg-[#252525] border-b border-[#333333]">
+                    <div className="flex items-center gap-2 px-4 py-2.5 bg-canvas border-b-2 border-border">
                       <div className="flex gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-brand-red-light/80" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#555555]" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#555555]" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-border" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-border" />
                       </div>
                       <div className="flex-1 flex justify-center">
-                        <div className="px-4 py-1 rounded-lg bg-[#1a1a1a] text-[9px] text-text-secondary/50 font-mono">
+                        <div className="px-4 py-1 rounded-lg bg-surface border border-border text-[9px] text-text-secondary/50 font-mono">
                           dashboard.revvie.app
                         </div>
                       </div>
@@ -421,7 +421,7 @@ export function EcosystemSection() {
                         ].map((stat, i) => (
                           <motion.div
                             key={i}
-                            className="bg-[#252525] rounded-xl p-2.5"
+                            className="bg-canvas border-2 border-border rounded-xl p-2.5"
                             initial={{ opacity: 0, y: 10 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
@@ -437,7 +437,7 @@ export function EcosystemSection() {
                       </div>
 
                       {/* Chart area */}
-                      <div className="bg-[#252525] rounded-xl p-3 flex-1">
+                      <div className="bg-canvas border-2 border-border rounded-xl p-3 flex-1">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-[9px] text-text-secondary/60 font-semibold uppercase">
                             Member Growth
@@ -491,7 +491,7 @@ export function EcosystemSection() {
                         ].map((item, i) => (
                           <div
                             key={i}
-                            className="flex items-center gap-2 bg-[#252525] rounded-lg px-2.5 py-2"
+                            className="flex items-center gap-2 bg-canvas border border-border rounded-lg px-2.5 py-2"
                           >
                             <div
                               className={`w-5 h-5 rounded-md ${item.c} flex items-center justify-center`}
@@ -511,8 +511,8 @@ export function EcosystemSection() {
                   </div>
 
                   {/* Laptop base/stand */}
-                  <div className="mx-auto w-2/3 h-2 bg-[#252525] rounded-b-lg" />
-                  <div className="mx-auto w-1/3 h-1 bg-[#333333] rounded-b-md" />
+                  <div className="mx-auto w-2/3 h-2 bg-surface rounded-b-lg border-x-2 border-b-2 border-border" />
+                  <div className="mx-auto w-1/3 h-1 bg-border rounded-b-md" />
 
                   {/* Laptop shadow */}
                   <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-3 bg-teal/10 blur-xl rounded-full" />
@@ -539,7 +539,7 @@ export function EcosystemSection() {
               {/* Web Portal CTA */}
               <Link
                 href="/login"
-                className="relative flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl border-2 border-teal text-teal font-bold uppercase tracking-wide text-xs sm:text-sm hover:bg-teal/10 hover:shadow-[0_0_30px_rgba(55,200,195,0.2)] hover:scale-[1.02] transition-all duration-300"
+                className="relative flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl border-2 border-brand-teal bg-canvas text-brand-teal font-bold uppercase tracking-wide text-xs sm:text-sm shadow-[4px_4px_0px_#1a8a86] hover:translate-y-1 hover:translate-x-1 hover:shadow-none transition-all duration-300"
               >
                 <Shield className="w-4 h-4" />
                 Access Web Portal

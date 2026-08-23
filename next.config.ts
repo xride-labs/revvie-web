@@ -13,6 +13,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config, { dev }) => {
+    if (dev) {
+      // @sentry/node pulls in @prisma/instrumentation → @opentelemetry/instrumentation
+      // which uses a dynamic require() expression webpack can't statically analyse.
+      // Sentry never initialises in dev (guarded by isProd checks everywhere), so
+      // this warning is a false-positive. Suppress it so the console stays clean.
+      config.ignoreWarnings = [
+        ...(config.ignoreWarnings ?? []),
+        { module: /node_modules\/@prisma\/instrumentation/ },
+        { module: /node_modules\/@opentelemetry\/instrumentation/ },
+      ]
+    }
+    return config
+  },
 }
 
 const config = isProd

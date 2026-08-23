@@ -112,7 +112,7 @@ export function HeroSection() {
               {/* Primary CTA — Riders */}
               <Button
                 size="lg"
-                className="w-full sm:w-auto text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 rounded-full bg-linear-to-r from-brand-red-light to-brand-red hover:from-[#d94444] hover:to-[#960000] text-white border-0 shadow-[0_20px_50px_rgba(200,55,55,0.4)] transition-all duration-300 hover:shadow-[0_25px_60px_rgba(200,55,55,0.5)] hover:scale-105 font-bold uppercase tracking-wide"
+                className="w-full sm:w-auto text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 rounded-full bg-primary border-2 border-primary text-white shadow-[6px_6px_0px_#850000] transition-all duration-300 hover:translate-y-1 hover:translate-x-1 hover:shadow-none font-bold uppercase tracking-wide"
                 asChild
               >
                 <a href="#download">
@@ -123,7 +123,7 @@ export function HeroSection() {
               {/* Secondary CTA — Partners */}
               <Button
                 size="lg"
-                className="w-full sm:w-auto text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 rounded-full bg-transparent border-2 border-teal text-teal hover:bg-teal/10 hover:shadow-[0_0_30px_rgba(55,200,195,0.25)] transition-all duration-300 hover:scale-105 font-bold uppercase tracking-wide"
+                className="w-full sm:w-auto text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 rounded-full bg-canvas border-2 border-brand-teal text-brand-teal shadow-[4px_4px_0px_#1a8a86] transition-all duration-300 hover:translate-y-1 hover:translate-x-1 hover:shadow-none font-bold uppercase tracking-wide"
                 asChild
               >
                 <Link href="/login">
@@ -168,10 +168,10 @@ export function HeroSection() {
               animate={shouldReduceMotion ? { y: 0, rotate: 0 } : 'float1'}
               variants={shouldReduceMotion ? undefined : floatVariants}
             >
-              <div className="w-full h-full bg-surface/80 backdrop-blur-md rounded-3xl shadow-atmospheric flex items-center justify-center border border-[#444444]/50">
+              <div className="w-full h-full bg-surface rounded-3xl shadow-[4px_4px_0px_#850000] flex items-center justify-center border-2 border-border">
                 <Shield className="w-16 h-16 sm:w-20 sm:h-20 text-brand-red-light" />
               </div>
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#333333] text-white text-xs px-3 py-1 rounded-full font-medium">
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-surface border-2 border-border text-white text-xs px-3 py-1 rounded-full font-bold uppercase">
                 Helmet
               </div>
             </motion.div>
@@ -182,8 +182,8 @@ export function HeroSection() {
               animate={shouldReduceMotion ? { y: 0, rotate: 0 } : 'float2'}
               variants={shouldReduceMotion ? undefined : floatVariants}
             >
-              <div className="w-full h-full bg-[#333333]/90 backdrop-blur-md rounded-[2.5rem] shadow-[0_30px_70px_rgba(0,0,0,0.6)] p-2 border border-[#444444]/50">
-                <div className="w-full h-full bg-[#1a1a1a] rounded-4xl overflow-hidden relative">
+              <div className="w-full h-full bg-surface rounded-[2.5rem] shadow-[8px_8px_0px_#850000] p-2 border-2 border-border">
+                <div className="w-full h-full bg-canvas rounded-4xl overflow-hidden relative">
                   {/* App UI mockup */}
                   <div className="absolute inset-0 p-4">
                     <div className="bg-linear-to-b from-brand-red-light/20 to-transparent rounded-2xl p-4 mb-4">
@@ -199,12 +199,12 @@ export function HeroSection() {
                       {[1, 2, 3].map((i) => (
                         <div
                           key={i}
-                          className="flex items-center gap-3 bg-[#333333]/50 rounded-xl p-3"
+                          className="flex items-center gap-3 bg-surface border-2 border-border rounded-xl p-3"
                         >
-                          <div className="w-8 h-8 rounded-full bg-linear-to-r from-brand-red-light to-brand-red" />
+                          <div className="w-8 h-8 rounded-full bg-primary" />
                           <div className="flex-1">
-                            <div className="h-2 bg-[#444444] rounded w-20 mb-1" />
-                            <div className="h-2 bg-[#444444]/50 rounded w-14" />
+                            <div className="h-2 bg-text-secondary rounded w-20 mb-1" />
+                            <div className="h-2 bg-text-muted rounded w-14" />
                           </div>
                           <div className="w-6 h-6 rounded-full bg-[#77ff00]/20 flex items-center justify-center">
                             <div className="w-2 h-2 rounded-full bg-[#77ff00]" />
@@ -223,7 +223,7 @@ export function HeroSection() {
               animate={shouldReduceMotion ? { y: 0, rotate: 0 } : 'float3'}
               variants={shouldReduceMotion ? undefined : floatVariants}
             >
-              <div className="w-full h-full bg-surface/80 backdrop-blur-md rounded-full shadow-atmospheric flex items-center justify-center border border-[#444444]/50">
+              <div className="w-full h-full bg-surface rounded-full shadow-[4px_4px_0px_#1a8a86] flex items-center justify-center border-2 border-border">
                 <motion.div
                   className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-[#37c8c3] flex items-center justify-center"
                   animate={shouldReduceMotion ? { rotate: 0 } : { rotate: 360 }}
@@ -240,7 +240,7 @@ export function HeroSection() {
               animate={shouldReduceMotion ? { y: 0, rotate: 0 } : 'float4'}
               variants={shouldReduceMotion ? undefined : floatVariants}
             >
-              <div className="w-full h-full bg-surface/80 backdrop-blur-md rounded-3xl shadow-atmospheric flex items-center justify-center border border-[#444444]/50 p-4">
+              <div className="w-full h-full bg-surface rounded-3xl shadow-[4px_4px_0px_#4db300] flex items-center justify-center border-2 border-border p-4">
                 <div className="relative w-full h-full">
                   <Map className="w-10 h-10 text-[#77ff00] absolute top-0 left-0" />
                   {/* Route line */}
@@ -277,7 +277,7 @@ export function HeroSection() {
               animate={shouldReduceMotion ? { y: 0, rotate: 0 } : 'float5'}
               variants={shouldReduceMotion ? undefined : floatVariants}
             >
-              <div className="w-full h-full bg-surface/80 backdrop-blur-md rounded-3xl shadow-atmospheric flex items-center justify-center border border-teal/30 group hover:border-teal transition-colors">
+              <div className="w-full h-full bg-surface rounded-3xl shadow-[4px_4px_0px_#1a8a86] flex items-center justify-center border-2 border-border group hover:border-brand-teal transition-colors">
                 <motion.div
                   animate={shouldReduceMotion ? { rotate: 0 } : { rotate: [0, 360] }}
                   transition={{ duration: 20, repeat: shouldReduceMotion ? 0 : Infinity, ease: 'linear' }}
@@ -309,7 +309,7 @@ export function HeroSection() {
                   }
               }
             >
-              <div className="w-full h-full bg-linear-to-br from-brand-red-light to-brand-red rounded-2xl shadow-[0_20px_50px_rgba(200,55,55,0.4)] flex items-center justify-center">
+              <div className="w-full h-full bg-primary rounded-2xl shadow-[6px_6px_0px_#850000] flex items-center justify-center border-2 border-primary">
                 <Smartphone className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
               </div>
             </motion.div>

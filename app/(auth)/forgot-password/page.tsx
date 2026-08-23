@@ -19,7 +19,6 @@ export default function ForgotPasswordPage() {
     e.preventDefault()
     setIsLoading(true)
     setError('')
-
     try {
       const { error: resetError } = await authClient.requestPasswordReset({
         email: email.trim(),
@@ -41,34 +40,30 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex items-center justify-center bg-canvas relative overflow-hidden p-4">
       {/* Background decorations */}
       <motion.div
-        className="absolute top-20 left-10 w-72 h-72 bg-teal/8 rounded-full blur-3xl"
+        className="absolute top-20 left-10 w-72 h-72 bg-brand-red-light/6 rounded-full blur-3xl pointer-events-none"
         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 8, repeat: Infinity }}
       />
       <motion.div
-        className="absolute bottom-20 right-10 w-96 h-96 bg-brand-red-light/10 rounded-full blur-3xl"
+        className="absolute bottom-20 right-10 w-96 h-96 bg-neon-green/5 rounded-full blur-3xl pointer-events-none"
         animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 10, repeat: Infinity }}
       />
 
       <motion.div
         className="w-full max-w-md relative z-10"
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 22 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.5 }}
       >
-        <div className="rounded-3xl bg-surface/80 backdrop-blur-xl border border-[#444444]/50 shadow-atmospheric overflow-hidden">
-          {/* Top gradient bar */}
-          <div className="h-1 bg-linear-to-r from-teal via-neon-green to-brand-red-light" />
+        <div className="rounded-3xl bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/[0.07] shadow-atmospheric overflow-hidden">
+          <div className="h-px bg-linear-to-r from-transparent via-brand-red-light/50 to-transparent" />
 
           <div className="p-8">
             {/* Logo */}
             <div className="text-center mb-8">
-              <Link
-                href="/"
-                className="inline-flex items-center justify-center gap-2 mb-4"
-              >
-                <div className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center shadow-[0_0_20px_rgba(200,55,55,0.3)]">
+              <Link href="/" className="inline-flex items-center justify-center gap-2 mb-4">
+                <div className="w-11 h-11 rounded-xl overflow-hidden border border-border shadow-[0_0_18px_rgba(229,0,0,0.2)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/revvie-logo.png" alt="Revvie" className="w-full h-full object-cover" />
                 </div>
@@ -77,41 +72,41 @@ export default function ForgotPasswordPage() {
               {isSubmitted ? (
                 <>
                   <motion.div
-                    className="w-16 h-16 bg-neon-green/15 rounded-full flex items-center justify-center mx-auto mb-4"
+                    className="w-16 h-16 bg-neon-green/10 border border-neon-green/20 rounded-full flex items-center justify-center mx-auto mb-4"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: 'spring', damping: 15 }}
                   >
-                    <Mail className="w-8 h-8 text-neon-green" />
+                    <Mail className="w-7 h-7 text-neon-green" />
                   </motion.div>
-                  <h1 className="text-2xl font-bold text-white uppercase tracking-wide">
+                  <h1 className="text-xl font-bold text-white uppercase tracking-widest">
                     Check your email
                   </h1>
-                  <p className="text-text-secondary text-sm mt-2">
-                    We&apos;ve sent a password reset link to{' '}
-                    <span className="font-medium text-teal">{email}</span>
+                  <p className="text-text-secondary/60 text-sm mt-2">
+                    We&apos;ve sent a reset link to{' '}
+                    <span className="font-medium text-brand-red-light">{email}</span>
                   </p>
                 </>
               ) : (
                 <>
-                  <h1 className="text-2xl font-bold text-white uppercase tracking-wide">
+                  <h1 className="text-xl font-bold text-white uppercase tracking-widest">
                     Forgot password?
                   </h1>
-                  <p className="text-text-secondary text-sm mt-2">
-                    No worries, we&apos;ll send you reset instructions
+                  <p className="text-text-secondary/60 text-sm mt-2">
+                    No worries — we&apos;ll send you reset instructions
                   </p>
                 </>
               )}
             </div>
 
             {isSubmitted ? (
-              <div className="space-y-4">
-                <p className="text-sm text-text-secondary/60 text-center">
-                  Didn&apos;t receive the email? Check your spam folder or try again.
+              <div className="space-y-3">
+                <p className="text-sm text-text-secondary/50 text-center">
+                  Didn&apos;t receive it? Check your spam folder or try again.
                 </p>
                 <Button
                   variant="outline"
-                  className="w-full h-12 rounded-2xl bg-[#1a1a1a] border-[#444444]/50 text-white hover:bg-[#252525] hover:text-white transition-colors"
+                  className="w-full h-11 rounded-xl bg-canvas border border-white/10 text-white/80 hover:bg-[#111] hover:text-white hover:border-white/15 transition-all"
                   onClick={() => setIsSubmitted(false)}
                 >
                   Try another email
@@ -119,7 +114,7 @@ export default function ForgotPasswordPage() {
                 <Link href="/login">
                   <Button
                     variant="ghost"
-                    className="w-full h-12 rounded-2xl text-text-secondary hover:text-white hover:bg-[#1a1a1a] transition-colors"
+                    className="w-full h-11 rounded-xl text-text-secondary/50 hover:text-white hover:bg-[#111] transition-colors"
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to login
@@ -129,13 +124,13 @@ export default function ForgotPasswordPage() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
-                  <div className="bg-brand-red/15 text-brand-red-light text-sm p-3 rounded-2xl text-center border border-brand-red/20">
+                  <div className="bg-brand-red/10 text-brand-red-light text-sm p-3 rounded-xl text-center border border-brand-red/20">
                     {error}
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-text-secondary text-sm">
+                <div className="space-y-1.5">
+                  <Label htmlFor="email" className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase">
                     Email
                   </Label>
                   <Input
@@ -146,20 +141,17 @@ export default function ForgotPasswordPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={isLoading}
-                    className="h-12 rounded-2xl bg-[#1a1a1a] border-[#444444]/50 text-white placeholder:text-text-secondary/40 focus:border-teal/60 focus:ring-teal/30"
+                    className="h-11 rounded-xl bg-[#0d0d0d] border border-white/10 text-white placeholder:text-white/20 focus:border-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
                   />
                 </div>
 
                 <Button
                   type="submit"
-                  className="w-full h-12 rounded-2xl bg-linear-to-r from-brand-red-light to-brand-red text-white font-bold uppercase tracking-wide text-sm hover:shadow-[0_10px_30px_rgba(200,55,55,0.3)] transition-shadow"
+                  className="w-full h-11 rounded-xl bg-linear-to-r from-brand-red-light to-brand-red text-white font-bold uppercase tracking-widest text-xs hover:opacity-90 transition-all"
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Sending...
-                    </>
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Sending…</>
                   ) : (
                     'Reset password'
                   )}
@@ -168,7 +160,7 @@ export default function ForgotPasswordPage() {
                 <Link href="/login">
                   <Button
                     variant="ghost"
-                    className="w-full h-12 rounded-2xl text-text-secondary hover:text-white hover:bg-[#1a1a1a] transition-colors"
+                    className="w-full h-11 rounded-xl text-text-secondary/50 hover:text-white hover:bg-[#111] transition-colors"
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to login

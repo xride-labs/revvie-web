@@ -144,7 +144,7 @@ export default function BrandRegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-canvas relative overflow-hidden p-4">
-      <PortalBackdropArt accent="teal" />
+      <PortalBackdropArt />
 
       <motion.div
         className="absolute top-20 right-10 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl"

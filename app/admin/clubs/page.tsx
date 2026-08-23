@@ -51,6 +51,11 @@ import {
 } from 'lucide-react'
 import { useAdminClubs } from '@/store/features/admin'
 import { AdminCRUDPopover, CRUDActionBuilders } from '@/components/admin/crud-popover'
+import { Checkbox } from '@/components/ui/checkbox'
+import { useBulkSelection } from '@/hooks/use-bulk-selection'
+import { BulkActionBar } from '@/components/bulk-action-bar'
+import { performBulkAction } from '@/lib/server/admin'
+import { toast } from 'sonner'
 
 interface AdminClub {
   id: string
@@ -128,6 +133,26 @@ export default function AdminClubsPage() {
   const handleDeleteClub = async (club: AdminClub) => {
     if (!confirm(`Delete club "${club.name}"? This cannot be undone.`)) return
     await dispatchDeleteClub(club.id)
+  }
+
+  // ── Bulk verify (super-admin) ──────────────────────────────────────────────
+  const sel = useBulkSelection()
+  const [bulkBusy, setBulkBusy] = useState<string | null>(null)
+
+  const runBulkVerify = async () => {
+    if (sel.count === 0) return
+    const ids = sel.selectedIds
+    setBulkBusy('verify')
+    try {
+      const result = await performBulkAction({ module: 'clubs', action: 'verify', ids })
+      toast.success(`${result.processed} club${result.processed === 1 ? '' : 's'} verified`)
+      sel.clear()
+      doFetch()
+    } catch {
+      toast.error('Bulk verify failed — try again')
+    } finally {
+      setBulkBusy(null)
+    }
   }
 
   // Debounced server-side search
@@ -274,6 +299,13 @@ export default function AdminClubsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10">
+                    <Checkbox
+                      checked={sel.allSelected(clubs.map((c) => c.id))}
+                      onCheckedChange={() => sel.toggleAll(clubs.map((c) => c.id))}
+                      aria-label="Select all clubs"
+                    />
+                  </TableHead>
                   <TableHead>Club</TableHead>
                   <TableHead>Owner</TableHead>
                   <TableHead>Members</TableHead>
@@ -286,6 +318,13 @@ export default function AdminClubsPage() {
               <TableBody>
                 {clubs.map((club) => (
                   <TableRow key={club.id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={sel.isSelected(club.id)}
+                        onCheckedChange={() => sel.toggle(club.id)}
+                        aria-label={`Select ${club.name}`}
+                      />
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10">
@@ -403,6 +442,20 @@ export default function AdminClubsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <BulkActionBar
+        count={sel.count}
+        busyKey={bulkBusy}
+        onClear={sel.clear}
+        actions={[
+          {
+            key: 'verify',
+            label: 'Verify',
+            icon: <ShieldCheck className="h-4 w-4" />,
+            onClick: runBulkVerify,
+          },
+        ]}
+      />
 
       {/* View Club Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>

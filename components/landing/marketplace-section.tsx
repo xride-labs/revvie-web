@@ -107,15 +107,15 @@ export function MarketplaceSection() {
               className="group cursor-pointer"
             >
               <motion.div
-                className="relative rounded-3xl bg-surface/60 backdrop-blur-md overflow-hidden border border-transparent hover:border-teal/40 transition-all duration-500 shadow-atmospheric"
+                className="relative rounded-3xl bg-surface overflow-hidden border-2 border-border hover:border-brand-teal transition-all duration-300"
                 whileHover={{
-                  y: -10,
-                  boxShadow: '0 30px 60px rgba(0, 0, 0, 0.6)',
+                  y: -8,
+                  boxShadow: '6px 6px 0px rgba(55, 200, 195, 1)',
                 }}
                 transition={{ duration: 0.3 }}
               >
                 {/* Product Image Area */}
-                <div className="aspect-square bg-linear-to-br from-[#1a1a1a] to-[#2a2a2a] relative overflow-hidden flex items-center justify-center">
+                <div className="aspect-square bg-canvas border-b-2 border-border relative overflow-hidden flex items-center justify-center">
                   {/* Decorative gradient */}
                   <div className="absolute inset-0 bg-linear-to-b from-transparent to-surface/30" />
 
@@ -141,7 +141,7 @@ export function MarketplaceSection() {
                   </motion.div>
 
                   {/* Verified badge */}
-                  <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-[#37c8c3]/20 backdrop-blur-sm px-3 py-1.5 rounded-full border border-[#37c8c3]/30">
+                  <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-surface border-2 border-border px-3 py-1.5 rounded-full">
                     <BadgeCheck className="w-3.5 h-3.5 text-[#37c8c3]" />
                     <span className="text-xs text-[#37c8c3] font-semibold">
                       {listing.badge}
@@ -165,7 +165,7 @@ export function MarketplaceSection() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {/* Avatar */}
-                      <div className="w-8 h-8 rounded-full bg-linear-to-r from-brand-red-light to-brand-red flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
                         <span className="text-white text-xs font-bold">
                           {listing.seller.charAt(0)}
                         </span>
@@ -203,7 +203,7 @@ export function MarketplaceSection() {
           transition={{ duration: 0.6, delay: 0.3 }}
         >
           <motion.button
-            className="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-linear-to-r from-brand-red-light to-brand-red text-white font-bold uppercase tracking-wide text-lg shadow-[0_20px_50px_rgba(200,55,55,0.3)] hover:shadow-[0_25px_60px_rgba(200,55,55,0.4)] transition-shadow duration-300"
+            className="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-primary border-2 border-primary text-white font-bold uppercase tracking-wide text-lg shadow-[6px_6px_0px_#850000] hover:translate-y-1 hover:translate-x-1 hover:shadow-none transition-all duration-300"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
           >

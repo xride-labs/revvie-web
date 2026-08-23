@@ -40,7 +40,6 @@ import {
   Trophy,
   Star,
   Image as ImageIcon,
-  Loader2,
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -387,6 +386,12 @@ export default function ClubDetailPage() {
             <DropdownMenuContent align="end">
               {isOwner && (
                 <>
+                  <DropdownMenuItem onClick={() => router.push(`/clubs/${club.id}/manage`)}>
+                    Manage Club
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push(`/clubs/${club.id}/analytics`)}>
+                    Analytics
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
                     Edit Club
                   </DropdownMenuItem>
@@ -451,9 +456,15 @@ export default function ClubDetailPage() {
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Chat
                 </Button>
-                <Button variant="outline">
-                  <Settings className="w-4 h-4" />
-                </Button>
+                {isOwner && (
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/clubs/${club.id}/manage`)}
+                    title="Manage club"
+                  >
+                    <Settings className="w-4 h-4" />
+                  </Button>
+                )}
               </>
             ) : isPending ? (
               <Button disabled>Request Pending</Button>

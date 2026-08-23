@@ -19,6 +19,17 @@ const socialLinks = [
   { icon: Youtube, href: 'https://youtube.com', label: 'YouTube' },
 ]
 
+const legalLinks = [
+  { label: 'Terms & Conditions', href: '/terms' },
+  { label: 'Privacy Policy', href: '/privacy' },
+  { label: 'Refund Policy', href: '/refund' },
+]
+
+const companyLinks = [
+  { label: 'About Us', href: '/about' },
+  { label: 'Contact', href: '/contact' },
+]
+
 export function Footer() {
   return (
     <footer className="landing-section relative overflow-hidden bg-linear-to-b from-canvas to-black">
@@ -54,7 +65,7 @@ export function Footer() {
           </p>
 
           {/* Social Icons */}
-          <div className="flex items-center gap-6 mb-12">
+          <div className="flex items-center gap-6 mb-10">
             {socialLinks.map((link, index) => {
               const Icon = link.icon
               return (
@@ -63,7 +74,7 @@ export function Footer() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full bg-surface/80 backdrop-blur-md flex items-center justify-center text-text-secondary/60 hover:text-white hover:bg-teal/20 hover:border-teal/50 border border-[#444444]/50 transition-all duration-300"
+                  className="w-12 h-12 rounded-full bg-surface flex items-center justify-center text-text-secondary/60 hover:text-white hover:bg-border border-2 border-border transition-all duration-300"
                   whileHover={{ scale: 1.1, y: -3 }}
                   whileTap={{ scale: 0.95 }}
                   aria-label={link.label}
@@ -74,12 +85,38 @@ export function Footer() {
             })}
           </div>
 
+          {/* Company + Legal links */}
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 mb-8">
+            {companyLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-text-secondary/50 text-sm hover:text-white transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
           {/* Divider line */}
-          <div className="w-24 h-px bg-linear-to-r from-transparent via-[#444444] to-transparent mb-8" />
+          <div className="w-full max-w-sm h-px bg-border/40 mb-6" />
+
+          {/* Legal links */}
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-6">
+            {legalLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-text-secondary/40 text-xs hover:text-text-secondary transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
 
           {/* Copyright */}
           <p className="text-text-secondary/30 text-sm">
-            © 2026 Revvie. All rights reserved.
+            © 2026 Revvie by XRide Labs. All rights reserved.
           </p>
         </motion.div>
       </div>

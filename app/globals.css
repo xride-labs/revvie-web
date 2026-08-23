@@ -43,69 +43,74 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: 24px;
   --radius-4xl: 32px;
-  /* Night Rider Brand Colors */
-  --color-canvas: #080808;
-  --color-surface: #1a1a1a;
+  /* Brutalist OLED Brand Tokens */
+  --color-canvas: #000000;
+  --color-surface: #0A0A0A;
   --color-neon-green: #7dff00;
-  --color-electric-blue: #0091ff;
-  --color-teal: #0091ff;
-  --color-text-primary: #f5f5f5;
+  --color-electric-blue: #8b5cf6; /* now electric violet (name kept for back-compat) */
+  --color-teal: #8b5cf6; /* now electric violet (name kept for back-compat) */
+  --color-violet: #8b5cf6;
+  --color-violet-light: #a78bfa;
+  --color-text-primary: #ffffff;
   --color-text-secondary: #aaaaaa;
   /* Gradients defined as CSS vars */
-  --gradient-primary: linear-gradient(135deg, #ff4040 0%, #a80000 100%);
+  --gradient-primary: linear-gradient(45deg, var(--color-brand-red-light) 50%, #FFD600 50%);
   /* Custom brand colors */
   --color-brand-red: #a80000;
   --color-brand-red-light: #e50000;
   --color-brand-red-bright: #ff4040;
+  --color-brand-yellow: #FFD600;
   --color-brand-green: #7dff00;
-  --color-brand-grey: #1a1a1a;
-  --color-brand-teal: #0091ff;
-  --color-brand-blue: #0091ff;
+  --color-brand-grey: #222222;
+  --color-brand-teal: #8b5cf6; /* now electric violet (name kept for back-compat) */
+  --color-brand-blue: #8b5cf6; /* now electric violet (name kept for back-compat) */
+  --color-brand-violet: #8b5cf6;
   /* Deep atmospheric shadow */
   --shadow-atmospheric: 0 20px 60px rgba(0, 0, 0, 0.65);
-  --shadow-glow-blue: 0 0 30px rgba(0, 145, 255, 0.3);
-  --shadow-glow-teal: 0 0 30px rgba(0, 145, 255, 0.3);
+  --shadow-glow-blue: 0 0 30px rgba(139, 92, 246, 0.3);
+  --shadow-glow-teal: 0 0 30px rgba(139, 92, 246, 0.3);
+  --shadow-glow-violet: 0 0 30px rgba(139, 92, 246, 0.3);
   --shadow-glow-red: 0 0 30px rgba(229, 0, 0, 0.35);
 }
 
 :root {
   /* Night Rider - 24px base radius */
   --radius: 1.5rem;
-  /* Canvas - Deep Black Main Background */
-  --background: #0f0f0f;
-  --foreground: #f5f5f5;
-  /* Surface - Dark Component Backgrounds */
-  --card: #161616;
-  --card-foreground: #f5f5f5;
-  --popover: #161616;
-  --popover-foreground: #f5f5f5;
-  /* Primary Action - Crimson Red */
+  /* Canvas - Deep OLED Black */
+  --background: #000000;
+  --foreground: #ffffff;
+  /* Surface - Elevated Panels */
+  --card: #0A0A0A;
+  --card-foreground: #ffffff;
+  --popover: #0A0A0A;
+  --popover-foreground: #ffffff;
+  /* Primary Action - Adrenaline Red */
   --primary: #e50000;
   --primary-foreground: #ffffff;
   /* Secondary - Surface color */
-  --secondary: #1e1e1e;
-  --secondary-foreground: #f5f5f5;
+  --secondary: #121212;
+  --secondary-foreground: #ffffff;
   --muted: #111111;
   --muted-foreground: #888888;
-  /* Electric Blue - Interactive/Hover accent */
-  --accent: #0091ff;
-  --accent-foreground: #ffffff;
+  /* High-Vis Yellow - Interactive/Hover accent */
+  --accent: #FFD600;
+  --accent-foreground: #000000;
   --destructive: #a80000;
-  --border: #2a2a2a;
-  --input: #262626;
+  --border: #222222;
+  --input: #121212;
   --ring: #e50000;
   --chart-1: #e50000;
-  --chart-2: #0091ff;
+  --chart-2: #FFD600;
   --chart-3: #7dff00;
   --chart-4: #a80000;
   --chart-5: #f5f5f5;
-  --sidebar: #0a0a0a;
-  --sidebar-foreground: #f5f5f5;
+  --sidebar: #050505;
+  --sidebar-foreground: #ffffff;
   --sidebar-primary: #e50000;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #0091ff;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #2a2a2a;
+  --sidebar-accent: #FFD600;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: #222222;
   --sidebar-ring: #e50000;
   --landing-gutter: clamp(1rem, 2.2vw, 2.5rem);
   --landing-max: 80rem;
@@ -130,11 +135,11 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f0f0f;
+  background: #000000;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
+  background: #222222;
   border-radius: 4px;
 }
 
@@ -227,10 +232,10 @@ section[id] {
 }
 
 .landing-surface {
-  border: 1px solid rgba(42, 42, 42, 0.6);
-  background: color-mix(in oklab, #161616 80%, transparent);
+  border: 1px solid rgba(34, 34, 34, 0.8);
+  background: color-mix(in oklab, #0A0A0A 90%, transparent);
   backdrop-filter: blur(12px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
 }
 
 /* Selection color */

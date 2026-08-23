@@ -145,7 +145,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 
           {/* Dialog Card */}
           <motion.div
-            className="relative z-52 w-full max-w-lg rounded-3xl bg-surface/95 backdrop-blur-xl border border-[#444444]/60 shadow-atmospheric overflow-hidden"
+            className="relative z-52 w-full max-w-lg rounded-3xl bg-surface border-2 border-border overflow-hidden"
             initial={{ scale: 0.9, y: 40, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, y: 40, opacity: 0 }}
@@ -154,7 +154,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-[#444444]/50 flex items-center justify-center text-text-secondary hover:text-white hover:bg-[#444444] transition-colors"
+              className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-surface border-2 border-border flex items-center justify-center text-text-secondary hover:text-white hover:bg-border transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -186,7 +186,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                   </p>
                   <button
                     onClick={onClose}
-                    className="px-8 py-3 rounded-full bg-linear-to-r from-brand-red-light to-brand-red text-white font-bold uppercase tracking-wide hover:shadow-[0_10px_30px_rgba(200,55,55,0.3)] transition-shadow"
+                    className="px-8 py-3 rounded-full bg-primary border-2 border-primary text-white font-bold uppercase tracking-wide shadow-[4px_4px_0px_#850000] hover:translate-y-1 hover:translate-x-1 hover:shadow-none transition-all"
                   >
                     Close
                   </button>
@@ -214,7 +214,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#1a1a1a] border border-[#444444]/50 text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-teal/60 focus:ring-1 focus:ring-teal/30 transition-all text-sm"
+                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-canvas border-2 border-border text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-brand-teal focus:ring-1 focus:ring-brand-teal/30 transition-all text-sm"
                       />
                     </div>
 
@@ -267,7 +267,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                         value={formData.message}
                         onChange={handleChange}
                         rows={3}
-                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#1a1a1a] border border-[#444444]/50 text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-teal/60 focus:ring-1 focus:ring-teal/30 transition-all text-sm resize-none"
+                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-canvas border-2 border-border text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-brand-teal focus:ring-1 focus:ring-brand-teal/30 transition-all text-sm resize-none"
                       />
                     </div>
 
@@ -275,7 +275,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                     <motion.button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-4 rounded-2xl bg-linear-to-r from-brand-red-light to-brand-red text-white font-bold uppercase tracking-wide text-sm flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(200,55,55,0.3)] hover:shadow-[0_15px_40px_rgba(200,55,55,0.4)] transition-shadow disabled:opacity-60"
+                      className="w-full py-4 rounded-2xl bg-primary border-2 border-primary text-white font-bold uppercase tracking-wide text-sm flex items-center justify-center gap-2 shadow-[4px_4px_0px_#850000] hover:translate-y-1 hover:translate-x-1 hover:shadow-none transition-all disabled:opacity-60"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
@@ -373,10 +373,10 @@ export function InvestSection() {
               return (
                 <motion.div key={index} variants={itemVariants} className="group">
                   <motion.div
-                    className="relative overflow-hidden rounded-3xl bg-surface/80 backdrop-blur-md border border-[#444444]/50 p-8 h-full shadow-atmospheric"
+                    className="relative overflow-hidden rounded-3xl bg-surface border-2 border-border p-8 h-full"
                     whileHover={{
-                      scale: 1.03,
-                      boxShadow: `0 0 50px ${card.color}20`,
+                      scale: 1.01,
+                      boxShadow: `6px 6px 0px ${card.color}`,
                     }}
                   >
                     {/* Top gradient glow */}
@@ -429,7 +429,7 @@ export function InvestSection() {
           >
             <motion.button
               onClick={() => setDialogOpen(true)}
-              className="inline-flex items-center gap-3 px-12 py-5 rounded-full bg-linear-to-r from-neon-green to-teal text-canvas font-bold uppercase tracking-wide text-lg shadow-[0_20px_50px_rgba(119,255,0,0.2)] hover:shadow-[0_25px_60px_rgba(119,255,0,0.3)] transition-shadow"
+              className="inline-flex items-center gap-3 px-12 py-5 rounded-full bg-brand-yellow border-2 border-brand-yellow text-canvas font-bold uppercase tracking-wide text-lg shadow-[6px_6px_0px_#D6A300] hover:translate-y-1 hover:translate-x-1 hover:shadow-none transition-all"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
             >

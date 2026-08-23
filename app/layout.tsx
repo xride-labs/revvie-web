@@ -38,8 +38,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${josefinSans.variable} antialiased`}>
-        <Providers>{children}</Providers>
+      <body className={`${josefinSans.variable} antialiased min-h-screen bg-background text-foreground flex flex-col selection:bg-primary selection:text-white`}>
+        <div className="flex-1 relative w-full max-w-[1920px] mx-auto border-x border-border shadow-2xl bg-canvas">
+          <Providers>{children}</Providers>
+        </div>
       </body>
     </html>
   )

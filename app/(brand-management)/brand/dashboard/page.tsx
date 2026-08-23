@@ -246,10 +246,10 @@ export default function BrandDashboardPage() {
   }, [business, businessLoading])
 
   const stats = [
-    { label: 'Listings',          value: analytics?.listings         ?? 0, icon: Package },
-    { label: 'Ad Campaigns',      value: analytics?.campaigns        ?? 0, icon: ShoppingBag },
-    { label: 'Total Impressions', value: analytics?.totalImpressions ?? 0, icon: Eye },
-    { label: 'Total Clicks',      value: analytics?.totalClicks      ?? 0, icon: TrendingUp },
+    { label: 'Listings',          value: analytics?.listings         ?? 0, icon: Package,     accent: '#f59e0b' },
+    { label: 'Ad Campaigns',      value: analytics?.campaigns        ?? 0, icon: ShoppingBag, accent: '#f97316' },
+    { label: 'Total Impressions', value: analytics?.totalImpressions ?? 0, icon: Eye,         accent: '#0091ff' },
+    { label: 'Total Clicks',      value: analytics?.totalClicks      ?? 0, icon: TrendingUp,  accent: '#7dff00' },
   ]
 
   const vBadge = VERIFICATION_BADGE[business?.verification ?? 'PENDING']
@@ -358,13 +358,19 @@ export default function BrandDashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
-          <Card key={stat.label}>
+          <Card
+            key={stat.label}
+            className="border-l-4 overflow-hidden"
+            style={{ borderLeftColor: stat.accent, background: `${stat.accent}0d` }}
+          >
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{stat.label}</p>
-                <stat.icon className="w-4 h-4 text-amber-500" />
+                <stat.icon className="w-4 h-4" style={{ color: stat.accent }} />
               </div>
-              <p className="text-3xl font-bold">{stat.value.toLocaleString()}</p>
+              <p className="text-4xl font-bold tabular-nums" style={{ color: stat.accent }}>
+                {stat.value.toLocaleString()}
+              </p>
             </CardContent>
           </Card>
         ))}

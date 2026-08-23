@@ -812,6 +812,34 @@ export async function bulkApproveAdCampaigns(ids: string[]): Promise<{ updated: 
   return apiAuthenticated.post<{ updated: number }>('/admin/bulk/ad-campaigns/approve', { ids })
 }
 
+export interface BulkActionRequest {
+  module: 'clubs' | 'club-join-requests' | 'ride-participants' | 'businesses' | 'ad-campaigns' | 'club-member-requests' | 'brand-campaigns' | 'brand-products';
+  action: 'approve' | 'reject' | 'verify' | 'accept' | 'decline' | 'delete' | 'feature' | 'unfeature' | 'hide' | 'show';
+  ids: string[];
+  data?: Record<string, any>;
+}
+
+export interface BulkActionResult {
+  success: boolean;
+  processed: number;
+  failed: number;
+  errors?: Array<{ id: string; error: string }>;
+}
+
+export async function performBulkAction(request: BulkActionRequest): Promise<BulkActionResult> {
+  return apiAuthenticated.post<BulkActionResult>('/admin/bulk/action', request);
+}
+
+export async function performClubManagerBulkAction(request: BulkActionRequest): Promise<BulkActionResult> {
+  // API_URL already ends in /api → path is relative to it. Backend mounts the
+  // club-manager scope at /api/bulk/club-manager/action.
+  return apiAuthenticated.post<BulkActionResult>('/bulk/club-manager/action', request);
+}
+
+export async function performBrandManagerBulkAction(request: BulkActionRequest): Promise<BulkActionResult> {
+  return apiAuthenticated.post<BulkActionResult>('/bulk/brand-manager/action', request);
+}
+
 // Export all as adminApi object
 export const adminApi = {
   getStats,
@@ -857,4 +885,7 @@ export const adminApi = {
   bulkAcceptRideParticipants,
   bulkApproveBusinesses,
   bulkApproveAdCampaigns,
+  performBulkAction,
+  performClubManagerBulkAction,
+  performBrandManagerBulkAction,
 }

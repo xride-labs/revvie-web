@@ -55,7 +55,7 @@ export function Navbar() {
 
   return (
     <motion.nav
-      className="fixed top-0 left-0 right-0 z-50 border-b border-white/8 bg-canvas/80 backdrop-blur-xl"
+      className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-canvas"
       initial={shouldReduceMotion ? { opacity: 0 } : { y: -100, opacity: 0 }}
       animate={shouldReduceMotion ? { opacity: 1 } : { y: 0, opacity: 1 }}
       transition={{ duration: shouldReduceMotion ? 0.2 : 0.6, ease: 'easeOut' }}
@@ -76,7 +76,7 @@ export function Navbar() {
             </span>
           </Link>
 
-          <div className="hidden lg:flex items-center gap-1 rounded-full border border-white/10 bg-surface/45 p-1.5">
+          <div className="hidden lg:flex items-center gap-1 rounded-full border border-border bg-surface p-1.5">
             {sectionLinks.map((link) => (
               <a
                 key={link.href}
@@ -95,7 +95,7 @@ export function Navbar() {
           {/* Single CTA - Get the App */}
           <Button
             asChild
-            className="rounded-full border-0 bg-linear-to-r from-brand-red-light to-brand-red px-8 py-6 text-base font-semibold text-white shadow-[0_10px_30px_rgba(200,55,55,0.3)] transition-all duration-300 hover:scale-105 hover:from-[#d94444] hover:to-[#960000] hover:shadow-[0_15px_40px_rgba(200,55,55,0.4)]"
+            className="rounded-full border-2 border-primary bg-primary px-8 py-6 text-base font-bold uppercase text-white shadow-[4px_4px_0px_#850000] transition-all duration-300 hover:translate-y-1 hover:translate-x-1 hover:shadow-none"
           >
             <Link href="/signup">Get the App</Link>
           </Button>

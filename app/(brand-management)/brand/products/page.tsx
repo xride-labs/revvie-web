@@ -59,6 +59,10 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
+import { Checkbox } from '@/components/ui/checkbox'
+import { useBulkSelection } from '@/hooks/use-bulk-selection'
+import { BulkActionBar } from '@/components/bulk-action-bar'
+import { performBrandManagerBulkAction } from '@/lib/server/admin'
 import {
   businessApi,
   type BrandProduct,
@@ -373,6 +377,33 @@ export default function BrandProductsPage() {
     } finally {
       setDeleting(false)
       setDeleteTarget(null)
+    }
+  }
+
+  // ── Bulk actions over the product catalogue (brand-manager scope) ──────────
+  const sel = useBulkSelection()
+  const [bulkBusy, setBulkBusy] = useState<string | null>(null)
+
+  const runBulkProducts = async (action: 'feature' | 'hide' | 'delete') => {
+    if (!business || sel.count === 0) return
+    const ids = sel.selectedIds
+    setBulkBusy(action)
+    try {
+      const result = await performBrandManagerBulkAction({
+        module: 'brand-products',
+        action,
+        ids,
+      })
+      const fresh = await businessApi.getBrandProducts(business.id)
+      setProducts(fresh)
+      sel.clear()
+      successToast(
+        `${result.processed} product${result.processed === 1 ? '' : 's'} updated`,
+      )
+    } catch {
+      errorToast(`Bulk ${action} failed`)
+    } finally {
+      setBulkBusy(null)
     }
   }
 
@@ -692,6 +723,13 @@ export default function BrandProductsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10">
+                      <Checkbox
+                        checked={sel.allSelected(filtered.map((p) => p.id))}
+                        onCheckedChange={() => sel.toggleAll(filtered.map((p) => p.id))}
+                        aria-label="Select all products"
+                      />
+                    </TableHead>
                     <TableHead className="w-10" />
                     <TableHead>Product</TableHead>
                     <TableHead>Category</TableHead>
@@ -711,6 +749,13 @@ export default function BrandProductsPage() {
                     const stockQty = (p as any).specs?.stockQty
                     return (
                       <TableRow key={p.id} className={!p.isActive ? 'opacity-60' : ''}>
+                        <TableCell>
+                          <Checkbox
+                            checked={sel.isSelected(p.id)}
+                            onCheckedChange={() => sel.toggle(p.id)}
+                            aria-label={`Select ${p.title}`}
+                          />
+                        </TableCell>
                         <TableCell>
                           <div className="w-10 h-10 rounded-lg bg-muted overflow-hidden flex items-center justify-center shrink-0">
                             {p.images?.[0] ? (
@@ -1034,6 +1079,34 @@ export default function BrandProductsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <BulkActionBar
+        count={sel.count}
+        busyKey={bulkBusy}
+        onClear={sel.clear}
+        actions={[
+          {
+            key: 'feature',
+            label: 'Feature',
+            icon: <Star className="h-4 w-4" />,
+            onClick: () => runBulkProducts('feature'),
+          },
+          {
+            key: 'hide',
+            label: 'Hide',
+            variant: 'outline',
+            icon: <EyeOff className="h-4 w-4" />,
+            onClick: () => runBulkProducts('hide'),
+          },
+          {
+            key: 'delete',
+            label: 'Delete',
+            variant: 'destructive',
+            icon: <Trash2 className="h-4 w-4" />,
+            onClick: () => runBulkProducts('delete'),
+          },
+        ]}
+      />
 
       {/* ── Delete confirmation ── */}
       <Dialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
