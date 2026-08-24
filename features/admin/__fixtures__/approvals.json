@@ -1,0 +1,1295 @@
+{
+  "pendingClubs": [
+    {
+      "id": "cmt4da9qm0072osd2xdtwoy16",
+      "name": "Peenya Industrial Area Riders - Mumbai Chapter",
+      "description": "Mumbai chapter of Peenya Industrial Area Riders. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.750Z",
+      "owner": {
+        "id": "cmt4da99n0012osd2w5hujd46",
+        "name": "Vikram Singh"
+      },
+      "_count": {
+        "members": 4
+      }
+    },
+    {
+      "id": "cmt4da9qf0071osd2ix3fhqg9",
+      "name": "Dakshineswar Motorcycle Collective - Delhi Chapter",
+      "description": "Delhi chapter of Dakshineswar Motorcycle Collective. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.743Z",
+      "owner": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel"
+      },
+      "_count": {
+        "members": 5
+      }
+    },
+    {
+      "id": "cmt4da9pw006yosd2usn6oocl",
+      "name": "Nagarbhavi Night Riders - Hyderabad Chapter",
+      "description": "Hyderabad chapter of Nagarbhavi Night Riders. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.724Z",
+      "owner": {
+        "id": "cmt4da990000zosd2z8i6nl8t",
+        "name": "Neha Gupta"
+      },
+      "_count": {
+        "members": 4
+      }
+    },
+    {
+      "id": "cmt4da9pk006wosd2hl3e7a0v",
+      "name": "Vidyaranyapura Adventure Seekers - Pune Chapter",
+      "description": "Pune chapter of Vidyaranyapura Adventure Seekers. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.712Z",
+      "owner": {
+        "id": "cmt4da97j000rosd2nf2ex7cf",
+        "name": "Priya Sharma"
+      },
+      "_count": {
+        "members": 3
+      }
+    },
+    {
+      "id": "cmt4da9p2006tosd225klnhgs",
+      "name": "Yelahanka Noble Riders - Jaipur Chapter",
+      "description": "Jaipur chapter of Yelahanka Noble Riders. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.694Z",
+      "owner": {
+        "id": "cmt4da990000zosd2z8i6nl8t",
+        "name": "Neha Gupta"
+      },
+      "_count": {
+        "members": 4
+      }
+    },
+    {
+      "id": "cmt4da9on006qosd21jt9mre3",
+      "name": "Varthur Adrenaline Junkies - Chennai Chapter",
+      "description": "Chennai chapter of Varthur Adrenaline Junkies. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.679Z",
+      "owner": {
+        "id": "cmt4da99n0012osd2w5hujd46",
+        "name": "Vikram Singh"
+      },
+      "_count": {
+        "members": 4
+      }
+    },
+    {
+      "id": "cmt4da9og006posd2cdbji9z4",
+      "name": "Langford Road Riders - Pune Chapter",
+      "description": "Pune chapter of Langford Road Riders. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.672Z",
+      "owner": {
+        "id": "cmt4da990000zosd2z8i6nl8t",
+        "name": "Neha Gupta"
+      },
+      "_count": {
+        "members": 3
+      }
+    },
+    {
+      "id": "cmt4da9oc006oosd2zmas6qo4",
+      "name": "Ulsoor Urban Explorers - Mumbai Chapter",
+      "description": "Mumbai chapter of Ulsoor Urban Explorers. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.668Z",
+      "owner": {
+        "id": "cmt4da97j000rosd2nf2ex7cf",
+        "name": "Priya Sharma"
+      },
+      "_count": {
+        "members": 5
+      }
+    },
+    {
+      "id": "cmt4da9no006kosd2p4jc1x2b",
+      "name": "Hebbal Lake Weekend Warriors - Hyderabad Chapter",
+      "description": "Hyderabad chapter of Hebbal Lake Weekend Warriors. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.644Z",
+      "owner": {
+        "id": "cmt4da94v000bosd2u1zmzilk",
+        "name": "Sarah Johnson"
+      },
+      "_count": {
+        "members": 2
+      }
+    },
+    {
+      "id": "cmt4da9ni006josd21i77xz8n",
+      "name": "Marathahalli Bike Brotherhood - Chennai Chapter",
+      "description": "Chennai chapter of Marathahalli Bike Brotherhood. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.638Z",
+      "owner": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel"
+      },
+      "_count": {
+        "members": 4
+      }
+    },
+    {
+      "id": "cmt4da9nc006iosd24klpiov0",
+      "name": "Banashankari Touring Club - Pune Chapter",
+      "description": "Pune chapter of Banashankari Touring Club. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.632Z",
+      "owner": {
+        "id": "cmt4da9290000osd2lzka4stp",
+        "name": "Admin User"
+      },
+      "_count": {
+        "members": 4
+      }
+    },
+    {
+      "id": "cmt4da9n6006hosd2n7pcvt6c",
+      "name": "Electronic City Riders - Mumbai Chapter",
+      "description": "Mumbai chapter of Electronic City Riders. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.626Z",
+      "owner": {
+        "id": "cmt4da99n0012osd2w5hujd46",
+        "name": "Vikram Singh"
+      },
+      "_count": {
+        "members": 3
+      }
+    },
+    {
+      "id": "cmt4da9mp006eosd2475bduhh",
+      "name": "Whitefield Adventure Club - Kochi Chapter",
+      "description": "Kochi chapter of Whitefield Adventure Club. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.609Z",
+      "owner": {
+        "id": "cmt4da95i000fosd2qw7k8luq",
+        "name": "Mike Wilson"
+      },
+      "_count": {
+        "members": 4
+      }
+    },
+    {
+      "id": "cmt4da9m9006cosd201drngjo",
+      "name": "Tech Park Riders Club - Chennai Chapter",
+      "description": "Chennai chapter of Tech Park Riders Club. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.594Z",
+      "owner": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel"
+      },
+      "_count": {
+        "members": 5
+      }
+    },
+    {
+      "id": "cmt4da9m4006bosd2ptcylx6i",
+      "name": "Outer Ring Road Warriors - Pune Chapter",
+      "description": "Pune chapter of Outer Ring Road Warriors. Join for rides, meetups, and community events!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.588Z",
+      "owner": {
+        "id": "cmt4da97j000rosd2nf2ex7cf",
+        "name": "Priya Sharma"
+      },
+      "_count": {
+        "members": 3
+      }
+    },
+    {
+      "id": "cmt4da9ll0068osd2mglcas5f",
+      "name": "Brigade Road Cruiser Gang",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Brigade Road Cruiser Gang for weekly group rides, track events, and social gatherings!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.569Z",
+      "owner": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe"
+      },
+      "_count": {
+        "members": 3
+      }
+    },
+    {
+      "id": "cmt4da9la0066osd20i65shn6",
+      "name": "Goraguntepalya Casual Commuters",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Goraguntepalya Casual Commuters for weekly group rides, track events, and social gatherings!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.558Z",
+      "owner": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe"
+      },
+      "_count": {
+        "members": 5
+      }
+    },
+    {
+      "id": "cmt4da9l50065osd2d7e20ntg",
+      "name": "Peenya Industrial Area Riders",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Peenya Industrial Area Riders for weekly group rides, track events, and social gatherings!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.553Z",
+      "owner": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe"
+      },
+      "_count": {
+        "members": 5
+      }
+    },
+    {
+      "id": "cmt4da9jw005yosd27eovyaca",
+      "name": "Sanjaynagar Motorcycle Guild",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Sanjaynagar Motorcycle Guild for weekly group rides, track events, and social gatherings!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.508Z",
+      "owner": {
+        "id": "cmt4da97j000rosd2nf2ex7cf",
+        "name": "Priya Sharma"
+      },
+      "_count": {
+        "members": 4
+      }
+    },
+    {
+      "id": "cmt4da9ji005wosd26g4qzjom",
+      "name": "Yelahanka Noble Riders",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Yelahanka Noble Riders for weekly group rides, track events, and social gatherings!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.494Z",
+      "owner": {
+        "id": "cmt4da95i000fosd2qw7k8luq",
+        "name": "Mike Wilson"
+      },
+      "_count": {
+        "members": 6
+      }
+    },
+    {
+      "id": "cmt4da9ix005tosd2n7j1wiz3",
+      "name": "Varthur Adrenaline Junkies",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Varthur Adrenaline Junkies for weekly group rides, track events, and social gatherings!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.473Z",
+      "owner": {
+        "id": "cmt4da95i000fosd2qw7k8luq",
+        "name": "Mike Wilson"
+      },
+      "_count": {
+        "members": 4
+      }
+    },
+    {
+      "id": "cmt4da9iq005sosd2rc0tz8l0",
+      "name": "Langford Road Riders",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Langford Road Riders for weekly group rides, track events, and social gatherings!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.466Z",
+      "owner": {
+        "id": "cmt4da98a000vosd20wvj5pcw",
+        "name": "Arjun Nair"
+      },
+      "_count": {
+        "members": 3
+      }
+    },
+    {
+      "id": "cmt4da9ii005rosd25ze4wktf",
+      "name": "Ulsoor Urban Explorers",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Ulsoor Urban Explorers for weekly group rides, track events, and social gatherings!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.458Z",
+      "owner": {
+        "id": "cmt4da99n0012osd2w5hujd46",
+        "name": "Vikram Singh"
+      },
+      "_count": {
+        "members": 4
+      }
+    },
+    {
+      "id": "cmt4da9ic005qosd20r28o275",
+      "name": "Rajajinagar Motorcycle Circle",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Rajajinagar Motorcycle Circle for weekly group rides, track events, and social gatherings!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.452Z",
+      "owner": {
+        "id": "cmt4da968000kosd2pup1w4sq",
+        "name": "Lisa Brown"
+      },
+      "_count": {
+        "members": 3
+      }
+    },
+    {
+      "id": "cmt4da9hw005oosd2n2dc2ubb",
+      "name": "Koramangala Casual Riders",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Koramangala Casual Riders for weekly group rides, track events, and social gatherings!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.436Z",
+      "owner": {
+        "id": "cmt4da990000zosd2z8i6nl8t",
+        "name": "Neha Gupta"
+      },
+      "_count": {
+        "members": 4
+      }
+    },
+    {
+      "id": "cmt4da9hk005mosd2yc2p3uch",
+      "name": "Marathahalli Bike Brotherhood",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Marathahalli Bike Brotherhood for weekly group rides, track events, and social gatherings!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.424Z",
+      "owner": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe"
+      },
+      "_count": {
+        "members": 5
+      }
+    },
+    {
+      "id": "cmt4da9gj005hosd2ttz4owsz",
+      "name": "Whitefield Adventure Club",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Whitefield Adventure Club for weekly group rides, track events, and social gatherings!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.387Z",
+      "owner": {
+        "id": "cmt4da99n0012osd2w5hujd46",
+        "name": "Vikram Singh"
+      },
+      "_count": {
+        "members": 3
+      }
+    },
+    {
+      "id": "cmt4da9fy005eosd2iezu6qpn",
+      "name": "Outer Ring Road Warriors",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Outer Ring Road Warriors for weekly group rides, track events, and social gatherings!",
+      "verified": false,
+      "createdAt": "2026-08-22T12:41:16.366Z",
+      "owner": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe"
+      },
+      "_count": {
+        "members": 4
+      }
+    }
+  ],
+  "pendingClubRequests": [],
+  "pendingRideRequests": [
+    {
+      "id": "cmt4daa5c00grosd21qy284us",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9tc00erosd2iq7ugihx",
+        "title": "Nandi Hills Sunrise Expedition",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da97j000rosd2nf2ex7cf",
+        "name": "Priya Sharma",
+        "email": "priya@example.com",
+        "avatar": "https://randomuser.me/api/portraits/women/12.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00gwosd2p01hcwq3",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9tk00esosd2uno9227p",
+        "title": "Ring Road Night Cruise",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da94v000bosd2u1zmzilk",
+        "name": "Sarah Johnson",
+        "email": "sarah@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560335/revvie/rides/Police_Woman_h2lvlq.png"
+      }
+    },
+    {
+      "id": "cmt4daa5c00gyosd2h72q8orr",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9tk00esosd2uno9227p",
+        "title": "Ring Road Night Cruise",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel",
+        "email": "raj@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/51.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00h2osd2dparx6vk",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9tq00etosd2ts0xwgy4",
+        "title": "Electronic City Tech Park Ride",
+        "status": "IN_PROGRESS"
+      },
+      "user": {
+        "id": "cmt4da968000kosd2pup1w4sq",
+        "name": "Lisa Brown",
+        "email": "lisa@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5c00h5osd2pucdg5bi",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9ty00euosd27zhbikhg",
+        "title": "Old Airport Road Speed Run",
+        "status": "IN_PROGRESS"
+      },
+      "user": {
+        "id": "cmt4da990000zosd2z8i6nl8t",
+        "name": "Neha Gupta",
+        "email": "neha@example.com",
+        "avatar": "https://randomuser.me/api/portraits/women/29.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00hcosd2ai5tsrj0",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9ua00ewosd2yjs23g88",
+        "title": "Whitefield Tech Campus Commute",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da94v000bosd2u1zmzilk",
+        "name": "Sarah Johnson",
+        "email": "sarah@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560335/revvie/rides/Police_Woman_h2lvlq.png"
+      }
+    },
+    {
+      "id": "cmt4daa5c00hrosd20solv8vc",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9v200f1osd2pt1r8wc3",
+        "title": "Vidhana Soudha City Exploration",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe",
+        "email": "john@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5c00huosd2mt0lafr5",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9v900f2osd2g9vxks8w",
+        "title": "Cubbon Park Casual Cruise",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel",
+        "email": "raj@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/51.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00hzosd2mxjb97rp",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9vf00f3osd2me6acbv7",
+        "title": "Indiranagar Lake Weekend Ride",
+        "status": "IN_PROGRESS"
+      },
+      "user": {
+        "id": "cmt4da95i000fosd2qw7k8luq",
+        "name": "Mike Wilson",
+        "email": "mike@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/75.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00ilosd2ecvxejby",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9w800f7osd2swvfb83f",
+        "title": "Koramangala Nightlife Run",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe",
+        "email": "john@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5c00iqosd2bj2tqo6p",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9wd00f8osd2rjt5jp3t",
+        "title": "Jayanagar Group Meetup Ride",
+        "status": "IN_PROGRESS"
+      },
+      "user": {
+        "id": "cmt4da97j000rosd2nf2ex7cf",
+        "name": "Priya Sharma",
+        "email": "priya@example.com",
+        "avatar": "https://randomuser.me/api/portraits/women/12.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00irosd25jsg47iv",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9wi00f9osd2fiesxiy7",
+        "title": "RT Nagar Community Cruise",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel",
+        "email": "raj@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/51.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00itosd2supzjdg4",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9wi00f9osd2fiesxiy7",
+        "title": "RT Nagar Community Cruise",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe",
+        "email": "john@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5c00iyosd2195b1305",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9wo00faosd241r2w00q",
+        "title": "Rajajinagar Breakfast Ride",
+        "status": "COMPLETED"
+      },
+      "user": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel",
+        "email": "raj@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/51.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00j3osd2y676z3pu",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9wt00fbosd2qfvgolr4",
+        "title": "Ulsoor Urban Adventure",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel",
+        "email": "raj@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/51.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00j7osd2col3hack",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9wz00fcosd2chqwsw82",
+        "title": "Langford Road Vintage Tour",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da990000zosd2z8i6nl8t",
+        "name": "Neha Gupta",
+        "email": "neha@example.com",
+        "avatar": "https://randomuser.me/api/portraits/women/29.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00j8osd2sa2isc84",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9wz00fcosd2chqwsw82",
+        "title": "Langford Road Vintage Tour",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da94v000bosd2u1zmzilk",
+        "name": "Sarah Johnson",
+        "email": "sarah@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560335/revvie/rides/Police_Woman_h2lvlq.png"
+      }
+    },
+    {
+      "id": "cmt4daa5c00jjosd2dkee3c9r",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9xd00ffosd2h7rfu805",
+        "title": "Frazer Town Heritage Cruise",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel",
+        "email": "raj@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/51.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00jlosd2igoa0yuf",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9xd00ffosd2h7rfu805",
+        "title": "Frazer Town Heritage Cruise",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe",
+        "email": "john@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5c00joosd26vgwa0ju",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9xj00fgosd24eqnlnah",
+        "title": "Yelahanka Off-Road Trail",
+        "status": "CANCELLED"
+      },
+      "user": {
+        "id": "cmt4da98a000vosd20wvj5pcw",
+        "name": "Arjun Nair",
+        "email": "arjun@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/85.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00jposd2tdyvdbfv",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9xj00fgosd24eqnlnah",
+        "title": "Yelahanka Off-Road Trail",
+        "status": "CANCELLED"
+      },
+      "user": {
+        "id": "cmt4da95i000fosd2qw7k8luq",
+        "name": "Mike Wilson",
+        "email": "mike@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/75.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00jqosd2iezzce4h",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9xo00fhosd2ordkbhep",
+        "title": "Sanjaynagar Motorcycle Meetup",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da968000kosd2pup1w4sq",
+        "name": "Lisa Brown",
+        "email": "lisa@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5c00jsosd2i06vk1bz",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9xt00fiosd2jrvnx4pi",
+        "title": "Vidyaranyapura Adventure Trek",
+        "status": "IN_PROGRESS"
+      },
+      "user": {
+        "id": "cmt4da95i000fosd2qw7k8luq",
+        "name": "Mike Wilson",
+        "email": "mike@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/75.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00jtosd2pjriak4a",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9xt00fiosd2jrvnx4pi",
+        "title": "Vidyaranyapura Adventure Trek",
+        "status": "IN_PROGRESS"
+      },
+      "user": {
+        "id": "cmt4da98a000vosd20wvj5pcw",
+        "name": "Arjun Nair",
+        "email": "arjun@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/85.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00k1osd2pywihcnm",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9ya00flosd2uxar8fak",
+        "title": "Jalahalli Weekend Waves",
+        "status": "COMPLETED"
+      },
+      "user": {
+        "id": "cmt4da98a000vosd20wvj5pcw",
+        "name": "Arjun Nair",
+        "email": "arjun@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/85.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00k3osd2q48rc4n5",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9ya00flosd2uxar8fak",
+        "title": "Jalahalli Weekend Waves",
+        "status": "COMPLETED"
+      },
+      "user": {
+        "id": "cmt4da968000kosd2pup1w4sq",
+        "name": "Lisa Brown",
+        "email": "lisa@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5c00k4osd27rxudwwu",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9ya00flosd2uxar8fak",
+        "title": "Jalahalli Weekend Waves",
+        "status": "COMPLETED"
+      },
+      "user": {
+        "id": "cmt4da9290000osd2lzka4stp",
+        "name": "Admin User",
+        "email": "admin@revvie.in",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772386875/revvie/rides/avatar_hgoxkz.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5c00kaosd2mozdxe0z",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9yw00foosd2w18molc9",
+        "title": "MG Road Express Rally",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da94v000bosd2u1zmzilk",
+        "name": "Sarah Johnson",
+        "email": "sarah@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560335/revvie/rides/Police_Woman_h2lvlq.png"
+      }
+    },
+    {
+      "id": "cmt4daa5d00koosd2s1vo3l5m",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9zd00frosd2nwxy5i2d",
+        "title": "Ring Road Night Cruise - Mumbai",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da990000zosd2z8i6nl8t",
+        "name": "Neha Gupta",
+        "email": "neha@example.com",
+        "avatar": "https://randomuser.me/api/portraits/women/29.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00kyosd27zj7d75k",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9zp00ftosd2ja8ifsiu",
+        "title": "Old Airport Road Speed Run - Chennai",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe",
+        "email": "john@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5d00l0osd27wojih6u",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4da9zu00fuosd267ivsxdp",
+        "title": "Sarjapur Road Scenic Tour - Hyderabad",
+        "status": "COMPLETED"
+      },
+      "user": {
+        "id": "cmt4da97j000rosd2nf2ex7cf",
+        "name": "Priya Sharma",
+        "email": "priya@example.com",
+        "avatar": "https://randomuser.me/api/portraits/women/12.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00l9osd2qfd2ajlr",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa0400fwosd2hhv6jaco",
+        "title": "Bannerghatta Nature Reserve Ride - Jaipur",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da9290000osd2lzka4stp",
+        "name": "Admin User",
+        "email": "admin@revvie.in",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772386875/revvie/rides/avatar_hgoxkz.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00lmosd2juoe4ir7",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa0n00fzosd2quj6cfjc",
+        "title": "Bangalore Fort Historical Tour - Pune",
+        "status": "COMPLETED"
+      },
+      "user": {
+        "id": "cmt4da94v000bosd2u1zmzilk",
+        "name": "Sarah Johnson",
+        "email": "sarah@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560335/revvie/rides/Police_Woman_h2lvlq.png"
+      }
+    },
+    {
+      "id": "cmt4daa5d00lqosd2fbsi2y2h",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa0s00g0osd2qvtnwnwd",
+        "title": "Vidhana Soudha City Exploration - Chennai",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel",
+        "email": "raj@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/51.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00lxosd2s83lgxdm",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa0x00g1osd27007w31p",
+        "title": "Cubbon Park Casual Cruise - Hyderabad",
+        "status": "IN_PROGRESS"
+      },
+      "user": {
+        "id": "cmt4da99n0012osd2w5hujd46",
+        "name": "Vikram Singh",
+        "email": "vikram@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/19.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00m5osd20zplfqjt",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa1c00g4osd206uk5hpq",
+        "title": "Yeshwanthpur Industrial Loop - Delhi",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da968000kosd2pup1w4sq",
+        "name": "Lisa Brown",
+        "email": "lisa@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5d00m6osd25ffprpa7",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa1c00g4osd206uk5hpq",
+        "title": "Yeshwanthpur Industrial Loop - Delhi",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da95i000fosd2qw7k8luq",
+        "name": "Mike Wilson",
+        "email": "mike@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/75.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00m8osd2vpq8bmrl",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa1h00g5osd2a398394d",
+        "title": "Marathahalli Bridge Challenge - Mumbai",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da968000kosd2pup1w4sq",
+        "name": "Lisa Brown",
+        "email": "lisa@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5d00meosd2w3rv25yt",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa1o00g6osd2v1awmch4",
+        "title": "Koramangala Nightlife Run - Pune",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe",
+        "email": "john@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5d00mgosd2fgl33ehd",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa1u00g7osd2mp2ztvys",
+        "title": "Jayanagar Group Meetup Ride - Chennai",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel",
+        "email": "raj@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/51.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00miosd2xav7rcba",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa1u00g7osd2mp2ztvys",
+        "title": "Jayanagar Group Meetup Ride - Chennai",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da9290000osd2lzka4stp",
+        "name": "Admin User",
+        "email": "admin@revvie.in",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772386875/revvie/rides/avatar_hgoxkz.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00msosd2qckkhrtu",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa2d00gaosd2o55k6gud",
+        "title": "Ulsoor Urban Adventure - Jaipur",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da98a000vosd20wvj5pcw",
+        "name": "Arjun Nair",
+        "email": "arjun@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/85.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00muosd2ro9uxm4p",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa2h00gbosd2t02pm1gq",
+        "title": "Langford Road Vintage Tour - Delhi",
+        "status": "IN_PROGRESS"
+      },
+      "user": {
+        "id": "cmt4da99n0012osd2w5hujd46",
+        "name": "Vikram Singh",
+        "email": "vikram@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/19.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00mwosd2jc5q1xrp",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa2h00gbosd2t02pm1gq",
+        "title": "Langford Road Vintage Tour - Delhi",
+        "status": "IN_PROGRESS"
+      },
+      "user": {
+        "id": "cmt4da98a000vosd20wvj5pcw",
+        "name": "Arjun Nair",
+        "email": "arjun@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/85.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00n0osd2fvjawklb",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa2n00gcosd2qayzxddp",
+        "title": "Hebbal Weekend Warriors Ride - Mumbai",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel",
+        "email": "raj@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/51.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00n1osd2b9732y5m",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa2s00gdosd2noij3p29",
+        "title": "Varthur Adrenaline Rush - Pune",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe",
+        "email": "john@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5d00n7osd2i41ya36a",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa2y00geosd2fubf7zso",
+        "title": "Frazer Town Heritage Cruise - Chennai",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da9290000osd2lzka4stp",
+        "name": "Admin User",
+        "email": "admin@revvie.in",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772386875/revvie/rides/avatar_hgoxkz.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00n9osd23m1z9wxy",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa3300gfosd2ar3ajvfy",
+        "title": "Yelahanka Off-Road Trail - Hyderabad",
+        "status": "COMPLETED"
+      },
+      "user": {
+        "id": "cmt4da9290000osd2lzka4stp",
+        "name": "Admin User",
+        "email": "admin@revvie.in",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772386875/revvie/rides/avatar_hgoxkz.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00nbosd25rrarvm3",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa3800ggosd2uvf8vwzh",
+        "title": "Sanjaynagar Motorcycle Meetup - Kochi",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da968000kosd2pup1w4sq",
+        "name": "Lisa Brown",
+        "email": "lisa@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5d00ngosd25m8anskv",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa3d00ghosd2f1j2rkoe",
+        "title": "Vidyaranyapura Adventure Trek - Jaipur",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da99n0012osd2w5hujd46",
+        "name": "Vikram Singh",
+        "email": "vikram@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/19.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00njosd22i7o2oor",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa3i00giosd2nfplrc9f",
+        "title": "Singasandra Desert Road Blast - Delhi",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da95i000fosd2qw7k8luq",
+        "name": "Mike Wilson",
+        "email": "mike@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/75.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00nkosd2zfq6sle6",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa3i00giosd2nfplrc9f",
+        "title": "Singasandra Desert Road Blast - Delhi",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da99n0012osd2w5hujd46",
+        "name": "Vikram Singh",
+        "email": "vikram@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/19.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00nnosd2xx6lmnsi",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa3i00giosd2nfplrc9f",
+        "title": "Singasandra Desert Road Blast - Delhi",
+        "status": "PLANNED"
+      },
+      "user": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe",
+        "email": "john@example.com",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      }
+    },
+    {
+      "id": "cmt4daa5d00nposd2m9sx2wed",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa3n00gjosd26i0mbr1i",
+        "title": "Nagarbhavi Night Exploration - Mumbai",
+        "status": "IN_PROGRESS"
+      },
+      "user": {
+        "id": "cmt4da97j000rosd2nf2ex7cf",
+        "name": "Priya Sharma",
+        "email": "priya@example.com",
+        "avatar": "https://randomuser.me/api/portraits/women/12.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00o1osd2r5mfy0y9",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa4900gnosd2t1obtjle",
+        "title": "MG Road Express Rally - Kochi",
+        "status": "IN_PROGRESS"
+      },
+      "user": {
+        "id": "cmt4da95i000fosd2qw7k8luq",
+        "name": "Mike Wilson",
+        "email": "mike@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/75.jpg"
+      }
+    },
+    {
+      "id": "cmt4daa5d00o4osd2ssywtkad",
+      "status": "REQUESTED",
+      "joinedAt": "2026-08-22T12:41:17.280Z",
+      "ride": {
+        "id": "cmt4daa4900gnosd2t1obtjle",
+        "title": "MG Road Express Rally - Kochi",
+        "status": "IN_PROGRESS"
+      },
+      "user": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel",
+        "email": "raj@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/51.jpg"
+      }
+    }
+  ]
+}

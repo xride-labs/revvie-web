@@ -1,0 +1,47 @@
+{
+  "listing": {
+    "id": "cmt4dabrn017rosd2xiz4jqpo",
+    "title": "Bonamici Folding Levers Set - Gold",
+    "description": "Bonamici Folding Levers Set - Gold — Official Racer's Pit Bangalore product. Genuine quality, fast shipping, warranty included.",
+    "price": 5600,
+    "currency": "INR",
+    "images": ["https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800"],
+    "videos": [],
+    "category": "Parts",
+    "subcategory": "Guards",
+    "specifications": null,
+    "condition": "New",
+    "locationLabel": null,
+    "allowBids": true,
+    "status": "ACTIVE",
+    "featured": true,
+    "featuredUntil": null,
+    "latitude": 12.93894769693815,
+    "longitude": 77.58166362798205,
+    "sellerId": "cmt4dabqp017losd2543ajdgr",
+    "clubId": null,
+    "visibility": "PUBLIC",
+    "createdAt": "2026-08-22T12:41:19.379Z",
+    "updatedAt": "2026-08-22T12:41:19.379Z",
+    "seller": {
+      "id": "cmt4dabqp017losd2543ajdgr",
+      "name": "Racer's Pit Bangalore",
+      "username": "racerspit_blr",
+      "avatar": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=200",
+      "reputationScore": 0,
+      "_count": {
+        "marketplaceListings": 12
+      }
+    },
+    "reviews": [],
+    "offers": [],
+    "interests": [],
+    "offerSummary": {
+      "totalOffers": 0,
+      "activeOffers": 0,
+      "highestOffer": null,
+      "myOffer": null,
+      "interestCount": 0
+    }
+  }
+}

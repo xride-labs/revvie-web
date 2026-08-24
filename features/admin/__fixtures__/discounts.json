@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "id": "seed_disc_4",
+      "businessId": "cmt4dabgz015yosd2nx8qrjyd",
+      "code": "REVVIE14",
+      "title": "SpeedWrench Garage — Revvie Exclusive 18% Off",
+      "description": "Exclusive discount for Revvie riders. Use code at checkout on SpeedWrench Garage's website or in-store.",
+      "imageUrl": "https://images.unsplash.com/photo-1520975916090-3105956dac38?w=1200",
+      "percentOff": 18,
+      "amountOffPaise": null,
+      "validFrom": "2026-08-22T12:41:19.432Z",
+      "validUntil": "2026-09-21T12:41:19.432Z",
+      "appliesTo": null,
+      "isFeatured": false,
+      "createdAt": "2026-08-22T12:41:19.551Z",
+      "updatedAt": "2026-08-22T12:41:19.551Z",
+      "business": {
+        "id": "cmt4dabgz015yosd2nx8qrjyd",
+        "displayName": "SpeedWrench Garage",
+        "slug": "speedwrench-garage",
+        "logoUrl": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=200"
+      }
+    },
+    {
+      "id": "seed_disc_3",
+      "businessId": "cmt4dabdy015iosd2rc8vi1fb",
+      "code": "REVVIE13",
+      "title": "Ride Ready Store — Revvie Exclusive 16% Off",
+      "description": "Exclusive discount for Revvie riders. Use code at checkout on Ride Ready Store's website or in-store.",
+      "imageUrl": "https://images.unsplash.com/photo-1452780212940-6f5c0d14d848?w=1200",
+      "percentOff": 16,
+      "amountOffPaise": null,
+      "validFrom": "2026-08-22T12:41:19.432Z",
+      "validUntil": "2026-09-21T12:41:19.432Z",
+      "appliesTo": null,
+      "isFeatured": false,
+      "createdAt": "2026-08-22T12:41:19.524Z",
+      "updatedAt": "2026-08-22T12:41:19.524Z",
+      "business": {
+        "id": "cmt4dabdy015iosd2rc8vi1fb",
+        "displayName": "Ride Ready Store",
+        "slug": "ride-ready-store",
+        "logoUrl": "https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=200"
+      }
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 2,
+    "total": 5,
+    "totalPages": 3
+  }
+}

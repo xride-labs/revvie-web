@@ -1,0 +1,62 @@
+{
+  "ride": {
+    "id": "cmt4daa4f00goosd2dil2z4qp",
+    "title": "Brigade Road Night Circuit - Jaipur",
+    "description": "Brigade Road Night Circuit based in Jaipur. Experience the best riding routes with fellow enthusiasts in Jaipur.",
+    "startLocation": "Jaipur Meetup Point",
+    "endLocation": "Jaipur Outskirts",
+    "experienceLevel": "Beginner",
+    "xpRequired": 189,
+    "pace": "Moderate",
+    "distance": 43,
+    "duration": 138,
+    "scheduledAt": "2026-09-15T13:59:18.470Z",
+    "endedAt": null,
+    "status": "PLANNED",
+    "startReminderSentAt": null,
+    "latitude": 26.911528442572525,
+    "longitude": 75.79726194698092,
+    "startLat": 26.911528442572525,
+    "startLng": 75.79726194698092,
+    "endLat": 26.913705261922203,
+    "endLng": 75.77738555138626,
+    "keepPermanently": false,
+    "isFeatured": false,
+    "routeData": null,
+    "waypoints": null,
+    "images": ["https://images.unsplash.com/photo-1580310614729-ccd69652491d?w=1200"],
+    "chatGroupId": null,
+    "chatLocked": false,
+    "creatorId": "cmt4da95i000fosd2qw7k8luq",
+    "clubId": "cmt4da9jp005xosd2elcr4g8o",
+    "friendGroupId": null,
+    "pausedAt": null,
+    "privacyLevel": "PUBLIC",
+    "effectiveDurationSec": null,
+    "effectiveDistanceKm": null,
+    "endedReason": null,
+    "createdAt": "2026-08-22T12:41:17.247Z",
+    "updatedAt": "2026-08-22T12:41:17.247Z",
+    "creator": {
+      "id": "cmt4da95i000fosd2qw7k8luq",
+      "name": "Mike Wilson",
+      "avatar": "https://randomuser.me/api/portraits/men/75.jpg"
+    },
+    "participants": [
+      {
+        "id": "cmt4daa5d00o5osd2b4dk118w",
+        "rideId": "cmt4daa4f00goosd2dil2z4qp",
+        "userId": "cmt4da97j000rosd2nf2ex7cf",
+        "status": "ACCEPTED",
+        "joinedAt": "2026-08-22T12:41:17.280Z",
+        "user": {
+          "id": "cmt4da97j000rosd2nf2ex7cf",
+          "name": "Priya Sharma",
+          "avatar": "https://randomuser.me/api/portraits/women/12.jpg"
+        }
+      }
+    ]
+  },
+  "participantStatus": null,
+  "pendingRequestCount": 0
+}

@@ -1,0 +1,91 @@
+{
+  "items": [
+    {
+      "id": "cmt4daagg00tbosd2n1lanjdu",
+      "title": "Tail Tidy Kit Universal",
+      "description": "Tail Tidy Kit Universal - Premium quality, verified seller. Contact for details.",
+      "price": 28000,
+      "currency": "INR",
+      "images": [
+        "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800"
+      ],
+      "videos": [],
+      "category": "Parts",
+      "subcategory": "Tail Tidy",
+      "specifications": null,
+      "condition": "Fair",
+      "locationLabel": null,
+      "allowBids": true,
+      "status": "ACTIVE",
+      "featured": false,
+      "featuredUntil": null,
+      "latitude": 13.02089656044846,
+      "longitude": 77.55871282911514,
+      "sellerId": "cmt4da9290000osd2lzka4stp",
+      "clubId": null,
+      "visibility": "PUBLIC",
+      "createdAt": "2026-08-22T12:41:17.680Z",
+      "updatedAt": "2026-08-22T12:41:17.680Z"
+    },
+    {
+      "id": "cmt4daaga00taosd27zykyspy",
+      "title": "Handlebar Mirrors Pair",
+      "description": "Handlebar Mirrors Pair - Premium quality, verified seller. Contact for details.",
+      "price": 15000,
+      "currency": "INR",
+      "images": [
+        "https://images.unsplash.com/photo-1553531384-cc64ac80f931?w=800"
+      ],
+      "videos": [],
+      "category": "Accessories",
+      "subcategory": "Backpack",
+      "specifications": null,
+      "condition": "Like New",
+      "locationLabel": null,
+      "allowBids": true,
+      "status": "ACTIVE",
+      "featured": false,
+      "featuredUntil": null,
+      "latitude": 13.047802273167871,
+      "longitude": 77.55356508140129,
+      "sellerId": "cmt4da9290000osd2lzka4stp",
+      "clubId": null,
+      "visibility": "PUBLIC",
+      "createdAt": "2026-08-22T12:41:17.674Z",
+      "updatedAt": "2026-08-22T12:41:17.674Z"
+    },
+    {
+      "id": "cmt4daaey00t4osd2xf5t04uv",
+      "title": "Daily Commute Backpack",
+      "description": "Daily Commute Backpack - Premium quality, verified seller. Contact for details.",
+      "price": 5000,
+      "currency": "INR",
+      "images": [
+        "https://images.unsplash.com/photo-1581091012184-7e0cdfbb6797?w=800"
+      ],
+      "videos": [],
+      "category": "Accessories",
+      "subcategory": "Pump",
+      "specifications": null,
+      "condition": "Fair",
+      "locationLabel": null,
+      "allowBids": true,
+      "status": "ACTIVE",
+      "featured": false,
+      "featuredUntil": null,
+      "latitude": 13.040995112374098,
+      "longitude": 77.60000372809043,
+      "sellerId": "cmt4da9290000osd2lzka4stp",
+      "clubId": null,
+      "visibility": "PUBLIC",
+      "createdAt": "2026-08-22T12:41:17.626Z",
+      "updatedAt": "2026-08-22T12:41:17.626Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 3,
+    "total": 6,
+    "totalPages": 2
+  }
+}

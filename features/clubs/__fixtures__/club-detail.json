@@ -1,0 +1,80 @@
+{
+  "club": {
+    "id": "cmt4da9g5005fosd2fipt2s3j",
+    "name": "Tech Park Riders Club",
+    "description": "Premier motorcycle and scooter club in Bangalore. Join Tech Park Riders Club for weekly group rides, track events, and social gatherings!",
+    "location": "Bangalore, India",
+    "establishedAt": "2026-07-16T14:04:48.573Z",
+    "verified": true,
+    "image": "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?w=1200",
+    "coverImage": "https://images.unsplash.com/photo-1580310614729-ccd69652491d?w=1200",
+    "clubType": "Casual Community",
+    "isPublic": true,
+    "requiresLicense": false,
+    "memberCount": 11,
+    "trophies": ["Best Turnout 2025", "Most Active"],
+    "trophyCount": 3,
+    "gallery": [
+      "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?w=1200",
+      "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200"
+    ],
+    "reputation": 4.69650512322894,
+    "isFeatured": false,
+    "latitude": 12.961813988564916,
+    "longitude": 77.71513821283784,
+    "ownerId": "cmt4da99n0012osd2w5hujd46",
+    "createdAt": "2026-08-22T12:41:16.373Z",
+    "updatedAt": "2026-08-22T12:41:16.373Z",
+    "owner": {
+      "id": "cmt4da99n0012osd2w5hujd46",
+      "name": "Vikram Singh",
+      "avatar": "https://randomuser.me/api/portraits/men/19.jpg"
+    },
+    "members": [
+      {
+        "id": "cmt4da9s5007iosd2ouq8p3jc",
+        "clubId": "cmt4da9g5005fosd2fipt2s3j",
+        "userId": "cmt4da99n0012osd2w5hujd46",
+        "role": "FOUNDER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "status": "ACTIVE",
+        "mutedUntil": null,
+        "suspendedUntil": null,
+        "bannedUntil": null,
+        "lastInteractionAt": null,
+        "lastMessageAt": null,
+        "messageCount": 0,
+        "user": {
+          "id": "cmt4da99n0012osd2w5hujd46",
+          "name": "Vikram Singh",
+          "avatar": "https://randomuser.me/api/portraits/men/19.jpg"
+        }
+      },
+      {
+        "id": "cmt4da9s5007josd2gxb91atm",
+        "clubId": "cmt4da9g5005fosd2fipt2s3j",
+        "userId": "cmt4da968000kosd2pup1w4sq",
+        "role": "MEMBER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "status": "ACTIVE",
+        "mutedUntil": null,
+        "suspendedUntil": null,
+        "bannedUntil": null,
+        "lastInteractionAt": null,
+        "lastMessageAt": null,
+        "messageCount": 0,
+        "user": {
+          "id": "cmt4da968000kosd2pup1w4sq",
+          "name": "Lisa Brown",
+          "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+        }
+      }
+    ],
+    "_count": {
+      "members": 4,
+      "joinRequests": 0
+    },
+    "joinRequestStatus": null,
+    "pendingRequestCount": 0
+  }
+}

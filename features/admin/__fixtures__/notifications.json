@@ -1,0 +1,50 @@
+{
+  "items": [
+    {
+      "id": "cmt4ggd9v0000gwd2omcb3d1s",
+      "userId": "cmt4da99n0012osd2w5hujd46",
+      "type": "RIDE_INVITE",
+      "title": "Whitefield Tech Campus Commute - Kochi starts in 30 minutes",
+      "message": "Time to gear up — open the ride to view route + meetup.",
+      "relatedType": "ride",
+      "relatedId": "cmt4da9zz00fvosd2ghhyylgl",
+      "isRead": false,
+      "readAt": null,
+      "sentViaEmail": false,
+      "sentViaPush": true,
+      "createdAt": "2026-08-22T14:10:00.115Z",
+      "user": {
+        "id": "cmt4da99n0012osd2w5hujd46",
+        "name": "Vikram Singh",
+        "email": "vikram@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/19.jpg"
+      }
+    },
+    {
+      "id": "cmt4ggd9v0001gwd21nj7o22d",
+      "userId": "cmt4da96v000oosd29m4dgjmd",
+      "type": "RIDE_INVITE",
+      "title": "Whitefield Tech Campus Commute - Kochi starts in 30 minutes",
+      "message": "Time to gear up — open the ride to view route + meetup.",
+      "relatedType": "ride",
+      "relatedId": "cmt4da9zz00fvosd2ghhyylgl",
+      "isRead": false,
+      "readAt": null,
+      "sentViaEmail": false,
+      "sentViaPush": true,
+      "createdAt": "2026-08-22T14:10:00.115Z",
+      "user": {
+        "id": "cmt4da96v000oosd29m4dgjmd",
+        "name": "Raj Patel",
+        "email": "raj@example.com",
+        "avatar": "https://randomuser.me/api/portraits/men/51.jpg"
+      }
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 2,
+    "total": 25,
+    "totalPages": 13
+  }
+}

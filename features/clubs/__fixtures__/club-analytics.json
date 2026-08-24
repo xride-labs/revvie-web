@@ -1,0 +1,77 @@
+{
+  "club": {
+    "name": "Tech Park Riders Club",
+    "memberCount": 11
+  },
+  "summary": {
+    "totalMembers": 4,
+    "activeToday": 0,
+    "activeWeek": 0,
+    "dormant": 4,
+    "totalMessages": 0,
+    "groupCount": 0,
+    "moderated": 0
+  },
+  "members": [
+    {
+      "userId": "cmt4da99n0012osd2w5hujd46",
+      "user": {
+        "id": "cmt4da99n0012osd2w5hujd46",
+        "name": "Vikram Singh",
+        "avatar": "https://randomuser.me/api/portraits/men/19.jpg",
+        "email": "vikram@example.com"
+      },
+      "role": "FOUNDER",
+      "status": "ACTIVE",
+      "joinedAt": "2026-08-22T12:41:16.805Z",
+      "lastInteractionAt": null,
+      "lastMessageAt": null,
+      "messageCount": 0
+    },
+    {
+      "userId": "cmt4da968000kosd2pup1w4sq",
+      "user": {
+        "id": "cmt4da968000kosd2pup1w4sq",
+        "name": "Lisa Brown",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png",
+        "email": "lisa@example.com"
+      },
+      "role": "MEMBER",
+      "status": "ACTIVE",
+      "joinedAt": "2026-08-22T12:41:16.805Z",
+      "lastInteractionAt": null,
+      "lastMessageAt": null,
+      "messageCount": 0
+    },
+    {
+      "userId": "cmt4da9290000osd2lzka4stp",
+      "user": {
+        "id": "cmt4da9290000osd2lzka4stp",
+        "name": "Admin User",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772386875/revvie/rides/avatar_hgoxkz.jpg",
+        "email": "admin@revvie.in"
+      },
+      "role": "ADMIN",
+      "status": "ACTIVE",
+      "joinedAt": "2026-08-22T12:41:16.805Z",
+      "lastInteractionAt": null,
+      "lastMessageAt": null,
+      "messageCount": 0
+    },
+    {
+      "userId": "cmt4da95i000fosd2qw7k8luq",
+      "user": {
+        "id": "cmt4da95i000fosd2qw7k8luq",
+        "name": "Mike Wilson",
+        "avatar": "https://randomuser.me/api/portraits/men/75.jpg",
+        "email": "mike@example.com"
+      },
+      "role": "OFFICER",
+      "status": "ACTIVE",
+      "joinedAt": "2026-08-22T12:41:16.805Z",
+      "lastInteractionAt": null,
+      "lastMessageAt": null,
+      "messageCount": 0
+    }
+  ]
+}

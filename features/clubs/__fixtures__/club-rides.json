@@ -1,0 +1,59 @@
+{
+  "items": [
+    {
+      "id": "cmt4daa1u00g7osd2mp2ztvys",
+      "title": "Jayanagar Group Meetup Ride - Chennai",
+      "description": "Jayanagar Group Meetup Ride based in Chennai. Experience the best riding routes with fellow enthusiasts in Chennai.",
+      "startLocation": "Chennai Meetup Point",
+      "endLocation": "Chennai Outskirts",
+      "experienceLevel": "Intermediate",
+      "xpRequired": 127,
+      "pace": "Moderate",
+      "distance": 104,
+      "duration": 68,
+      "scheduledAt": "2026-08-30T22:50:47.941Z",
+      "endedAt": null,
+      "status": "PLANNED",
+      "startReminderSentAt": null,
+      "latitude": 13.083136193873655,
+      "longitude": 80.26070951778419,
+      "startLat": 13.083136193873655,
+      "startLng": 80.26070951778419,
+      "endLat": 13.081828442572524,
+      "endLng": 80.28066194698093,
+      "keepPermanently": false,
+      "isFeatured": false,
+      "routeData": null,
+      "waypoints": null,
+      "images": [
+        "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?w=1200"
+      ],
+      "chatGroupId": null,
+      "chatLocked": false,
+      "creatorId": "cmt4da968000kosd2pup1w4sq",
+      "clubId": "cmt4da9g5005fosd2fipt2s3j",
+      "friendGroupId": null,
+      "pausedAt": null,
+      "privacyLevel": "PUBLIC",
+      "effectiveDurationSec": null,
+      "effectiveDistanceKm": null,
+      "endedReason": null,
+      "createdAt": "2026-08-22T12:41:17.154Z",
+      "updatedAt": "2026-08-22T12:41:17.154Z",
+      "creator": {
+        "id": "cmt4da968000kosd2pup1w4sq",
+        "name": "Lisa Brown",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      },
+      "_count": {
+        "participants": 4
+      }
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 1,
+    "totalPages": 1
+  }
+}

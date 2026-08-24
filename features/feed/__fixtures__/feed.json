@@ -1,0 +1,49 @@
+{
+  "posts": [
+    {
+      "id": "cmt4daam200w5osd27xqnscj8",
+      "type": "listing",
+      "author": {
+        "id": "cmt4da95i000fosd2qw7k8luq",
+        "name": "Mike Wilson",
+        "username": "mike_adventure",
+        "avatar": "https://randomuser.me/api/portraits/men/75.jpg",
+        "clubs": []
+      },
+      "content": "Just hit 10000 km milestone!",
+      "images": [],
+      "clubId": null,
+      "isAnnouncement": false,
+      "isPinned": false,
+      "expiresAt": null,
+      "likesCount": 3,
+      "commentsCount": 1,
+      "isLiked": false,
+      "isSaved": false,
+      "createdAt": "2026-08-22T12:41:17.882Z"
+    },
+    {
+      "id": "cmt4daalx00w4osd2ihguhilu",
+      "type": "listing",
+      "author": {
+        "id": "cmt4da94v000bosd2u1zmzilk",
+        "name": "Sarah Johnson",
+        "username": "sarah_speed",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560335/revvie/rides/Police_Woman_h2lvlq.png",
+        "clubs": []
+      },
+      "content": "Monsoon riding tips - thread below 🧵",
+      "images": ["https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=1200"],
+      "clubId": null,
+      "isAnnouncement": false,
+      "isPinned": false,
+      "expiresAt": null,
+      "likesCount": 3,
+      "commentsCount": 1,
+      "isLiked": false,
+      "isSaved": false,
+      "createdAt": "2026-08-22T12:41:17.877Z"
+    }
+  ],
+  "hasMore": true
+}

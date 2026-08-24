@@ -1,0 +1,18 @@
+[
+  {
+    "id": "seed_disc_0",
+    "businessId": "cmt4dab4z0146osd28d8yety0",
+    "code": "REVVIE10",
+    "title": "ThunderGear Co. — Revvie Exclusive 10% Off",
+    "description": "Exclusive discount for Revvie riders. Use code at checkout on ThunderGear Co.'s website or in-store.",
+    "imageUrl": "https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=1200",
+    "percentOff": 10,
+    "amountOffPaise": null,
+    "validFrom": "2026-08-22T12:41:19.432Z",
+    "validUntil": "2026-09-21T12:41:19.432Z",
+    "appliesTo": null,
+    "isFeatured": true,
+    "createdAt": "2026-08-22T12:41:19.443Z",
+    "updatedAt": "2026-08-22T12:41:19.443Z"
+  }
+]

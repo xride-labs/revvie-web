@@ -1,0 +1,82 @@
+{
+  "items": [
+    {
+      "id": "cmt4da9g5005fosd2fipt2s3j",
+      "name": "Tech Park Riders Club",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Tech Park Riders Club for weekly group rides, track events, and social gatherings!",
+      "location": "Bangalore, India",
+      "establishedAt": "2026-07-16T14:04:48.573Z",
+      "verified": true,
+      "image": "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?w=1200",
+      "coverImage": "https://images.unsplash.com/photo-1580310614729-ccd69652491d?w=1200",
+      "clubType": "Casual Community",
+      "isPublic": true,
+      "requiresLicense": false,
+      "memberCount": 4,
+      "trophies": ["Best Turnout 2025", "Most Active"],
+      "trophyCount": 3,
+      "gallery": [
+        "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?w=1200",
+        "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200"
+      ],
+      "reputation": 4.69650512322894,
+      "isFeatured": false,
+      "latitude": 12.961813988564916,
+      "longitude": 77.71513821283784,
+      "ownerId": "cmt4da99n0012osd2w5hujd46",
+      "createdAt": "2026-08-22T12:41:16.373Z",
+      "updatedAt": "2026-08-22T12:41:16.373Z",
+      "owner": {
+        "id": "cmt4da99n0012osd2w5hujd46",
+        "name": "Vikram Singh",
+        "avatar": "https://randomuser.me/api/portraits/men/19.jpg"
+      },
+      "_count": {
+        "members": 4
+      },
+      "role": "ADMIN"
+    },
+    {
+      "id": "cmt4da9hk005mosd2yc2p3uch",
+      "name": "Marathahalli Bike Brotherhood",
+      "description": "Premier motorcycle and scooter club in Bangalore. Join Marathahalli Bike Brotherhood for weekly group rides, track events, and social gatherings!",
+      "location": "Bangalore, India",
+      "establishedAt": "2026-03-02T10:20:28.529Z",
+      "verified": false,
+      "image": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200",
+      "coverImage": "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1200",
+      "clubType": "Sport Club",
+      "isPublic": true,
+      "requiresLicense": false,
+      "memberCount": 5,
+      "trophies": [],
+      "trophyCount": 2,
+      "gallery": [
+        "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200",
+        "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?w=1200"
+      ],
+      "reputation": 3.695925013649975,
+      "isFeatured": false,
+      "latitude": 13.01360336295491,
+      "longitude": 77.71749336925882,
+      "ownerId": "cmt4da9450007osd24vrdhkcu",
+      "createdAt": "2026-08-22T12:41:16.424Z",
+      "updatedAt": "2026-08-22T12:41:16.424Z",
+      "owner": {
+        "id": "cmt4da9450007osd24vrdhkcu",
+        "name": "John Doe",
+        "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772560334/revvie/rides/male_doctor_njjg5j.png"
+      },
+      "_count": {
+        "members": 5
+      },
+      "role": "ADMIN"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 25,
+    "totalPages": 2
+  }
+}

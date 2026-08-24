@@ -1,0 +1,32 @@
+[
+  {
+    "id": "cmt4dab4z0146osd28d8yety0",
+    "ownerId": "cmt4dab4b0143osd271ncga80",
+    "categories": ["GEAR_SELLER", "HELMET_SELLER"],
+    "displayName": "ThunderGear Co.",
+    "slug": "thundergear-co",
+    "tagline": "Built for the road, built for speed",
+    "description": "India's premier motorcycle gear brand. From helmets to jackets, we craft riding gear that merges safety with style. Trusted by 50,000+ riders across India.",
+    "logoUrl": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200",
+    "bannerUrl": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200",
+    "phone": "+919800000000",
+    "email": "brand1@thundergear.com",
+    "websiteUrl": "https://thundergear-co.in",
+    "addressLine1": null,
+    "addressLine2": null,
+    "city": "Bangalore",
+    "region": null,
+    "country": "India",
+    "latitude": 12.9716,
+    "longitude": 77.6046,
+    "pricingTier": "PRO",
+    "brandTier": "FREE",
+    "brandProExpiresAt": null,
+    "onboardingCompleted": false,
+    "verification": "APPROVED",
+    "verificationNotes": null,
+    "documents": null,
+    "createdAt": "2026-08-22T12:41:18.564Z",
+    "updatedAt": "2026-08-22T12:41:18.564Z"
+  }
+]

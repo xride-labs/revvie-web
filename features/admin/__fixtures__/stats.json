@@ -1,0 +1,33 @@
+{
+  "overview": {
+    "totalUsers": 21,
+    "totalRides": 70,
+    "totalClubs": 66,
+    "totalListings": 139,
+    "activeRides": 14,
+    "completedRides": 13,
+    "verifiedClubs": 38,
+    "pendingReports": 3,
+    "highPriorityReports": 2
+  },
+  "recent": {
+    "newUsersLast7Days": 21,
+    "newRidesLast7Days": 70,
+    "reportsLast7Days": 5
+  },
+  "breakdown": {
+    "usersByRole": {
+      "SELLER": 6,
+      "CLUB_OWNER": 4,
+      "BRAND_OWNER": 9,
+      "ADMIN": 2,
+      "RIDER": 11
+    },
+    "ridesByStatus": {
+      "CANCELLED": 5,
+      "COMPLETED": 13,
+      "IN_PROGRESS": 14,
+      "PLANNED": 38
+    }
+  }
+}

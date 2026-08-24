@@ -1,0 +1,58 @@
+{
+  "items": [
+    {
+      "id": "bsTaofFCRSO2uLV9QNm8G6ToLhiAlHlb",
+      "email": "creativekrithik@gmail.com",
+      "name": "Krithik M",
+      "username": "mrwhoyouknow",
+      "image": "https://lh3.googleusercontent.com/a/ACg8ocI3TWcaht9CtyF9WSPdWHKRQj32vKJhY9GRunShfRUvliSO15o=s96-c",
+      "phone": null,
+      "bio": "hola",
+      "location": null,
+      "activityLevel": "Casual",
+      "emailVerified": true,
+      "phoneVerified": false,
+      "status": "active",
+      "lastActive": "2026-08-22T16:12:08.880Z",
+      "roles": [
+        "RIDER"
+      ],
+      "ridesCompleted": 0,
+      "createdAt": "2026-08-22T14:11:47.419Z",
+      "_count": {
+        "createdRides": 0,
+        "createdClubs": 0
+      }
+    },
+    {
+      "id": "cmt4dabqp017losd2543ajdgr",
+      "email": "brand9@racerspit.in",
+      "name": "Racer's Pit Bangalore",
+      "username": "racerspit_blr",
+      "image": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=200",
+      "phone": null,
+      "bio": "Performance parts and track-day accessories for serious riders. Bangalore's only dedicated performance moto shop. From crash protection to data loggers — if it ",
+      "location": "Koramangala, Bangalore, India",
+      "activityLevel": "Casual",
+      "emailVerified": true,
+      "phoneVerified": true,
+      "status": "active",
+      "lastActive": "2026-08-22T12:41:19.346Z",
+      "roles": [
+        "BRAND_OWNER"
+      ],
+      "ridesCompleted": 0,
+      "createdAt": "2026-08-22T12:41:19.346Z",
+      "_count": {
+        "createdRides": 0,
+        "createdClubs": 0
+      }
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 3,
+    "total": 21,
+    "totalPages": 7
+  }
+}

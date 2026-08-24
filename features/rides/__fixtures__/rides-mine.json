@@ -1,0 +1,46 @@
+{
+  "items": [
+    {
+      "id": "cmt4daa2s00gdosd2noij3p29",
+      "title": "Varthur Adrenaline Rush - Pune",
+      "status": "PLANNED",
+      "startLocation": "Pune Meetup Point",
+      "endLocation": "Pune Outskirts",
+      "startLat": 18.48720593575792,
+      "startLng": 73.8640589468739,
+      "endLat": 18.553883463602414,
+      "endLng": 73.85079596195934,
+      "scheduledAt": "2026-09-13T14:09:26.091Z",
+      "endedAt": null,
+      "createdAt": "2026-08-22T12:41:17.188Z",
+      "keepPermanently": false,
+      "waypoints": null,
+      "trackingData": null,
+      "summary": null
+    },
+    {
+      "id": "cmt4daa2d00gaosd2o55k6gud",
+      "title": "Ulsoor Urban Adventure - Jaipur",
+      "status": "PLANNED",
+      "startLocation": "Jaipur Meetup Point",
+      "endLocation": "Jaipur Outskirts",
+      "startLat": 26.895547022251385,
+      "startLng": 75.7731586725869,
+      "endLat": 26.928620101409823,
+      "endLng": 75.80216298456754,
+      "scheduledAt": "2026-09-19T15:46:12.262Z",
+      "endedAt": null,
+      "createdAt": "2026-08-22T12:41:17.173Z",
+      "keepPermanently": false,
+      "waypoints": null,
+      "trackingData": null,
+      "summary": null
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 12,
+    "total": 8,
+    "totalPages": 1
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "items": [
+    {
+      "id": "cmt4da9r20075osd22u5p16ky",
+      "name": "Brigade Road Cruiser Gang - Hyderabad Chapter",
+      "description": "Hyderabad chapter of Brigade Road Cruiser Gang. Join for rides, meetups, and community events!",
+      "location": "Hyderabad, India",
+      "establishedAt": "2026-04-18T14:29:05.695Z",
+      "verified": true,
+      "image": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200",
+      "coverImage": "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1200",
+      "clubType": "Adventure Club",
+      "isPublic": true,
+      "requiresLicense": false,
+      "memberCount": 33,
+      "trophies": [
+        "Local Favorite"
+      ],
+      "trophyCount": 0,
+      "gallery": [
+        "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200",
+        "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?w=1200"
+      ],
+      "reputation": 3.306585874345989,
+      "isFeatured": false,
+      "latitude": 17.403711347307233,
+      "longitude": 78.48999931537567,
+      "ownerId": "cmt4da97j000rosd2nf2ex7cf",
+      "createdAt": "2026-08-22T12:41:16.766Z",
+      "updatedAt": "2026-08-22T12:41:16.766Z",
+      "owner": {
+        "id": "cmt4da97j000rosd2nf2ex7cf",
+        "name": "Priya Sharma",
+        "avatar": "https://randomuser.me/api/portraits/women/12.jpg"
+      },
+      "_count": {
+        "members": 3
+      }
+    },
+    {
+      "id": "cmt4da9qx0074osd2e2cqiwrk",
+      "name": "MG Road Thunder Club - Chennai Chapter",
+      "description": "Chennai chapter of MG Road Thunder Club. Join for rides, meetups, and community events!",
+      "location": "Chennai, India",
+      "establishedAt": "2026-03-18T23:31:50.712Z",
+      "verified": true,
+      "image": "https://images.unsplash.com/photo-1580310614729-ccd69652491d?w=1200",
+      "coverImage": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200",
+      "clubType": "Adventure Club",
+      "isPublic": true,
+      "requiresLicense": false,
+      "memberCount": 16,
+      "trophies": [
+        "Local Favorite"
+      ],
+      "trophyCount": 0,
+      "gallery": [
+        "https://images.unsplash.com/photo-1580310614729-ccd69652491d?w=1200",
+        "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1200"
+      ],
+      "reputation": 3.6431254838420104,
+      "isFeatured": false,
+      "latitude": 13.041373819155169,
+      "longitude": 80.297027680809,
+      "ownerId": "cmt4da95i000fosd2qw7k8luq",
+      "createdAt": "2026-08-22T12:41:16.761Z",
+      "updatedAt": "2026-08-22T12:41:16.761Z",
+      "owner": {
+        "id": "cmt4da95i000fosd2qw7k8luq",
+        "name": "Mike Wilson",
+        "avatar": "https://randomuser.me/api/portraits/men/75.jpg"
+      },
+      "_count": {
+        "members": 7
+      }
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 2,
+    "total": 66,
+    "totalPages": 33
+  }
+}

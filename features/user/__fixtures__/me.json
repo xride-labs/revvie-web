@@ -1,0 +1,324 @@
+{
+  "user": {
+    "id": "cmt4da9290000osd2lzka4stp",
+    "username": "admin",
+    "name": "Admin User",
+    "email": "admin@revvie.in",
+    "onboardingCompleted": false,
+    "dob": "1992-02-01T00:00:00.000Z",
+    "emailVerified": true,
+    "phoneVerified": true,
+    "phone": "+1234567890",
+    "subscriptionTier": "PRO",
+    "subscriptionStatus": null,
+    "subscriptionPlan": null,
+    "subscriptionCurrentPeriodEnd": null,
+    "subscriptionCancelAt": null,
+    "dodoCustomerId": null,
+    "subscriptionId": null,
+    "coverImage": "https://res.cloudinary.com/xride-labs/image/upload/v1772387502/revvie/rides/bannerBackgroundImage_o8qnzwji8ckd1_rynbjl.png",
+    "avatar": "https://res.cloudinary.com/xride-labs/image/upload/v1772386875/revvie/rides/avatar_hgoxkz.jpg",
+    "bio": "Platform administrator & club manager",
+    "location": "Mumbai, India",
+    "bloodType": "O+",
+    "ridesCompleted": 10,
+    "createdAt": "2026-08-22T12:41:15.873Z",
+    "updatedAt": "2026-08-22T12:41:15.873Z",
+    "roles": ["ADMIN", "CLUB_OWNER"],
+    "experience": {
+      "xpPoints": 5200,
+      "level": 12,
+      "levelTitle": "Road Commander",
+      "nextLevelXp": 3250,
+      "progressPercent": 100,
+      "reputationScore": 5,
+      "activityLevel": "Enthusiast"
+    },
+    "bikes": [
+      {
+        "id": "cmt4da9ak0017osd2b1n73g5s",
+        "make": "Kawasaki",
+        "model": "Ninja 650",
+        "year": 2022,
+        "type": "SPORT",
+        "engineCc": 649,
+        "color": "Emerald Green",
+        "odo": 5200,
+        "ownerSince": "2022-01-01T00:00:00.000Z",
+        "modifications": null,
+        "isPrimary": true,
+        "image": null,
+        "licensePlate": null
+      }
+    ],
+    "clubs": [
+      {
+        "id": "cmt4da9g5005fosd2fipt2s3j",
+        "name": "Tech Park Riders Club",
+        "role": "ADMIN",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 11,
+        "logo": "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?w=1200"
+      },
+      {
+        "id": "cmt4da9hk005mosd2yc2p3uch",
+        "name": "Marathahalli Bike Brotherhood",
+        "role": "ADMIN",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 21,
+        "logo": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200"
+      },
+      {
+        "id": "cmt4da9hp005nosd2du0unw9z",
+        "name": "Hebbal Lake Weekend Warriors",
+        "role": "OFFICER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 44,
+        "logo": "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1200"
+      },
+      {
+        "id": "cmt4da9hw005oosd2n2dc2ubb",
+        "name": "Koramangala Casual Riders",
+        "role": "ADMIN",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 48,
+        "logo": "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?w=1200"
+      },
+      {
+        "id": "cmt4da9ic005qosd20r28o275",
+        "name": "Rajajinagar Motorcycle Circle",
+        "role": "MEMBER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 6,
+        "logo": "https://images.unsplash.com/photo-1580310614729-ccd69652491d?w=1200"
+      },
+      {
+        "id": "cmt4da9j4005uosd2dxdacb5l",
+        "name": "RT Nagar Bike Lovers",
+        "role": "MEMBER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 16,
+        "logo": "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?w=1200"
+      },
+      {
+        "id": "cmt4da9jp005xosd2elcr4g8o",
+        "name": "Yeshwantpur Off-Road Club",
+        "role": "MEMBER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 45,
+        "logo": "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1200"
+      },
+      {
+        "id": "cmt4da9k3005zosd29773mrvn",
+        "name": "Vidyaranyapura Adventure Seekers",
+        "role": "FOUNDER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 52,
+        "logo": "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?w=1200"
+      },
+      {
+        "id": "cmt4da9kh0061osd26jpregmn",
+        "name": "Nagarbhavi Night Riders",
+        "role": "ADMIN",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 11,
+        "logo": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200"
+      },
+      {
+        "id": "cmt4da9ko0062osd2cdp51qks",
+        "name": "Jalahalli Weekend Waves",
+        "role": "MEMBER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 26,
+        "logo": "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1200"
+      },
+      {
+        "id": "cmt4da9lf0067osd2qulecntz",
+        "name": "MG Road Thunder Club",
+        "role": "FOUNDER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 20,
+        "logo": "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1200"
+      },
+      {
+        "id": "cmt4da9n6006hosd2n7pcvt6c",
+        "name": "Electronic City Riders - Mumbai Chapter",
+        "role": "ADMIN",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 19,
+        "logo": "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1200"
+      },
+      {
+        "id": "cmt4da9nc006iosd24klpiov0",
+        "name": "Banashankari Touring Club - Pune Chapter",
+        "role": "FOUNDER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 42,
+        "logo": "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?w=1200"
+      },
+      {
+        "id": "cmt4da9ni006josd21i77xz8n",
+        "name": "Marathahalli Bike Brotherhood - Chennai Chapter",
+        "role": "MEMBER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 24,
+        "logo": "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?w=1200"
+      },
+      {
+        "id": "cmt4da9nu006losd2w0hpkcji",
+        "name": "Koramangala Casual Riders - Kochi Chapter",
+        "role": "OFFICER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 10,
+        "logo": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200"
+      },
+      {
+        "id": "cmt4da9o0006mosd2jscuta49",
+        "name": "Jayanagar Club Members - Jaipur Chapter",
+        "role": "OFFICER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 13,
+        "logo": "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1200"
+      },
+      {
+        "id": "cmt4da9on006qosd21jt9mre3",
+        "name": "Varthur Adrenaline Junkies - Chennai Chapter",
+        "role": "OFFICER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 45,
+        "logo": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200"
+      },
+      {
+        "id": "cmt4da9os006rosd2ccwh16l4",
+        "name": "RT Nagar Bike Lovers - Hyderabad Chapter",
+        "role": "FOUNDER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 20,
+        "logo": "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1200"
+      },
+      {
+        "id": "cmt4da9ox006sosd2e526jmw1",
+        "name": "Frazer Town Heritage Riders - Kochi Chapter",
+        "role": "ADMIN",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 37,
+        "logo": "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?w=1200"
+      },
+      {
+        "id": "cmt4da9p2006tosd225klnhgs",
+        "name": "Yelahanka Noble Riders - Jaipur Chapter",
+        "role": "MEMBER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 21,
+        "logo": "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?w=1200"
+      },
+      {
+        "id": "cmt4da9pk006wosd2hl3e7a0v",
+        "name": "Vidyaranyapura Adventure Seekers - Pune Chapter",
+        "role": "OFFICER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 36,
+        "logo": "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1200"
+      },
+      {
+        "id": "cmt4da9q90070osd2j2ln3ajl",
+        "name": "Gowdenhalli Touring Society - Jaipur Chapter",
+        "role": "ADMIN",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 23,
+        "logo": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200"
+      },
+      {
+        "id": "cmt4da9qm0072osd2xdtwoy16",
+        "name": "Peenya Industrial Area Riders - Mumbai Chapter",
+        "role": "OFFICER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 30,
+        "logo": "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?w=1200"
+      },
+      {
+        "id": "cmt4da9qx0074osd2e2cqiwrk",
+        "name": "MG Road Thunder Club - Chennai Chapter",
+        "role": "OFFICER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 16,
+        "logo": "https://images.unsplash.com/photo-1580310614729-ccd69652491d?w=1200"
+      },
+      {
+        "id": "cmt4da9r20075osd22u5p16ky",
+        "name": "Brigade Road Cruiser Gang - Hyderabad Chapter",
+        "role": "OFFICER",
+        "joinedAt": "2026-08-22T12:41:16.805Z",
+        "memberCount": 33,
+        "logo": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200"
+      }
+    ],
+    "rideStats": {
+      "totalDistanceKm": 1000,
+      "longestRideKm": 150,
+      "nightRides": 2,
+      "weekendRides": 5
+    },
+    "badges": [
+      {
+        "id": "cmt4da9az001hosd2eamlkryw",
+        "title": "First Ride",
+        "auraPoints": 100,
+        "icon": "🏁",
+        "earnedAt": "2026-08-22T12:41:16.237Z"
+      },
+      {
+        "id": "cmt4da9az001iosd2bwje5t1s",
+        "title": "1000 KM Club",
+        "auraPoints": 150,
+        "icon": "🔥",
+        "earnedAt": "2026-08-22T12:41:16.237Z"
+      }
+    ],
+    "social": {
+      "followers": 3,
+      "following": 3,
+      "friends": 9
+    },
+    "safety": {
+      "emergencyContacts": {
+        "count": 1,
+        "items": [
+          {
+            "id": "cmt4da9ct002fosd2ka3b66ae",
+            "userId": "cmt4da9290000osd2lzka4stp",
+            "name": "Ravi Kumar",
+            "phone": "+919876543210",
+            "relationship": "Brother",
+            "isPrimary": true,
+            "createdAt": "2026-08-22T12:41:16.253Z",
+            "updatedAt": "2026-08-22T12:41:16.253Z"
+          }
+        ]
+      },
+      "helmetVerified": true,
+      "lastSafetyCheck": "2026-01-12T00:00:00.000Z"
+    },
+    "preferences": {
+      "id": "cmt4da9da002nosd2mkypg57u",
+      "userId": "cmt4da9290000osd2lzka4stp",
+      "rideReminders": false,
+      "serviceReminderKm": 3000,
+      "darkMode": true,
+      "units": "metric",
+      "openToInvite": false,
+      "pushNotifications": true,
+      "emailNotifications": true,
+      "smsNotifications": false,
+      "profileVisibility": "public",
+      "showLocation": true,
+      "showBikes": true,
+      "lowDataMode": false,
+      "showStats": true,
+      "sensorMode": false,
+      "ghostMode": false,
+      "createdAt": "2026-08-22T12:41:16.270Z",
+      "updatedAt": "2026-08-22T12:41:16.270Z"
+    }
+  }
+}
