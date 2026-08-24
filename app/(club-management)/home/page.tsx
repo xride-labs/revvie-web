@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
 import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { Label } from '@/components/ui/label'
@@ -23,8 +22,6 @@ import {
   Bookmark,
   Share2,
   MoreHorizontal,
-  Calendar,
-  Users,
   Image as ImageIcon,
   Loader2,
   Zap,
@@ -35,47 +32,26 @@ import {
   Send,
 } from 'lucide-react'
 import Link from 'next/link'
-import { feedApi } from '@/lib/services'
+import {
+  useGetFeedQuery,
+  useLikePostMutation,
+  useUnlikePostMutation,
+  useCreatePostMutation,
+} from '@/features/feed/api'
+import type { Post } from '@/entities/post/model'
 import { useClubContext } from '@/contexts/club-context'
 import { useAuth, hasAnyRole } from '@/lib/use-auth'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
 import { cn } from '@/lib/utils'
 
-interface FeedPost {
-  id: string
-  type: 'ride' | 'content' | 'listing' | 'club-activity'
-  isAnnouncement?: boolean
-  isPinned?: boolean
-  expiresAt?: string | null
-  author: {
-    id: string
-    name: string
-    username: string
-    avatar: string | null
-    clubs: Array<{ id: string; name: string; avatar: string | null }>
-  }
-  content: string
-  images: string[]
-  ride?: {
-    id: string
-    title: string
-    scheduledAt: string
-    participantsCount: number
-  }
-  listing?: {
-    id: string
-    title: string
-    price: number
-    currency: string
-    isSold: boolean
-  }
-  club?: { id: string; name: string; avatar: string | null }
-  likesCount: number
-  commentsCount: number
-  isLiked: boolean
-  isSaved: boolean
-  createdAt: string
-}
+/**
+ * The old local interface declared `ride`/`listing` preview objects and a `club` ref
+ * nested on every post. The backend never sends them — a feed post carries only a bare
+ * `clubId` and its `type`, never the referenced ride/listing. The "Active Rides" carousel
+ * and the ride/listing preview cards further down that read those fields have therefore
+ * never rendered anything; removed rather than kept as permanently-empty UI.
+ */
+type FeedPost = Post
 
 function formatTimeAgo(dateString: string) {
   const date = new Date(dateString)
@@ -87,16 +63,6 @@ function formatTimeAgo(dateString: string) {
   const diffInDays = Math.floor(diffInHours / 24)
   if (diffInDays < 7) return `${diffInDays}d ago`
   return date.toLocaleDateString()
-}
-
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  })
 }
 
 function formatExpiry(expiresAt: string) {
@@ -116,12 +82,18 @@ interface CreatePostDialogProps {
   onCreated: (post: FeedPost) => void
 }
 
-function CreatePostDialog({ open, onOpenChange, clubId, isClubAdmin, onCreated }: CreatePostDialogProps) {
+function CreatePostDialog({
+  open,
+  onOpenChange,
+  clubId,
+  isClubAdmin,
+  onCreated,
+}: CreatePostDialogProps) {
   const [content, setContent] = useState('')
   const [isAnnouncement, setIsAnnouncement] = useState(isClubAdmin)
   const [isPinned, setIsPinned] = useState(false)
   const [expiresIn, setExpiresIn] = useState('')
-  const [submitting, setSubmitting] = useState(false)
+  const [createPost, { isLoading: submitting }] = useCreatePostMutation()
 
   const reset = () => {
     setContent('')
@@ -132,7 +104,6 @@ function CreatePostDialog({ open, onOpenChange, clubId, isClubAdmin, onCreated }
 
   const handleSubmit = async () => {
     if (!content.trim()) return
-    setSubmitting(true)
     try {
       let expiresAt: string | undefined
       if (expiresIn) {
@@ -141,30 +112,39 @@ function CreatePostDialog({ open, onOpenChange, clubId, isClubAdmin, onCreated }
           expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000).toISOString()
         }
       }
-      const post = await feedApi.createPost({
+      const post = await createPost({
         content: content.trim(),
         type: 'content',
+        images: [],
         clubId,
         isAnnouncement: isClubAdmin && isAnnouncement,
         isPinned: isClubAdmin && isPinned,
         expiresAt: expiresAt ?? null,
-      })
-      onCreated(post as unknown as FeedPost)
+      }).unwrap()
+      onCreated(post as FeedPost)
       reset()
       onOpenChange(false)
     } catch {
       // creation failed silently
-    } finally {
-      setSubmitting(false)
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v) }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) reset()
+        onOpenChange(v)
+      }}
+    >
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {isAnnouncement ? <Megaphone className="w-5 h-5 text-amber-500" /> : <Send className="w-5 h-5" />}
+            {isAnnouncement ? (
+              <Megaphone className="w-5 h-5 text-amber-500" />
+            ) : (
+              <Send className="w-5 h-5" />
+            )}
             {isAnnouncement ? 'New Announcement' : 'Create Post'}
           </DialogTitle>
         </DialogHeader>
@@ -189,14 +169,18 @@ function CreatePostDialog({ open, onOpenChange, clubId, isClubAdmin, onCreated }
 
           {isClubAdmin && (
             <div className="space-y-3 p-3 rounded-xl bg-muted/50 border border-border">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Club Admin Options</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Club Admin Options
+              </p>
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Megaphone className="w-4 h-4 text-amber-500" />
                   <div>
                     <p className="text-sm font-medium">Announcement</p>
-                    <p className="text-xs text-muted-foreground">Highlights post for all members</p>
+                    <p className="text-xs text-muted-foreground">
+                      Highlights post for all members
+                    </p>
                   </div>
                 </div>
                 <Switch checked={isAnnouncement} onCheckedChange={setIsAnnouncement} />
@@ -231,8 +215,20 @@ function CreatePostDialog({ open, onOpenChange, clubId, isClubAdmin, onCreated }
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={() => { reset(); onOpenChange(false) }}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={!content.trim() || submitting} className="gap-2">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              reset()
+              onOpenChange(false)
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={!content.trim() || submitting}
+            className="gap-2"
+          >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
             {isAnnouncement ? 'Post Announcement' : 'Post'}
           </Button>
@@ -246,60 +242,65 @@ export default function FeedPage() {
   const { club: activeClub } = useClubContext()
   const { user } = useAuth()
 
-  const [posts, setPosts] = useState<FeedPost[]>([])
-  const [loading, setLoading] = useState(true)
+  const [localPosts, setLocalPosts] = useState<FeedPost[] | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
 
   const isClubAdmin = hasAnyRole(user, 'CLUB_OWNER', 'CLUB_ADMIN', 'ADMIN', 'CO_ADMIN')
 
-  const fetchFeed = useCallback(async () => {
-    setLoading(true)
-    try {
-      const response = await feedApi.getFeed({ clubId: activeClub?.id, page: 1 })
-      const raw = response?.posts || []
-      // Pinned posts float to the top
-      const pinned = raw.filter((p: FeedPost) => p.isPinned)
-      const rest = raw.filter((p: FeedPost) => !p.isPinned)
-      setPosts([...pinned, ...rest])
-    } catch {
-      setPosts([])
-    } finally {
-      setLoading(false)
-    }
-  }, [activeClub?.id])
+  // `clubId` is accepted by the query for forward-compat but the backend does not filter
+  // on it — see the note in features/feed/endpoints.ts. This is always the global feed.
+  const { data, isLoading: loading } = useGetFeedQuery({
+    clubId: activeClub?.id,
+    page: 1,
+  })
+  const [likePost] = useLikePostMutation()
+  const [unlikePost] = useUnlikePostMutation()
 
-  useEffect(() => {
-    fetchFeed()
-  }, [fetchFeed])
+  // `localPosts` overlays optimistic like/save toggles and freshly-created posts onto the
+  // fetched list; `null` means "no local edits yet, use the query result as-is".
+  const posts = localPosts ?? data?.posts ?? []
 
-  const handleLike = (postId: string) => {
-    setPosts((prev) =>
-      prev.map((post) =>
+  const handleLike = async (postId: string) => {
+    const target = posts.find((p) => p.id === postId)
+    if (!target) return
+    const nextLiked = !target.isLiked
+
+    setLocalPosts(
+      posts.map((post) =>
         post.id === postId
-          ? { ...post, isLiked: !post.isLiked, likesCount: post.isLiked ? post.likesCount - 1 : post.likesCount + 1 }
+          ? {
+              ...post,
+              isLiked: nextLiked,
+              likesCount: nextLiked ? post.likesCount + 1 : post.likesCount - 1,
+            }
           : post,
+      ),
+    )
+
+    try {
+      await (nextLiked ? likePost(postId) : unlikePost(postId)).unwrap()
+    } catch {
+      // Roll back the optimistic toggle — the backend call is the source of truth.
+      setLocalPosts(posts)
+    }
+  }
+
+  const handleSave = (postId: string) => {
+    // There is no save/unsave route on the backend (see features/feed/endpoints.ts), so
+    // this can only be a local, non-persisted toggle for this session.
+    setLocalPosts(
+      posts.map((post) =>
+        post.id === postId ? { ...post, isSaved: !post.isSaved } : post,
       ),
     )
   }
 
-  const handleSave = (postId: string) => {
-    setPosts((prev) =>
-      prev.map((post) => (post.id === postId ? { ...post, isSaved: !post.isSaved } : post)),
-    )
-  }
-
   const handleCreated = (post: FeedPost) => {
-    setPosts((prev) => {
-      const withNew = [post, ...prev]
-      const pinned = withNew.filter((p) => p.isPinned)
-      const rest = withNew.filter((p) => !p.isPinned)
-      return [...pinned, ...rest]
-    })
+    const withNew = [post, ...posts]
+    const pinned = withNew.filter((p) => p.isPinned)
+    const rest = withNew.filter((p) => !p.isPinned)
+    setLocalPosts([...pinned, ...rest])
   }
-
-  const activeRidePosts = posts
-    .filter((p): p is FeedPost & { ride: NonNullable<FeedPost['ride']> } => p.type === 'ride' && !!p.ride)
-    .slice(0, 8)
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
@@ -308,44 +309,18 @@ export default function FeedPage() {
         <div>
           <h2 className="font-bold text-lg">{activeClub?.name ?? 'Club Feed'}</h2>
           <p className="text-xs text-muted-foreground">
-            {activeClub ? `${activeClub.membersCount ?? 0} members` : 'Select a club'}
+            {activeClub ? `${activeClub.memberCount ?? 0} members` : 'Select a club'}
           </p>
         </div>
-        <Button onClick={() => setCreateOpen(true)} className="gap-2 rounded-full" size="sm">
+        <Button
+          onClick={() => setCreateOpen(true)}
+          className="gap-2 rounded-full"
+          size="sm"
+        >
           <Plus className="w-4 h-4" />
           {isClubAdmin ? 'Post' : 'Post'}
         </Button>
       </div>
-
-      {/* Stories / Active Rides */}
-      {activeRidePosts.length > 0 && (
-        <>
-          <div className="mb-6">
-            <h2 className="text-sm font-semibold text-muted-foreground mb-3">ACTIVE RIDES</h2>
-            <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-              {activeRidePosts.map((post) => (
-                <Link
-                  key={post.id}
-                  href={`/rides/${post.ride.id}`}
-                  className="shrink-0 w-20 flex flex-col items-center gap-2"
-                >
-                  <div className="w-16 h-16 rounded-full bg-linear-to-br from-primary to-amber-500 p-0.5">
-                    <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
-                      <Avatar className="w-14 h-14">
-                        <AvatarFallback className="bg-muted text-muted-foreground text-[10px]">
-                          {post.ride.title.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </div>
-                  </div>
-                  <span className="text-xs text-center truncate w-full">{post.ride.title}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-          <Separator className="mb-6" />
-        </>
-      )}
 
       {/* Posts Feed */}
       <div className="space-y-6">
@@ -380,7 +355,10 @@ export default function FeedPage() {
                 ? `No posts in ${activeClub.name} yet. Be the first to post!`
                 : 'Select a club to see its feed.'}
             </p>
-            <Button onClick={() => setCreateOpen(true)} className="mt-4 rounded-full gap-2">
+            <Button
+              onClick={() => setCreateOpen(true)}
+              className="mt-4 rounded-full gap-2"
+            >
               <Plus className="w-4 h-4" /> Create First Post
             </Button>
           </div>
@@ -418,17 +396,25 @@ export default function FeedPage() {
 
                 {/* Author Header */}
                 <div className="flex items-start justify-between mb-3">
-                  <Link href={`/profile/${post.author.username}`} className="flex items-start gap-3">
+                  <Link
+                    href={`/profile/${post.author.username}`}
+                    className="flex items-start gap-3"
+                  >
                     <Avatar className="w-10 h-10">
                       <AvatarFallback className="bg-linear-to-br from-primary to-amber-500 text-white font-semibold">
-                        {(post.author.name ?? post.author.username ?? '?').split(' ').map((n) => n[0]).join('')}
+                        {(post.author.name ?? post.author.username ?? '?')
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-sm">{post.author.name}</span>
                         {post.type === 'club-activity' && (
-                          <Badge variant="secondary" className="text-[10px] px-1.5">Club</Badge>
+                          <Badge variant="secondary" className="text-[10px] px-1.5">
+                            Club
+                          </Badge>
                         )}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -439,7 +425,11 @@ export default function FeedPage() {
                       {(post.author.clubs?.length ?? 0) > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
                           {post.author.clubs.slice(0, 2).map((club) => (
-                            <Badge key={club.id} variant="outline" className="text-[10px] px-1.5 py-0">
+                            <Badge
+                              key={club.id}
+                              variant="outline"
+                              className="text-[10px] px-1.5 py-0"
+                            >
                               {club.name}
                             </Badge>
                           ))}
@@ -474,51 +464,34 @@ export default function FeedPage() {
                   </div>
                 )}
 
-                {/* Ride Card */}
-                {post.type === 'ride' && post.ride && (
-                  <Link href={`/rides/${post.ride.id}`}>
-                    <div className="bg-linear-to-r from-primary/10 to-amber-100/50 rounded-xl p-4 mb-3 border border-primary/20">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="font-semibold text-sm">{post.ride.title}</h3>
-                          <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-3 h-3" /> {formatDate(post.ride.scheduledAt)}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Users className="w-3 h-3" /> {post.ride.participantsCount} riders
-                            </span>
-                          </div>
-                        </div>
-                        <Button size="sm" className="rounded-full">Join</Button>
-                      </div>
-                    </div>
-                  </Link>
-                )}
-
-                {/* Listing Card */}
-                {post.type === 'listing' && post.listing && (
-                  <Link href={`/marketplace/${post.listing.id}`}>
-                    <div className="bg-muted rounded-xl p-4 mb-3">
-                      <div className="flex items-center gap-4">
-                        <div className="w-20 h-20 bg-background rounded-lg flex items-center justify-center">
-                          <ImageIcon className="w-8 h-8 text-muted-foreground/30" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-sm">{post.listing.title}</h3>
-                          <p className="text-lg font-bold text-primary">${post.listing.price.toLocaleString()}</p>
-                          {post.listing.isSold && <Badge variant="secondary">Sold</Badge>}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+                {/*
+                  Ride/listing preview cards lived here, reading `post.ride`/`post.listing`.
+                  The backend's post payload never includes them — only the bare `type` tag
+                  and `clubId` — so these have never rendered. A `type` badge is the most
+                  that can be shown without a second fetch per post; see the comment on the
+                  `FeedPost` alias above.
+                */}
+                {(post.type === 'ride' || post.type === 'listing') && (
+                  <Badge variant="outline" className="mb-3">
+                    {post.type === 'ride' ? 'Ride' : 'Marketplace'}
+                  </Badge>
                 )}
 
                 {/* Actions */}
                 <div className="flex items-center justify-between pt-2 border-t border-border">
                   <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="sm" className="gap-1.5 h-8" onClick={() => handleLike(post.id)}>
-                      <Heart className={cn('w-4 h-4', post.isLiked && 'fill-red-500 text-red-500')} />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="gap-1.5 h-8"
+                      onClick={() => handleLike(post.id)}
+                    >
+                      <Heart
+                        className={cn(
+                          'w-4 h-4',
+                          post.isLiked && 'fill-red-500 text-red-500',
+                        )}
+                      />
                       <span className="text-xs">{post.likesCount}</span>
                     </Button>
                     <Button variant="ghost" size="sm" className="gap-1.5 h-8">
@@ -529,8 +502,15 @@ export default function FeedPage() {
                       <Share2 className="w-4 h-4" />
                     </Button>
                   </div>
-                  <Button variant="ghost" size="sm" className="h-8" onClick={() => handleSave(post.id)}>
-                    <Bookmark className={cn('w-4 h-4', post.isSaved && 'fill-foreground')} />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8"
+                    onClick={() => handleSave(post.id)}
+                  >
+                    <Bookmark
+                      className={cn('w-4 h-4', post.isSaved && 'fill-foreground')}
+                    />
                   </Button>
                 </div>
               </CardContent>
@@ -541,7 +521,9 @@ export default function FeedPage() {
 
       {posts.length > 0 && (
         <div className="mt-8 text-center">
-          <Button variant="outline" className="rounded-full">Load More</Button>
+          <Button variant="outline" className="rounded-full">
+            Load More
+          </Button>
         </div>
       )}
 

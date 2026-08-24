@@ -65,8 +65,7 @@ export function mapApiError(error: unknown): MappedError {
     raw = error.message
     // Backend zod errors come back as `details: { fieldErrors: {...} }`
     const details = error.details as
-      | { fieldErrors?: Record<string, string[]> }
-      | undefined
+      { fieldErrors?: Record<string, string[]> } | undefined
     if (details?.fieldErrors) {
       fieldErrors = Object.fromEntries(
         Object.entries(details.fieldErrors).map(([k, v]) => [

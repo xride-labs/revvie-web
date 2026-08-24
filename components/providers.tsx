@@ -1,7 +1,6 @@
 'use client'
 
-import { Provider as ReduxProvider } from 'react-redux'
-import { store } from '@/store'
+import { StoreProvider } from '@/core/store/store-provider'
 import { Toaster } from '@/components/ui/sonner'
 
 interface ProvidersProps {
@@ -10,9 +9,9 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <ReduxProvider store={store}>
+    <StoreProvider>
       {children}
       <Toaster position="top-right" richColors closeButton />
-    </ReduxProvider>
+    </StoreProvider>
   )
 }

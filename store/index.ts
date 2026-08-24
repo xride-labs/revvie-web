@@ -1,32 +1,13 @@
-import { configureStore } from '@reduxjs/toolkit'
-import userReducer from './slices/userSlice'
-import clubsReducer from './slices/clubsSlice'
-import ridesReducer from './slices/ridesSlice'
-import marketplaceReducer from './slices/marketplaceSlice'
-import feedReducer from './slices/feedSlice'
-import adminReducer from './slices/adminSlice'
+/**
+ * Transitional barrel.
+ *
+ * Store infrastructure moved to `core/store/`; the thunk-based `features/` and `slices/`
+ * modules here are replaced feature-by-feature during the RTK Query migration. New code
+ * should import from `@/core/store/*` and `@/features/<domain>/api` directly.
+ */
+export { makeStore } from '@/core/store/make-store'
+export type { AppStore, RootState, AppDispatch } from '@/core/store/make-store'
+export { StoreProvider } from '@/core/store/store-provider'
+export { useAppDispatch, useAppSelector, useAppStore } from '@/core/store/hooks'
 
-export const store = configureStore({
-  reducer: {
-    user: userReducer,
-    clubs: clubsReducer,
-    rides: ridesReducer,
-    marketplace: marketplaceReducer,
-    feed: feedReducer,
-    admin: adminReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        // Ignore these action types
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
-      },
-    }),
-  devTools: process.env.NODE_ENV !== 'production',
-})
-
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
-
-// Export feature hooks, selectors, and thunks
 export * from './features'

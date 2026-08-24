@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, ArrowLeft, Mail } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { authClient, resolveAuthCallbackURL } from '@/lib/auth-client'
 
 export default function ForgotPasswordPage() {
@@ -62,10 +62,17 @@ export default function ForgotPasswordPage() {
           <div className="p-8">
             {/* Logo */}
             <div className="text-center mb-8">
-              <Link href="/" className="inline-flex items-center justify-center gap-2 mb-4">
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center gap-2 mb-4"
+              >
                 <div className="w-11 h-11 rounded-xl overflow-hidden border border-border shadow-[0_0_18px_rgba(229,0,0,0.2)]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/revvie-logo.png" alt="Revvie" className="w-full h-full object-cover" />
+                  {}
+                  <img
+                    src="/revvie-logo.png"
+                    alt="Revvie"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </Link>
 
@@ -130,7 +137,10 @@ export default function ForgotPasswordPage() {
                 )}
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="email" className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase">
+                  <Label
+                    htmlFor="email"
+                    className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase"
+                  >
                     Email
                   </Label>
                   <Input
@@ -151,7 +161,10 @@ export default function ForgotPasswordPage() {
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Sending…</>
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending…
+                    </>
                   ) : (
                     'Reset password'
                   )}

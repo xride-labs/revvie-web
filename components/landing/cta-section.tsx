@@ -3,10 +3,10 @@
 import { Button } from '@/components/ui/button'
 import { Zap, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, type Variants } from 'motion/react'
 
 export function CTASection() {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -17,7 +17,7 @@ export function CTASection() {
     },
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
@@ -26,7 +26,7 @@ export function CTASection() {
     },
   }
 
-  const badgeVariants = {
+  const badgeVariants: Variants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: {
       opacity: 1,
@@ -39,7 +39,7 @@ export function CTASection() {
     },
   }
 
-  const _decorativeVariants = {
+  const _decorativeVariants: Variants = {
     animate: {
       scale: [1, 1.2, 1],
       opacity: [0.5, 0.8, 0.5],

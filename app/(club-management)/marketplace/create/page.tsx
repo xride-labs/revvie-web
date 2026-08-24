@@ -2,7 +2,8 @@
 
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { marketplaceApi, mediaApi } from '@/lib/services'
+import { useCreateListingMutation, useUpdateListingMutation } from '@/features/marketplace/api'
+import { useUploadListingImageMutation } from '@/features/media/api'
 import { fileToDataUrl } from '@/lib/media-utils'
 import { useToast } from '@/hooks/use-toast'
 import {
@@ -23,28 +24,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ChevronLeft, ImagePlus, X, Plus, DollarSign, Loader2 } from 'lucide-react'
-import type {
-  ListingCategory,
-  ListingCondition,
-} from '@/store/slices/marketplaceSlice'
+import { ChevronLeft, X, Plus, DollarSign, Loader2 } from 'lucide-react'
+
+// `category`/`condition` are a strict enum on the backend's create validator
+// (`createListingSchema` in `src/validators/schemas.ts`) even though the persisted/
+// response field is a free string (Prisma `String?`) — see entities/listing/model.ts.
+// The values below used to be 'Bikes'/'Apparel'/'Tools'/'Excellent'/'For Parts', none of
+// which the backend accepts; every listing created through this form 400'd. Fixed to
+// the real enum: Motorcycle|Gear|Accessories|Parts|Other and New|Like New|Good|Fair|Poor.
+import type { ListingCategory, ListingCondition } from '@/features/marketplace/schemas'
 
 const categories: Array<{ label: string; value: ListingCategory }> = [
-  { label: 'Bikes', value: 'bikes' },
-  { label: 'Parts', value: 'parts' },
-  { label: 'Accessories', value: 'accessories' },
-  { label: 'Gear', value: 'gear' },
-  { label: 'Apparel', value: 'apparel' },
-  { label: 'Tools', value: 'tools' },
+  { label: 'Motorcycle', value: 'Motorcycle' },
+  { label: 'Parts', value: 'Parts' },
+  { label: 'Accessories', value: 'Accessories' },
+  { label: 'Gear', value: 'Gear' },
+  { label: 'Other', value: 'Other' },
 ]
 
 const conditions: Array<{ label: string; value: ListingCondition }> = [
-  { label: 'New', value: 'new' },
-  { label: 'Like New', value: 'like-new' },
-  { label: 'Excellent', value: 'excellent' },
-  { label: 'Good', value: 'good' },
-  { label: 'Fair', value: 'fair' },
-  { label: 'For Parts', value: 'parts-only' },
+  { label: 'New', value: 'New' },
+  { label: 'Like New', value: 'Like New' },
+  { label: 'Good', value: 'Good' },
+  { label: 'Fair', value: 'Fair' },
+  { label: 'Poor', value: 'Poor' },
 ]
 
 interface ListingFormData {
@@ -82,12 +85,14 @@ export default function CreateListingPage() {
     loading: loadingToast,
     dismiss: dismissToast,
   } = useToast()
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [createListing, { isLoading: isSubmitting }] = useCreateListingMutation()
+  const [updateListing] = useUpdateListingMutation()
+  const [uploadListingImage] = useUploadListingImageMutation()
   const [imageFiles, setImageFiles] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [listingData, setListingData] = useState<ListingFormData>(initialListingData)
 
-  const showMotorcycleFields = listingData.category === 'bikes'
+  const showMotorcycleFields = listingData.category === 'Motorcycle'
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files || [])
@@ -128,18 +133,17 @@ export default function CreateListingPage() {
       return
     }
 
-    setIsSubmitting(true)
     const loadingToastId = loadingToast('Publishing listing...', {
       description: 'Creating your listing and uploading images.',
     })
 
     const bikeDetails = showMotorcycleFields
       ? [
-        listingData.year ? `Year: ${listingData.year}` : null,
-        listingData.make ? `Make: ${listingData.make}` : null,
-        listingData.model ? `Model: ${listingData.model}` : null,
-        listingData.mileage ? `Mileage: ${listingData.mileage}` : null,
-      ].filter(Boolean)
+          listingData.year ? `Year: ${listingData.year}` : null,
+          listingData.make ? `Make: ${listingData.make}` : null,
+          listingData.model ? `Model: ${listingData.model}` : null,
+          listingData.mileage ? `Mileage: ${listingData.mileage}` : null,
+        ].filter(Boolean)
       : []
 
     const descriptionWithDetails =
@@ -148,21 +152,24 @@ export default function CreateListingPage() {
         : listingData.description.trim()
 
     try {
-      const { listing } = await marketplaceApi.createListing({
+      const { listing } = await createListing({
         title: listingData.title.trim(),
         description: descriptionWithDetails,
         price: parsedPrice,
-        category: listingData.category,
-        condition: listingData.condition,
-        location: listingData.location.trim(),
+        category: listingData.category || undefined,
+        condition: listingData.condition || undefined,
+        locationLabel: listingData.location.trim() || undefined,
         currency: 'USD',
-        images: [],
-      })
+        visibility: 'PUBLIC',
+      }).unwrap()
 
       const uploadedImages: string[] = []
       for (const file of imageFiles) {
         const dataUrl = await fileToDataUrl(file)
-        const uploadResponse = await mediaApi.uploadListingImage(listing.id, dataUrl)
+        const uploadResponse = await uploadListingImage({
+          listingId: listing.id,
+          file: dataUrl,
+        }).unwrap()
         const imageUrl = uploadResponse.imageUrl || uploadResponse.media?.secureUrl
         if (imageUrl) {
           uploadedImages.push(imageUrl)
@@ -170,7 +177,10 @@ export default function CreateListingPage() {
       }
 
       if (uploadedImages.length > 0) {
-        await marketplaceApi.updateListing(listing.id, { images: uploadedImages })
+        await updateListing({
+          listingId: listing.id,
+          data: { images: uploadedImages },
+        }).unwrap()
       }
 
       successToast('Listing published', {
@@ -185,7 +195,6 @@ export default function CreateListingPage() {
       })
     } finally {
       dismissToast(loadingToastId)
-      setIsSubmitting(false)
     }
   }
 

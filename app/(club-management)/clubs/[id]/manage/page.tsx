@@ -2,124 +2,38 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { clubsApi } from '@/lib/services'
+import {
+  useGetClubQuery,
+  useGetPendingRequestsQuery,
+  useApproveRequestMutation,
+  useRejectRequestMutation,
+  useUpdateMemberRoleMutation,
+  useRemoveMemberMutation,
+  useDeleteClubMutation,
+  useUpdateClubMutation,
+} from '@/features/clubs/api'
+import type { ClubMember } from '@/entities/club/model'
+import type { ClubRequestsResponse } from '@/features/clubs/schemas'
 import { mapApiError } from '@/lib/errors'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Switch } from '@/components/ui/switch'
-import { Separator } from '@/components/ui/separator'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Checkbox } from '@/components/ui/checkbox'
 import { useBulkSelection } from '@/hooks/use-bulk-selection'
-import { BulkActionBar } from '@/components/bulk-action-bar'
-import { performClubManagerBulkAction } from '@/lib/server/admin'
-import {
-  ChevronLeft,
-  Settings,
-  Users,
-  Shield,
-  Bell,
-  Trash2,
-  UserMinus,
-  Crown,
-  MoreHorizontal,
-  Check,
-  X,
-  AlertTriangle,
-  Loader2,
-  BarChart3,
-} from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { usePerformClubManagerBulkActionMutation } from '@/features/admin/api'
+import { ChevronLeft, Settings, Users, Shield, Bell, BarChart3 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
 
-interface ClubSettings {
-  id: string
-  name: string
-  description: string
-  location: string
-  isPublic: boolean
-  requireApproval: boolean
-  allowMemberInvites: boolean
-  showMemberList: boolean
-}
+import type { ClubSettings } from './_lib/constants'
+import { MembersTab } from './_components/members-tab'
+import { RequestsTab } from './_components/requests-tab'
+import { SettingsTab } from './_components/settings-tab'
+import { DangerTab } from './_components/danger-tab'
+import { RemoveMemberDialog } from './_components/remove-member-dialog'
+import { DeleteClubDialog } from './_components/delete-club-dialog'
 
-interface Member {
-  id: string
-  userId?: string
-  name: string
-  username?: string
-  role: string
-  joinedAt: string
-  status?: string
-  user?: {
-    id: string
-    name: string
-    image: string | null
-  }
-}
-
-interface PendingRequest {
-  id: string
-  user: {
-    id: string
-    name: string
-    username: string
-  }
-  message: string
-  requestedAt: string
-}
-
-const roleOptions = ['MEMBER', 'OFFICER', 'ADMIN']
-
-const roleColors = {
-  FOUNDER: 'bg-amber-100 text-amber-700',
-  ADMIN: 'bg-red-100 text-red-700',
-  OFFICER: 'bg-blue-100 text-blue-700',
-  MEMBER: 'bg-gray-100 text-gray-700',
-}
+type Member = ClubMember
+type PendingRequest = ClubRequestsResponse['requests'][number]
 
 export default function ClubManagePage() {
   const params = useParams()
@@ -130,133 +44,65 @@ export default function ClubManagePage() {
     loading: loadingToast,
     dismiss: dismissToast,
   } = useToast()
+  const clubId = params.id as string
   const [activeTab, setActiveTab] = useState('members')
   const [clubSettings, setClubSettings] = useState<ClubSettings | null>(null)
-  const [members, setMembers] = useState<Member[]>([])
-  const [pendingRequests, setPendingRequests] = useState<PendingRequest[]>([])
   const [isSavingSettings, setIsSavingSettings] = useState(false)
-  const [settingsFieldErrors, setSettingsFieldErrors] = useState<Record<string, string>>({})
+  const [settingsFieldErrors, setSettingsFieldErrors] = useState<Record<string, string>>(
+    {},
+  )
   const [selectedMember, setSelectedMember] = useState<Member | null>(null)
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false)
   const [isDeleteClubDialogOpen, setIsDeleteClubDialogOpen] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+
+  const {
+    data: clubResponse,
+    isLoading: clubLoading,
+    isError: clubError,
+  } = useGetClubQuery(clubId, { skip: !clubId })
+  const { data: pendingResponse, isLoading: pendingLoading } = useGetPendingRequestsQuery(
+    clubId,
+    { skip: !clubId },
+  )
+  const [approveRequest] = useApproveRequestMutation()
+  const [rejectRequest] = useRejectRequestMutation()
+  const [updateMemberRole] = useUpdateMemberRoleMutation()
+  const [removeMember] = useRemoveMemberMutation()
+  const [deleteClub] = useDeleteClubMutation()
+  const [updateClub] = useUpdateClubMutation()
+
+  const loading = clubLoading || pendingLoading
+  const error = clubError ? 'Failed to load club management data' : null
+  const members: Member[] = clubResponse?.club.members ?? []
+  const pendingRequests: PendingRequest[] = pendingResponse?.requests ?? []
 
   useEffect(() => {
-    const fetchClubData = async () => {
-      const loadingToastId = loadingToast('Loading club management...', {
-        description: 'Fetching settings, members, and requests.',
-      })
-      try {
-        setLoading(true)
-        const clubId = params.id as string
-
-        const [clubResponse, pendingResponse] = await Promise.all([
-          clubsApi.getClub(clubId),
-          clubsApi.getPendingRequests(clubId),
-        ])
-
-        const clubData = clubResponse.club
-        setClubSettings({
-          id: clubData.id,
-          name: clubData.name,
-          description: clubData.description,
-          location: clubData.location,
-          isPublic: clubData.isPublic ?? !clubData.isPrivate,
-          requireApproval: clubData.requireApproval ?? true,
-          allowMemberInvites: clubData.allowMemberInvites ?? true,
-          showMemberList: clubData.showMemberList ?? true,
-        })
-
-        // Extract members from club details, transform to local Member type
-        const clubMembers = (clubData.members || []).map(
-          (m: {
-            id?: string
-            userId?: string
-            role: string
-            joinedAt?: string
-            user?: {
-              id: string
-              name: string
-              username?: string
-              image: string | null
-            }
-          }) => ({
-            id: m.id || m.userId || '',
-            userId: m.userId || m.user?.id,
-            name: m.user?.name || 'Unknown',
-            username: m.user?.username,
-            role: m.role,
-            joinedAt: m.joinedAt || new Date().toISOString(),
-            user: m.user,
-          }),
-        )
-        setMembers(clubMembers)
-
-        const mappedPendingRequests = (pendingResponse.requests || []).map(
-          (request: {
-            id: string
-            userId?: string
-            name?: string
-            username?: string
-            joinedAt?: string
-            requestedAt?: string
-            message?: string
-            user?: {
-              id?: string
-              name?: string
-              username?: string
-            }
-          }) => {
-            const requesterId = request.userId || request.user?.id || request.id
-            return {
-              id: requesterId,
-              user: {
-                id: requesterId,
-                name: request.user?.name || request.name || 'Unknown',
-                username: request.user?.username || request.username || 'unknown',
-              },
-              message: request.message || '',
-              requestedAt:
-                request.requestedAt || request.joinedAt || new Date().toISOString(),
-            }
-          },
-        )
-        setPendingRequests(mappedPendingRequests)
-      } catch (err) {
-        setError('Failed to load club management data')
-        console.error(err)
-        errorToast('Failed to load club management', {
-          description: err instanceof Error ? err.message : 'Please refresh and try again.',
-        })
-      } finally {
-        dismissToast(loadingToastId)
-        setLoading(false)
-      }
-    }
-
-    if (params.id) {
-      fetchClubData()
-    }
-  }, [params.id, dismissToast, errorToast, loadingToast])
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+    if (!clubResponse) return
+    const clubData = clubResponse.club
+    setClubSettings({
+      id: clubData.id,
+      name: clubData.name,
+      description: clubData.description,
+      location: clubData.location,
+      isPublic: clubData.isPublic,
+      // The backend does not return these three on GET /clubs/:id — the previous
+      // `clubData.requireApproval ?? true` read undefined and fell through to the
+      // default on every load, so the toggles never reflected saved state. Kept as
+      // explicit defaults until the backend exposes them.
+      requireApproval: true,
+      allowMemberInvites: true,
+      showMemberList: true,
     })
-  }
+  }, [clubResponse])
 
-  const handleApproveRequest = async (requestId: string) => {
+  const handleApproveRequest = async (requestId: string, userId: string) => {
     if (!clubSettings) return
     const loadingToastId = loadingToast('Approving request...', {
       description: 'Updating membership status.',
     })
     try {
-      await clubsApi.approveRequest(clubSettings.id, requestId)
-      setPendingRequests((prev) => prev.filter((request) => request.id !== requestId))
+      await approveRequest({ clubId: clubSettings.id, userId }).unwrap()
       successToast('Request approved')
     } catch (err) {
       console.error('Failed to approve request:', err)
@@ -268,14 +114,13 @@ export default function ClubManagePage() {
     }
   }
 
-  const handleRejectRequest = async (requestId: string) => {
+  const handleRejectRequest = async (requestId: string, userId: string) => {
     if (!clubSettings) return
     const loadingToastId = loadingToast('Rejecting request...', {
       description: 'Updating membership status.',
     })
     try {
-      await clubsApi.rejectRequest(clubSettings.id, requestId)
-      setPendingRequests((prev) => prev.filter((request) => request.id !== requestId))
+      await rejectRequest({ clubId: clubSettings.id, userId }).unwrap()
       successToast('Request rejected')
     } catch (err) {
       console.error('Failed to reject request:', err)
@@ -290,6 +135,7 @@ export default function ClubManagePage() {
   // ── Bulk approve/reject of join requests (club-manager scope) ──────────────
   const reqSel = useBulkSelection()
   const [bulkBusy, setBulkBusy] = useState<'approve' | 'reject' | null>(null)
+  const [performClubManagerBulkAction] = usePerformClubManagerBulkActionMutation()
 
   const runBulkRequests = async (action: 'approve' | 'reject') => {
     if (!clubSettings || reqSel.count === 0) return
@@ -303,8 +149,7 @@ export default function ClubManagePage() {
         module: 'club-member-requests',
         action,
         ids,
-      })
-      setPendingRequests((prev) => prev.filter((r) => !ids.includes(r.id)))
+      }).unwrap()
       reqSel.clear()
       successToast(
         `${result.processed} request${result.processed === 1 ? '' : 's'} ${action === 'approve' ? 'approved' : 'rejected'}`,
@@ -327,10 +172,11 @@ export default function ClubManagePage() {
     const member = members.find((m) => m.id === memberId)
     const userId = member?.userId || memberId
     try {
-      await clubsApi.updateMemberRole(clubSettings.id, userId, newRole)
-      setMembers((prev) =>
-        prev.map((m) => (m.id === memberId ? { ...m, role: newRole } : m)),
-      )
+      await updateMemberRole({
+        clubId: clubSettings.id,
+        userId,
+        data: { role: newRole as 'MEMBER' | 'OFFICER' | 'ADMIN' },
+      }).unwrap()
       successToast('Member role updated')
     } catch (err) {
       console.error('Failed to update member role:', err)
@@ -349,8 +195,7 @@ export default function ClubManagePage() {
     })
     const userId = selectedMember.userId || selectedMember.id
     try {
-      await clubsApi.removeMember(clubSettings.id, userId)
-      setMembers((prev) => prev.filter((m) => m.id !== selectedMember.id))
+      await removeMember({ clubId: clubSettings.id, userId }).unwrap()
       setIsRemoveDialogOpen(false)
       setSelectedMember(null)
       successToast('Member removed')
@@ -370,7 +215,7 @@ export default function ClubManagePage() {
       description: 'Removing club data and members.',
     })
     try {
-      await clubsApi.deleteClub(clubSettings.id)
+      await deleteClub(clubSettings.id).unwrap()
       successToast('Club deleted')
       router.push('/clubs')
     } catch (err) {
@@ -391,19 +236,15 @@ export default function ClubManagePage() {
       description: 'Updating club configuration.',
     })
     try {
-      const { club } = await clubsApi.updateClub(clubSettings.id, {
-        name: clubSettings.name,
-        description: clubSettings.description,
-        location: clubSettings.location,
-        isPublic: clubSettings.isPublic,
-      })
-      setClubSettings({
-        ...clubSettings,
-        name: club.name,
-        description: club.description || clubSettings.description,
-        location: club.location || clubSettings.location,
-        isPublic: club.isPublic ?? clubSettings.isPublic,
-      })
+      await updateClub({
+        clubId: clubSettings.id,
+        data: {
+          name: clubSettings.name,
+          description: clubSettings.description,
+          location: clubSettings.location,
+          isPublic: clubSettings.isPublic,
+        },
+      }).unwrap()
       successToast('Club settings saved')
     } catch (err) {
       console.error('Failed to update club settings:', err)
@@ -464,7 +305,11 @@ export default function ClubManagePage() {
           <h1 className="text-2xl font-bold">Manage Club</h1>
           <p className="text-sm text-muted-foreground">{clubSettings.name}</p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => router.push(`/clubs/${params.id}/analytics`)}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.push(`/clubs/${params.id}/analytics`)}
+        >
           <BarChart3 className="w-4 h-4 mr-2" />
           Analytics
         </Button>
@@ -495,458 +340,59 @@ export default function ClubManagePage() {
           </TabsTrigger>
         </TabsList>
 
-        {/* Members Tab */}
         <TabsContent value="members">
-          <Card>
-            <CardHeader>
-              <CardTitle>Club Members ({members.length})</CardTitle>
-              <CardDescription>Manage member roles and permissions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Member</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Joined</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {members.map((member) => (
-                    <TableRow key={member.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar>
-                            <AvatarFallback>
-                              {member.name
-                                .split(' ')
-                                .map((n) => n[0])
-                                .join('')}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">{member.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              @{member.username}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {member.role === 'FOUNDER' ? (
-                          <Badge className={roleColors.FOUNDER}>
-                            <Crown className="w-3 h-3 mr-1" />
-                            FOUNDER
-                          </Badge>
-                        ) : (
-                          <Select
-                            defaultValue={member.role}
-                            onValueChange={(val) => handleRoleChange(member.id, val)}
-                          >
-                            <SelectTrigger className="w-32">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {roleOptions.map((role) => (
-                                <SelectItem key={role} value={role}>
-                                  {role}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
-                      </TableCell>
-                      <TableCell>{formatDate(member.joinedAt)}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
-                          className="text-green-600 border-green-600"
-                        >
-                          Active
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {member.role !== 'FOUNDER' && (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreHorizontal className="w-4 h-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>View Profile</DropdownMenuItem>
-                              <DropdownMenuItem>Send Message</DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-red-600"
-                                onClick={() => {
-                                  setSelectedMember(member)
-                                  setIsRemoveDialogOpen(true)
-                                }}
-                              >
-                                <UserMinus className="w-4 h-4 mr-2" />
-                                Remove Member
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Requests Tab */}
-        <TabsContent value="requests">
-          <Card>
-            <CardHeader>
-              <CardTitle>Pending Join Requests</CardTitle>
-              <CardDescription>Review and approve member requests</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {pendingRequests.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  No pending requests
-                </div>
-              ) : (
-                <ScrollArea className="h-100">
-                  {/* Select-all → enables bulk approve/reject via the action bar */}
-                  <div className="flex items-center gap-2 mb-3 px-1">
-                    <Checkbox
-                      checked={reqSel.allSelected(pendingRequests.map((r) => r.id))}
-                      onCheckedChange={() =>
-                        reqSel.toggleAll(pendingRequests.map((r) => r.id))
-                      }
-                      aria-label="Select all requests"
-                    />
-                    <span className="text-xs text-muted-foreground">
-                      Select all ({pendingRequests.length})
-                    </span>
-                  </div>
-                  <div className="space-y-4">
-                    {pendingRequests.map((request) => (
-                      <div
-                        key={request.id}
-                        className="flex items-start gap-4 p-4 border rounded-lg"
-                      >
-                        <Checkbox
-                          checked={reqSel.isSelected(request.id)}
-                          onCheckedChange={() => reqSel.toggle(request.id)}
-                          className="mt-1"
-                          aria-label={`Select ${request.user.name}`}
-                        />
-                        <Avatar>
-                          <AvatarFallback>
-                            {request.user.name
-                              .split(' ')
-                              .map((n) => n[0])
-                              .join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-medium">{request.user.name}</p>
-                              <p className="text-sm text-muted-foreground">
-                                @{request.user.username}
-                              </p>
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                              {formatDate(request.requestedAt)}
-                            </p>
-                          </div>
-                          {request.message && (
-                            <p className="mt-2 text-sm bg-muted p-3 rounded-lg">
-                              &quot;{request.message}&quot;
-                            </p>
-                          )}
-                          <div className="flex gap-2 mt-3">
-                            <Button
-                              size="sm"
-                              onClick={() => handleApproveRequest(request.id)}
-                            >
-                              <Check className="w-4 h-4 mr-1" />
-                              Approve
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleRejectRequest(request.id)}
-                            >
-                              <X className="w-4 h-4 mr-1" />
-                              Reject
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              )}
-            </CardContent>
-          </Card>
-
-          <BulkActionBar
-            count={reqSel.count}
-            busyKey={bulkBusy}
-            onClear={reqSel.clear}
-            actions={[
-              {
-                key: 'approve',
-                label: 'Approve',
-                icon: <Check className="h-4 w-4" />,
-                onClick: () => runBulkRequests('approve'),
-              },
-              {
-                key: 'reject',
-                label: 'Reject',
-                variant: 'outline',
-                icon: <X className="h-4 w-4" />,
-                onClick: () => runBulkRequests('reject'),
-              },
-            ]}
+          <MembersTab
+            members={members}
+            onRoleChange={handleRoleChange}
+            onSelectForRemoval={(member) => {
+              setSelectedMember(member)
+              setIsRemoveDialogOpen(true)
+            }}
           />
         </TabsContent>
 
-        {/* Settings Tab */}
-        <TabsContent value="settings">
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Club Information</CardTitle>
-                <CardDescription>
-                  Update your club&apos;s basic information
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Club Name</Label>
-                  <Input
-                    id="name"
-                    value={clubSettings.name}
-                    onChange={(e) =>
-                      setClubSettings({ ...clubSettings, name: e.target.value })
-                    }
-                    aria-invalid={!!settingsFieldErrors.name}
-                  />
-                  {settingsFieldErrors.name && (
-                    <p className="text-xs text-destructive">{settingsFieldErrors.name}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={clubSettings.description}
-                    onChange={(e) =>
-                      setClubSettings({ ...clubSettings, description: e.target.value })
-                    }
-                    rows={4}
-                    aria-invalid={!!settingsFieldErrors.description}
-                  />
-                  {settingsFieldErrors.description && (
-                    <p className="text-xs text-destructive">{settingsFieldErrors.description}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    value={clubSettings.location}
-                    onChange={(e) =>
-                      setClubSettings({ ...clubSettings, location: e.target.value })
-                    }
-                    aria-invalid={!!settingsFieldErrors.location}
-                  />
-                  {settingsFieldErrors.location && (
-                    <p className="text-xs text-destructive">{settingsFieldErrors.location}</p>
-                  )}
-                </div>
-                <Button onClick={handleSaveSettings} disabled={isSavingSettings}>
-                  {isSavingSettings ? (
-                    <><Loader2 className="w-4 h-4 animate-spin mr-2" />Saving…</>
-                  ) : (
-                    'Save Changes'
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Privacy & Access</CardTitle>
-                <CardDescription>Control who can see and join your club</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Public Club</p>
-                    <p className="text-sm text-muted-foreground">
-                      Anyone can find and view this club
-                    </p>
-                  </div>
-                  <Switch
-                    checked={clubSettings.isPublic}
-                    onCheckedChange={(checked) =>
-                      setClubSettings({ ...clubSettings, isPublic: checked })
-                    }
-                  />
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Require Approval</p>
-                    <p className="text-sm text-muted-foreground">
-                      New members must be approved
-                    </p>
-                  </div>
-                  <Switch
-                    checked={clubSettings.requireApproval}
-                    onCheckedChange={(checked) =>
-                      setClubSettings({ ...clubSettings, requireApproval: checked })
-                    }
-                  />
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Allow Member Invites</p>
-                    <p className="text-sm text-muted-foreground">
-                      Members can invite others
-                    </p>
-                  </div>
-                  <Switch
-                    checked={clubSettings.allowMemberInvites}
-                    onCheckedChange={(checked) =>
-                      setClubSettings({ ...clubSettings, allowMemberInvites: checked })
-                    }
-                  />
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Show Member List</p>
-                    <p className="text-sm text-muted-foreground">
-                      Non-members can see the member list
-                    </p>
-                  </div>
-                  <Switch
-                    checked={clubSettings.showMemberList}
-                    onCheckedChange={(checked) =>
-                      setClubSettings({ ...clubSettings, showMemberList: checked })
-                    }
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        <TabsContent value="requests">
+          <RequestsTab
+            pendingRequests={pendingRequests}
+            reqSel={reqSel}
+            bulkBusy={bulkBusy}
+            onApprove={handleApproveRequest}
+            onReject={handleRejectRequest}
+            onBulkApprove={() => runBulkRequests('approve')}
+            onBulkReject={() => runBulkRequests('reject')}
+          />
         </TabsContent>
 
-        {/* Danger Zone Tab */}
+        <TabsContent value="settings">
+          <SettingsTab
+            clubSettings={clubSettings}
+            onChange={setClubSettings}
+            fieldErrors={settingsFieldErrors}
+            isSaving={isSavingSettings}
+            onSave={handleSaveSettings}
+          />
+        </TabsContent>
+
         <TabsContent value="danger">
-          <Card className="border-red-200">
-            <CardHeader>
-              <CardTitle className="text-red-600">Danger Zone</CardTitle>
-              <CardDescription>
-                These actions are irreversible. Proceed with caution.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <Alert variant="destructive">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>Warning</AlertTitle>
-                <AlertDescription>
-                  Deleting a club will permanently remove all club data including member
-                  lists, ride history, and conversations. This action cannot be undone.
-                </AlertDescription>
-              </Alert>
-              <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg">
-                <div>
-                  <p className="font-medium text-red-600">Delete Club</p>
-                  <p className="text-sm text-muted-foreground">
-                    Permanently delete this club and all its data
-                  </p>
-                </div>
-                <Button
-                  variant="destructive"
-                  onClick={() => setIsDeleteClubDialogOpen(true)}
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete Club
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <DangerTab onRequestDelete={() => setIsDeleteClubDialogOpen(true)} />
         </TabsContent>
       </Tabs>
 
-      {/* Remove Member Dialog */}
-      <Dialog open={isRemoveDialogOpen} onOpenChange={setIsRemoveDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Remove Member</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to remove {selectedMember?.name} from the club? They
-              will need to request to join again.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsRemoveDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleRemoveMember}>
-              Remove Member
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <RemoveMemberDialog
+        open={isRemoveDialogOpen}
+        onOpenChange={setIsRemoveDialogOpen}
+        member={selectedMember}
+        onConfirm={handleRemoveMember}
+      />
 
-      {/* Delete Club Dialog */}
-      <Dialog open={isDeleteClubDialogOpen} onOpenChange={setIsDeleteClubDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-red-600">Delete Club</DialogTitle>
-            <DialogDescription>
-              This action is permanent and cannot be undone. All club data will be lost.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Label htmlFor="confirm">
-              Type <strong>{clubSettings.name}</strong> to confirm deletion
-            </Label>
-            <Input
-              id="confirm"
-              className="mt-2"
-              value={deleteConfirmText}
-              onChange={(e) => setDeleteConfirmText(e.target.value)}
-              placeholder="Enter club name"
-            />
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsDeleteClubDialogOpen(false)
-                setDeleteConfirmText('')
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={deleteConfirmText !== clubSettings.name}
-              onClick={handleDeleteClub}
-            >
-              Delete Forever
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteClubDialog
+        open={isDeleteClubDialogOpen}
+        onOpenChange={setIsDeleteClubDialogOpen}
+        clubName={clubSettings.name}
+        confirmText={deleteConfirmText}
+        onConfirmTextChange={setDeleteConfirmText}
+        onConfirm={handleDeleteClub}
+      />
     </div>
   )
 }

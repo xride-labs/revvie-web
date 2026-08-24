@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -34,7 +34,6 @@ import {
   Trophy,
   Bike,
   Image as ImageIcon,
-  Loader2,
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -43,7 +42,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import Link from 'next/link'
-import { userApi, mediaApi } from '@/lib/services'
+import { useGetMyProfileQuery, useGetPublicProfileQuery } from '@/features/user/api'
+import { useUploadProfileGalleryMutation } from '@/features/media/api'
 import { fileToDataUrl } from '@/lib/media-utils'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
@@ -93,6 +93,11 @@ interface UserProfile {
 export default function ProfilePage() {
   const params = useParams()
   const router = useRouter()
+  // Despite the name, this is treated as a username below (`getPublicProfile(username)` →
+  // `GET /users/${username}`) — but that route takes a user **id**, not a username
+  // (verified: `/users/admin` → 400 "Invalid ID format"). Any link into this route that
+  // passes a real username (as opposed to `'me'`) will fail to load. Not fixed here —
+  // see the note in features/user/endpoints.ts for what a real fix requires.
   const username = params.id as string
   const {
     success: successToast,
@@ -101,58 +106,42 @@ export default function ProfilePage() {
     dismiss: dismissToast,
   } = useToast()
 
-  const [user, setUser] = useState<UserProfile | null>(null)
-  const [loading, setLoading] = useState(true)
   const [isFollowing, setIsFollowing] = useState(false)
   const [isUnfollowDialogOpen, setIsUnfollowDialogOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
+  // The profile response has no `gallery` field (see entities/user/model.ts) — this is
+  // session-local only, populated by uploads below, never loaded from the server.
   const [galleryItems, setGalleryItems] = useState<
     Array<{ id: string; url: string | null }>
   >([])
   const [isGalleryDialogOpen, setIsGalleryDialogOpen] = useState(false)
   const [galleryFiles, setGalleryFiles] = useState<File[]>([])
-  const [isGalleryUploading, setIsGalleryUploading] = useState(false)
+  const [uploadProfileGallery, { isLoading: isGalleryUploading }] =
+    useUploadProfileGalleryMutation()
 
   const isOwnProfile = username === 'me'
 
-  useEffect(() => {
-    fetchProfile()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [username])
+  const { data: meData, isLoading: meLoading } = useGetMyProfileQuery(undefined, {
+    skip: !isOwnProfile,
+  })
+  const { data: publicData, isLoading: publicLoading } = useGetPublicProfileQuery(
+    username,
+    { skip: isOwnProfile },
+  )
+  const loading = isOwnProfile ? meLoading : publicLoading
+  const userData = (isOwnProfile ? meData : publicData)?.user
 
-  const fetchProfile = async () => {
-    const loadingToastId = loadingToast('Loading profile...', {
-      description: 'Fetching profile details and gallery.',
-    })
-    try {
-      setLoading(true)
-      const response =
-        username === 'me'
-          ? await userApi.getProfile()
-          : await userApi.getPublicProfile(username)
-      const userData = response.user
-      setUser({
+  const user: UserProfile | null = userData
+    ? {
         id: userData.id,
         name: userData.name || '',
         username: userData.username || '',
-        bio: userData.bio,
-        location: userData.location,
+        bio: userData.bio ?? undefined,
+        location: userData.location ?? undefined,
         avatar: userData.avatar,
-      })
-      setGalleryItems(
-        (userData as { gallery?: Array<{ id: string; url: string | null }> }).gallery ||
-        [],
-      )
-    } catch (err) {
-      console.error('Failed to fetch profile:', err)
-      errorToast('Failed to load profile', {
-        description: err instanceof Error ? err.message : 'Please refresh and try again.',
-      })
-    } finally {
-      dismissToast(loadingToastId)
-      setLoading(false)
-    }
-  }
+      }
+    : null
+
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -180,11 +169,10 @@ export default function ProfilePage() {
       description: `Uploading ${galleryFiles.length} image(s).`,
     })
     try {
-      setIsGalleryUploading(true)
       const uploads = [] as Array<{ id: string; url: string | null }>
       for (const file of galleryFiles) {
         const dataUrl = await fileToDataUrl(file)
-        const response = await mediaApi.uploadProfileGallery(dataUrl)
+        const response = await uploadProfileGallery(dataUrl).unwrap()
         uploads.push({
           id: response.media?.publicId?.toString() || `${Date.now()}-${file.name}`,
           url: response.imageUrl || response.media?.secureUrl || dataUrl,
@@ -203,7 +191,6 @@ export default function ProfilePage() {
       })
     } finally {
       dismissToast(loadingToastId)
-      setIsGalleryUploading(false)
     }
   }
 

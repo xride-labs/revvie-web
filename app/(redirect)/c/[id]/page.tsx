@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = club ? `Join ${club.name} on Revvie` : 'Join a club on Revvie'
   const description = club
     ? `${club.memberCount} member${club.memberCount !== 1 ? 's' : ''}${club.location ? ` · ${club.location}` : ''}${club.description ? ` — ${club.description}` : ''}`
-    : "Someone shared a club with you. Open the Revvie app to see members, rides, and request to join."
+    : 'Someone shared a club with you. Open the Revvie app to see members, rides, and request to join.'
   return {
     title,
     description,

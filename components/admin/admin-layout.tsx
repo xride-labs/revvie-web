@@ -115,13 +115,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         user,
         'CLUB_OWNER',
         'CLUB_ADMIN',
-        'CLUB_MODERATOR', 
+        'CLUB_MODERATOR',
         'BRAND_OWNER',
         'BRAND_ADMIN',
         'BRAND_MODERATOR',
         'CO_ADMIN',
         'ADMIN',
-        'MODERATOR'
+        'MODERATOR',
       )
       if (debugAuth) {
         console.warn('[AdminLayout] user is not admin', {

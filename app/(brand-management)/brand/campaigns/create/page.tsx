@@ -9,20 +9,31 @@ import { Label } from '@/components/ui/label'
 import { Loader2, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useToast } from '@/hooks/use-toast'
-import { businessApi, type AdSlot } from '@/lib/server/business'
+import { useCreateCampaignMutation } from '@/features/business/api'
+import { useBusinessContext } from '@/contexts/business-context'
+import type { AdPlacementSlot as AdSlot } from '@/entities/business/model'
 
 const AD_SLOTS: { value: AdSlot; label: string; description: string }[] = [
   { value: 'HOME_FEED', label: 'Home Feed', description: 'Top of the home tab' },
   { value: 'DISCOVER_TOP', label: 'Discover', description: 'Discover tab hero banner' },
-  { value: 'MARKETPLACE_INLINE', label: 'Marketplace', description: 'Inline between listings' },
+  {
+    value: 'MARKETPLACE_INLINE',
+    label: 'Marketplace',
+    description: 'Inline between listings',
+  },
   { value: 'CHAT_LIST_TOP', label: 'Chat List', description: 'Top of conversations' },
-  { value: 'POST_RIDE_SUMMARY', label: 'Post-Ride', description: 'Shown after a ride ends' },
+  {
+    value: 'POST_RIDE_SUMMARY',
+    label: 'Post-Ride',
+    description: 'Shown after a ride ends',
+  },
 ]
 
 export default function CreateCampaignPage() {
   const router = useRouter()
   const { success: successToast, error: errorToast } = useToast()
-  const [loading, setLoading] = useState(false)
+  const { business } = useBusinessContext()
+  const [createCampaign, { isLoading: loading }] = useCreateCampaignMutation()
   const [form, setForm] = useState({
     title: '',
     ctaLabel: '',
@@ -49,26 +60,31 @@ export default function CreateCampaignPage() {
       errorToast('Select at least one ad placement')
       return
     }
-    setLoading(true)
+    if (!business) {
+      errorToast('No brand profile found')
+      return
+    }
     try {
-      const businesses = await businessApi.getMyBusinesses()
-      if (!businesses.length) throw new Error('No brand profile found')
-      await businessApi.createCampaign(businesses[0].id, {
-        title: form.title,
-        ctaLabel: form.ctaLabel,
-        ctaUrl: form.ctaUrl || null,
-        imageUrl: form.imageUrl,
-        startsAt: new Date(form.startsAt).toISOString(),
-        endsAt: new Date(form.endsAt).toISOString(),
-        budgetPaise: form.budgetPaise ? parseInt(form.budgetPaise) * 100 : 0,
-        slots: form.selectedSlots,
+      await createCampaign({
+        businessId: business.id,
+        data: {
+          title: form.title,
+          ctaLabel: form.ctaLabel,
+          ctaUrl: form.ctaUrl || null,
+          imageUrl: form.imageUrl,
+          startsAt: new Date(form.startsAt).toISOString(),
+          endsAt: new Date(form.endsAt).toISOString(),
+          budgetPaise: form.budgetPaise ? parseInt(form.budgetPaise) * 100 : 0,
+          slots: form.selectedSlots,
+          targetTags: [],
+        },
+      }).unwrap()
+      successToast('Campaign submitted for review!', {
+        description: 'Admin will approve it before it goes live.',
       })
-      successToast('Campaign submitted for review!', { description: 'Admin will approve it before it goes live.' })
       router.push('/brand/campaigns')
     } catch (err) {
       errorToast(err instanceof Error ? err.message : 'Failed to create campaign')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -76,17 +92,23 @@ export default function CreateCampaignPage() {
     <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="flex items-center gap-3 mb-6">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/brand/campaigns"><ArrowLeft className="w-4 h-4" /></Link>
+          <Link href="/brand/campaigns">
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
         </Button>
         <div>
           <h2 className="text-2xl font-bold">New Campaign</h2>
-          <p className="text-sm text-muted-foreground">Campaigns go live after admin approval</p>
+          <p className="text-sm text-muted-foreground">
+            Campaigns go live after admin approval
+          </p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
-          <CardHeader><CardTitle className="text-base">Campaign Details</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base">Campaign Details</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1.5">
               <Label>Campaign Title</Label>
@@ -108,7 +130,10 @@ export default function CreateCampaignPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>CTA URL <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                <Label>
+                  CTA URL{' '}
+                  <span className="text-muted-foreground text-xs">(optional)</span>
+                </Label>
                 <Input
                   placeholder="https://..."
                   value={form.ctaUrl}
@@ -146,7 +171,10 @@ export default function CreateCampaignPage() {
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label>Budget (₹) <span className="text-muted-foreground text-xs">(optional)</span></Label>
+              <Label>
+                Budget (₹){' '}
+                <span className="text-muted-foreground text-xs">(optional)</span>
+              </Label>
               <Input
                 type="number"
                 placeholder="e.g. 5000"
@@ -158,7 +186,9 @@ export default function CreateCampaignPage() {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">Ad Placements</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base">Ad Placements</CardTitle>
+          </CardHeader>
           <CardContent>
             <div className="space-y-2">
               {AD_SLOTS.map((slot) => (
@@ -185,7 +215,14 @@ export default function CreateCampaignPage() {
           className="w-full bg-amber-500 hover:bg-amber-600 text-white h-12"
           disabled={loading}
         >
-          {loading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Submitting...</> : 'Submit Campaign for Review'}
+          {loading ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              Submitting...
+            </>
+          ) : (
+            'Submit Campaign for Review'
+          )}
         </Button>
       </form>
     </div>

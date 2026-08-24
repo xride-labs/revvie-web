@@ -69,7 +69,12 @@ export default async function RideSharePage({ params }: PageProps) {
               { label: 'Start', value: ride.startLocation },
               { label: 'Riders', value: String(ride.participantCount) },
               ...(ride.scheduledAt
-                ? [{ label: 'When', value: new Date(ride.scheduledAt).toLocaleDateString() }]
+                ? [
+                    {
+                      label: 'When',
+                      value: new Date(ride.scheduledAt).toLocaleDateString(),
+                    },
+                  ]
                 : []),
             ]
           : undefined

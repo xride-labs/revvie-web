@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, type Variants } from 'motion/react'
 import { Users, MapPin, Radio, Shield, Compass } from 'lucide-react'
 
 const features = [
@@ -59,7 +59,7 @@ const features = [
 ]
 
 export function FeaturesSection() {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -70,7 +70,7 @@ export function FeaturesSection() {
     },
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
       opacity: 1,
@@ -128,9 +128,11 @@ export function FeaturesSection() {
                     relative overflow-hidden rounded-3xl bg-surface
                     border-2 border-border p-5 sm:p-6
                     transition-all duration-300 hover:border-brand-teal
-                    h-full ${isHero
-                      ? 'min-h-[26rem] sm:min-h-[30rem] lg:min-h-0'
-                      : 'min-h-[16rem] sm:min-h-[18rem] lg:min-h-0'}
+                    h-full ${
+                      isHero
+                        ? 'min-h-[26rem] sm:min-h-[30rem] lg:min-h-0'
+                        : 'min-h-[16rem] sm:min-h-[18rem] lg:min-h-0'
+                    }
                   `}
                   whileHover={{
                     scale: 1.01,
@@ -170,7 +172,10 @@ export function FeaturesSection() {
                     animate={{ y: [0, -5, 0] }}
                     transition={{ duration: 3, repeat: Infinity, delay: index * 0.15 }}
                   >
-                    <Icon className="w-6 h-6 sm:w-7 sm:h-7" style={{ color: feature.color }} />
+                    <Icon
+                      className="w-6 h-6 sm:w-7 sm:h-7"
+                      style={{ color: feature.color }}
+                    />
                   </motion.div>
 
                   {/* Content */}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -21,10 +21,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Tag, Plus, Loader2, Calendar, Eye, MousePointer, MoreHorizontal, Trash2, Pencil } from 'lucide-react'
+import {
+  Tag,
+  Plus,
+  Loader2,
+  Calendar,
+  Eye,
+  MousePointer,
+  MoreHorizontal,
+  Trash2,
+  Pencil,
+} from 'lucide-react'
 import Link from 'next/link'
 import { useToast } from '@/hooks/use-toast'
-import { businessApi, type AdCampaign } from '@/lib/server/business'
+import {
+  useGetCampaignsQuery,
+  useUpdateCampaignMutation,
+  useDeleteCampaignMutation,
+} from '@/features/business/api'
+import { useBusinessContext } from '@/contexts/business-context'
+import type { AdCampaign } from '@/entities/business/model'
 
 const STATUS_BADGE: Record<string, string> = {
   DRAFT: 'text-muted-foreground border-border',
@@ -50,33 +66,26 @@ function toInputDate(iso: string) {
 
 export default function BrandCampaignsPage() {
   const { success: successToast, error: errorToast } = useToast()
-  const [campaigns, setCampaigns] = useState<AdCampaign[]>([])
-  const [loading, setLoading] = useState(true)
-  const [businessId, setBusinessId] = useState<string | null>(null)
+  const { business, loading: businessLoading } = useBusinessContext()
+  const businessId = business?.id ?? null
+  const { data: campaigns = [], isLoading: campaignsLoading } = useGetCampaignsQuery(
+    businessId ?? '',
+    { skip: !businessId },
+  )
+  const [updateCampaign, { isLoading: saving }] = useUpdateCampaignMutation()
+  const [deleteCampaign, { isLoading: deleting }] = useDeleteCampaignMutation()
   const [deleteTarget, setDeleteTarget] = useState<AdCampaign | null>(null)
-  const [deleting, setDeleting] = useState(false)
   const [editTarget, setEditTarget] = useState<AdCampaign | null>(null)
-  const [editForm, setEditForm] = useState<EditForm>({ title: '', ctaLabel: '', ctaUrl: '', startsAt: '', endsAt: '', budgetRupees: '' })
-  const [saving, setSaving] = useState(false)
+  const [editForm, setEditForm] = useState<EditForm>({
+    title: '',
+    ctaLabel: '',
+    ctaUrl: '',
+    startsAt: '',
+    endsAt: '',
+    budgetRupees: '',
+  })
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const businesses = await businessApi.getMyBusinesses()
-        if (businesses.length > 0) {
-          const id = businesses[0].id
-          setBusinessId(id)
-          const items = await businessApi.getCampaigns(id)
-          setCampaigns(items)
-        }
-      } catch {
-        // no-op
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
-  }, [])
+  const loading = businessLoading || (!!businessId && campaignsLoading)
 
   const openEdit = (c: AdCampaign) => {
     setEditForm({
@@ -92,37 +101,40 @@ export default function BrandCampaignsPage() {
 
   const handleSave = async () => {
     if (!businessId || !editTarget) return
-    setSaving(true)
     try {
-      const updated = await businessApi.updateCampaign(businessId, editTarget.id, {
-        title: editForm.title.trim(),
-        ctaLabel: editForm.ctaLabel.trim(),
-        ctaUrl: editForm.ctaUrl.trim() || null,
-        startsAt: editForm.startsAt ? new Date(editForm.startsAt).toISOString() : editTarget.startsAt,
-        endsAt: editForm.endsAt ? new Date(editForm.endsAt).toISOString() : editTarget.endsAt,
-        ...(editForm.budgetRupees ? { budgetPaise: Math.round(parseFloat(editForm.budgetRupees) * 100) } : {}),
-      })
-      setCampaigns((prev) => prev.map((c) => c.id === updated.id ? updated : c))
+      await updateCampaign({
+        businessId,
+        campaignId: editTarget.id,
+        data: {
+          title: editForm.title.trim(),
+          ctaLabel: editForm.ctaLabel.trim(),
+          ctaUrl: editForm.ctaUrl.trim() || null,
+          startsAt: editForm.startsAt
+            ? new Date(editForm.startsAt).toISOString()
+            : editTarget.startsAt,
+          endsAt: editForm.endsAt
+            ? new Date(editForm.endsAt).toISOString()
+            : editTarget.endsAt,
+          ...(editForm.budgetRupees
+            ? { budgetPaise: Math.round(parseFloat(editForm.budgetRupees) * 100) }
+            : {}),
+        },
+      }).unwrap()
       successToast('Campaign updated')
       setEditTarget(null)
     } catch {
       errorToast('Failed to update campaign')
-    } finally {
-      setSaving(false)
     }
   }
 
   const handleDelete = async () => {
     if (!businessId || !deleteTarget) return
-    setDeleting(true)
     try {
-      await businessApi.deleteCampaign(businessId, deleteTarget.id)
-      setCampaigns((prev) => prev.filter((c) => c.id !== deleteTarget.id))
+      await deleteCampaign({ businessId, campaignId: deleteTarget.id }).unwrap()
       successToast('Campaign deleted')
     } catch {
       errorToast('Failed to delete campaign')
     } finally {
-      setDeleting(false)
       setDeleteTarget(null)
     }
   }
@@ -132,7 +144,9 @@ export default function BrandCampaignsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold">Ad Campaigns</h2>
-          <p className="text-sm text-muted-foreground mt-1">Reach riders based on location, bike type, and riding style</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Reach riders based on location, bike type, and riding style
+          </p>
         </div>
         <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
           <Link href="/brand/campaigns/create">
@@ -151,7 +165,8 @@ export default function BrandCampaignsPage() {
             <Tag className="w-14 h-14 text-muted-foreground/30 mx-auto mb-4" />
             <h3 className="font-semibold text-lg mb-2">No campaigns yet</h3>
             <p className="text-muted-foreground text-sm max-w-xs mx-auto mb-6">
-              Sponsor rides, promote listings, and target riders by location and bike type.
+              Sponsor rides, promote listings, and target riders by location and bike
+              type.
             </p>
             <Button variant="outline" asChild>
               <Link href="/brand/campaigns/create">
@@ -166,25 +181,35 @@ export default function BrandCampaignsPage() {
             <Card key={c.id}>
               <CardContent className="p-4 flex items-center gap-4">
                 {c.imageUrl && (
-                  <img src={c.imageUrl} alt={c.title} className="w-16 h-16 rounded-lg object-cover shrink-0" />
+                  <img
+                    src={c.imageUrl}
+                    alt={c.title}
+                    className="w-16 h-16 rounded-lg object-cover shrink-0"
+                  />
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="font-medium truncate">{c.title}</p>
-                    <Badge variant="outline" className={`text-xs shrink-0 ${STATUS_BADGE[c.status] ?? ''}`}>
+                    <Badge
+                      variant="outline"
+                      className={`text-xs shrink-0 ${STATUS_BADGE[c.status] ?? ''}`}
+                    >
                       {c.status.replace(/_/g, ' ')}
                     </Badge>
                   </div>
                   <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      {new Date(c.startsAt).toLocaleDateString()} – {new Date(c.endsAt).toLocaleDateString()}
+                      {new Date(c.startsAt).toLocaleDateString()} –{' '}
+                      {new Date(c.endsAt).toLocaleDateString()}
                     </span>
                     <span className="flex items-center gap-1">
-                      <Eye className="w-3 h-3" /> {c.impressionCount.toLocaleString()} impressions
+                      <Eye className="w-3 h-3" /> {c.impressionCount.toLocaleString()}{' '}
+                      impressions
                     </span>
                     <span className="flex items-center gap-1">
-                      <MousePointer className="w-3 h-3" /> {c.clickCount.toLocaleString()} clicks
+                      <MousePointer className="w-3 h-3" /> {c.clickCount.toLocaleString()}{' '}
+                      clicks
                     </span>
                   </div>
                 </div>
@@ -222,7 +247,9 @@ export default function BrandCampaignsPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Edit Campaign</DialogTitle>
-            <DialogDescription>Changes apply to this draft before it goes live.</DialogDescription>
+            <DialogDescription>
+              Changes apply to this draft before it goes live.
+            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-2">
             <div className="grid gap-1.5">
@@ -242,7 +269,9 @@ export default function BrandCampaignsPage() {
               />
             </div>
             <div className="grid gap-1.5">
-              <Label>CTA URL <span className="text-muted-foreground text-xs">(optional)</span></Label>
+              <Label>
+                CTA URL <span className="text-muted-foreground text-xs">(optional)</span>
+              </Label>
               <Input
                 value={editForm.ctaUrl}
                 onChange={(e) => setEditForm((f) => ({ ...f, ctaUrl: e.target.value }))}
@@ -255,7 +284,9 @@ export default function BrandCampaignsPage() {
                 <Input
                   type="date"
                   value={editForm.startsAt}
-                  onChange={(e) => setEditForm((f) => ({ ...f, startsAt: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((f) => ({ ...f, startsAt: e.target.value }))
+                  }
                 />
               </div>
               <div className="grid gap-1.5">
@@ -268,38 +299,77 @@ export default function BrandCampaignsPage() {
               </div>
             </div>
             <div className="grid gap-1.5">
-              <Label>Budget (₹) <span className="text-muted-foreground text-xs">(optional)</span></Label>
+              <Label>
+                Budget (₹){' '}
+                <span className="text-muted-foreground text-xs">(optional)</span>
+              </Label>
               <Input
                 type="number"
                 min="0"
                 value={editForm.budgetRupees}
-                onChange={(e) => setEditForm((f) => ({ ...f, budgetRupees: e.target.value }))}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, budgetRupees: e.target.value }))
+                }
                 placeholder="e.g. 5000"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditTarget(null)} disabled={saving}>Cancel</Button>
-            <Button className="bg-amber-500 hover:bg-amber-600 text-white" onClick={handleSave} disabled={saving || !editForm.title.trim()}>
-              {saving ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Saving...</> : 'Save Changes'}
+            <Button
+              variant="outline"
+              onClick={() => setEditTarget(null)}
+              disabled={saving}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-amber-500 hover:bg-amber-600 text-white"
+              onClick={handleSave}
+              disabled={saving || !editForm.title.trim()}
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Delete Confirmation */}
-      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <Dialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Delete campaign?</DialogTitle>
             <DialogDescription>
-              <span className="font-medium">{deleteTarget?.title}</span> will be permanently deleted. This cannot be undone.
+              <span className="font-medium">{deleteTarget?.title}</span> will be
+              permanently deleted. This cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={deleting}>Cancel</Button>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteTarget(null)}
+              disabled={deleting}
+            >
+              Cancel
+            </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
-              {deleting ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Deleting...</> : 'Delete'}
+              {deleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

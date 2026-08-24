@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { marketplaceApi } from '@/lib/services'
+import { useGetListingQuery, useRegisterInterestMutation } from '@/features/marketplace/api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -26,12 +26,9 @@ import {
   Calendar,
   MessageCircle,
   Flag,
-  Star,
-  ShieldCheck,
   MoreHorizontal,
   ChevronRight,
   Image as ImageIcon,
-  Loader2,
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -42,89 +39,54 @@ import {
 import Link from 'next/link'
 import { useToast } from '@/hooks/use-toast'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
+import { initials } from '@/shared/lib/initials'
+import type { ListingDetails } from '@/entities/listing/model'
 
-interface Seller {
-  id: string
-  name: string
-  username: string
-  avatar: string | null
-  rating?: number
-  reviewsCount?: number
-  verified?: boolean
-  memberSince?: string
-  responseTime?: string
-  clubs?: { id: string; name: string }[]
-}
+/**
+ * The local `Listing`/`Seller`/`SellerListing` interfaces this page used to declare
+ * claimed a dozen fields the backend has never sent — `views`, `saves`, `listedAt`,
+ * `sellerListings`, `seller.rating`/`reviewsCount`/`verified`/`responseTime`. There is no
+ * "other listings from this seller" endpoint and no view/save counters on the wire. All
+ * removed below rather than kept rendering permanently-empty UI.
+ */
+type Listing = ListingDetails
 
-interface SellerListing {
-  id: string
-  title: string
-  price: number
-  image: string | null
-}
-
-interface Listing {
-  id: string
-  title: string
-  description: string
-  price: number
-  images: (string | null)[]
-  category: string
-  condition: string
-  location: string
-  listedAt?: string
-  views?: number
-  saves?: number
-  seller?: Seller
-  specifications?: Record<string, string>
-  sellerListings?: SellerListing[]
+/** Prisma stores `specifications` as a JSON-encoded string, not an object. */
+function parseSpecifications(
+  raw: string | null | undefined,
+): Record<string, string> | null {
+  if (!raw) return null
+  try {
+    const parsed = JSON.parse(raw)
+    return parsed && typeof parsed === 'object' ? parsed : null
+  } catch {
+    return null
+  }
 }
 
 export default function ListingDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const { success: successToast, error: errorToast, loading: loadingToast, dismiss: dismissToast } = useToast()
-  const [isContacting, setIsContacting] = useState(false)
+  const { success: successToast, error: errorToast } = useToast()
   const [isSaved, setIsSaved] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false)
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false)
   const [message, setMessage] = useState('')
-  const [listing, setListing] = useState<Listing | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchListing = async () => {
-      const loadingToastId = loadingToast('Loading listing details...', {
-        description: 'Fetching seller details and item information.',
-      })
-      try {
-        setLoading(true)
-        const listingId = params.id as string
-        const response = await marketplaceApi.getListing(listingId)
-        setListing(response.listing)
-      } catch (err) {
-        setError('Failed to load listing details')
-        console.error(err)
-        errorToast('Failed to load listing', {
-          description: err instanceof Error ? err.message : 'Please try again.',
-        })
-      } finally {
-        dismissToast(loadingToastId)
-        setLoading(false)
-      }
-    }
+  const listingId = params.id as string
+  const {
+    data,
+    isLoading: loading,
+    isError: error,
+  } = useGetListingQuery(listingId, { skip: !listingId })
+  const listing: Listing | null = data?.listing ?? null
+  const [registerInterest, { isLoading: isContacting }] = useRegisterInterestMutation()
 
-    if (params.id) {
-      fetchListing()
-    }
-  }, [params.id, dismissToast, errorToast, loadingToast])
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
+  const formatPrice = (price: number, currency: string) => {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency,
       maximumFractionDigits: 0,
     }).format(price)
   }
@@ -139,9 +101,8 @@ export default function ListingDetailPage() {
 
   const handleSendMessage = async () => {
     if (isContacting) return
-    setIsContacting(true)
     try {
-      await marketplaceApi.expressInterest(params.id as string)
+      await registerInterest(listingId).unwrap()
       successToast('Seller notified', {
         description: 'They can see your interest and will reach out.',
       })
@@ -151,8 +112,6 @@ export default function ListingDetailPage() {
       errorToast('Could not contact the seller', {
         description: err instanceof Error ? err.message : 'Please try again.',
       })
-    } finally {
-      setIsContacting(false)
     }
   }
 
@@ -191,14 +150,16 @@ export default function ListingDetailPage() {
   if (error || !listing) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-muted-foreground">{error || 'Listing not found'}</p>
+        <p className="text-muted-foreground">
+          {error ? 'Failed to load listing details' : 'Listing not found'}
+        </p>
         <Button onClick={() => router.back()}>Go Back</Button>
       </div>
     )
   }
 
   const images = listing.images || []
-  const sellerListings = listing.sellerListings || []
+  const specifications = parseSpecifications(listing.specifications)
 
   return (
     <div className="min-h-screen pb-24">
@@ -252,8 +213,9 @@ export default function ListingDetailPage() {
             {images.map((_, index) => (
               <button
                 key={index}
-                className={`w-2 h-2 rounded-full transition-colors ${index === selectedImageIndex ? 'bg-white' : 'bg-white/50'
-                  }`}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  index === selectedImageIndex ? 'bg-white' : 'bg-white/50'
+                }`}
                 onClick={() => setSelectedImageIndex(index)}
               />
             ))}
@@ -266,8 +228,9 @@ export default function ListingDetailPage() {
         {images.map((image, index) => (
           <button
             key={index}
-            className={`w-16 h-16 shrink-0 rounded-lg bg-muted flex items-center justify-center border-2 transition-colors ${index === selectedImageIndex ? 'border-primary' : 'border-transparent'
-              }`}
+            className={`w-16 h-16 shrink-0 rounded-lg bg-muted flex items-center justify-center border-2 transition-colors ${
+              index === selectedImageIndex ? 'border-primary' : 'border-transparent'
+            }`}
             onClick={() => setSelectedImageIndex(index)}
           >
             {image ? (
@@ -290,37 +253,37 @@ export default function ListingDetailPage() {
             <h1 className="text-2xl font-bold">{listing.title}</h1>
           </div>
           <p className="text-3xl font-bold text-primary mt-2">
-            {formatPrice(listing.price)}
+            {formatPrice(listing.price, listing.currency)}
           </p>
           <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              {listing.location}
-            </span>
-            {listing.listedAt && (
+            {listing.locationLabel && (
               <span className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                {formatDate(listing.listedAt)}
+                <MapPin className="w-4 h-4" />
+                {listing.locationLabel}
               </span>
             )}
+            <span className="flex items-center gap-1">
+              <Calendar className="w-4 h-4" />
+              {formatDate(listing.createdAt)}
+            </span>
           </div>
           <div className="flex gap-2 mt-3">
-            <Badge variant="secondary">{listing.category}</Badge>
-            <Badge variant="outline">{listing.condition}</Badge>
+            {listing.category && <Badge variant="secondary">{listing.category}</Badge>}
+            {listing.condition && <Badge variant="outline">{listing.condition}</Badge>}
           </div>
         </div>
 
         <Separator />
 
         {/* Specifications */}
-        {listing.specifications && Object.keys(listing.specifications).length > 0 && (
+        {specifications && Object.keys(specifications).length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Specifications</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-4">
-                {Object.entries(listing.specifications).map(([key, value]) => (
+                {Object.entries(specifications).map(([key, value]) => (
                   <div key={key}>
                     <p className="text-xs text-muted-foreground capitalize">
                       {key.replace(/([A-Z])/g, ' $1').trim()}
@@ -344,87 +307,38 @@ export default function ListingDetailPage() {
         <Separator />
 
         {/* Seller Info */}
-        {listing.seller && (
-          <Card>
-            <CardContent className="p-4">
-              <Link href={`/profile/${listing.seller.username}`}>
-                <div className="flex items-center gap-4">
-                  <Avatar className="w-14 h-14">
-                    <AvatarFallback>
-                      {listing.seller.name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold">{listing.seller.name}</p>
-                      {listing.seller.verified && (
-                        <ShieldCheck className="w-4 h-4 text-blue-500" />
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
-                        {listing.seller.rating || 0}
-                      </span>
-                      <span>({listing.seller.reviewsCount || 0} reviews)</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {listing.seller.responseTime || ''}
-                    </p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+        <Card>
+          <CardContent className="p-4">
+            <Link href={`/profile/${listing.sellerId}`}>
+              <div className="flex items-center gap-4">
+                <Avatar className="w-14 h-14">
+                  <AvatarFallback>{initials(listing.seller.name)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <p className="font-semibold">{listing.seller.name}</p>
                 </div>
-              </Link>
-            </CardContent>
-          </Card>
-        )}
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              </div>
+            </Link>
+          </CardContent>
+        </Card>
 
-        {/* More from Seller */}
-        {sellerListings.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-semibold">More from this seller</h2>
-              <Button variant="ghost" size="sm">
-                View all
-              </Button>
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {sellerListings.map((item) => (
-                <Link key={item.id} href={`/marketplace/${item.id}`}>
-                  <Card className="w-36 shrink-0">
-                    <CardContent className="p-2">
-                      <div className="aspect-square rounded-md bg-muted flex items-center justify-center mb-2">
-                        {item.image ? (
-                          <img
-                            src={item.image}
-                            alt={item.title}
-                            className="h-full w-full rounded-md object-cover"
-                          />
-                        ) : (
-                          <ImageIcon className="w-8 h-8 text-muted-foreground/30" />
-                        )}
-                      </div>
-                      <p className="text-sm font-medium truncate">{item.title}</p>
-                      <p className="text-sm text-primary font-semibold">
-                        {formatPrice(item.price)}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
+        {/*
+          "More from this seller" and view/save counters lived here, reading
+          `listing.sellerListings`/`listing.views`/`listing.saves`. None of those exist on
+          the backend — there is no related-listings endpoint and no counters on the wire
+          (verified against a live GET /marketplace/:id response). Removed rather than
+          rendering permanently-empty sections. `offerSummary.interestCount` is real and
+          shown below instead.
+        */}
+        {listing.offerSummary && listing.offerSummary.interestCount > 0 && (
+          <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+            <span>
+              {listing.offerSummary.interestCount} rider
+              {listing.offerSummary.interestCount === 1 ? '' : 's'} interested
+            </span>
           </div>
         )}
-
-        {/* Stats */}
-        <div className="flex items-center justify-center gap-6 py-4 text-sm text-muted-foreground">
-          <span>{listing.views} views</span>
-          <span>•</span>
-          <span>{listing.saves} saves</span>
-        </div>
       </div>
 
       {/* Fixed Bottom Action */}

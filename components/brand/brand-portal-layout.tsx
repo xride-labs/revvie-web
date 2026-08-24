@@ -20,7 +20,6 @@ import {
   Users,
   Wrench,
   ChevronDown,
-  Star,
   ShoppingCart,
   Sparkles,
   HardHat,
@@ -41,7 +40,7 @@ import { signOut } from '@/lib/auth-client'
 import { useEffect } from 'react'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
 import { useBusinessContext } from '@/contexts/business-context'
-import type { BusinessCategory } from '@/lib/server/business'
+import type { BusinessCategory } from '@/entities/business/model'
 
 const ONBOARD_PATH = '/brand/onboard'
 
@@ -52,53 +51,169 @@ interface NavItem {
 }
 
 const ALL_NAV: NavItem[] = [
-  { name: 'Dashboard',   href: '/brand/dashboard',   icon: LayoutDashboard },
-  { name: 'Messages',    href: '/brand/messages',    icon: MessageCircle },
-  { name: 'Products',    href: '/brand/products',    icon: Package },
-  { name: 'Services',    href: '/brand/services',    icon: Wrench },
+  { name: 'Dashboard', href: '/brand/dashboard', icon: LayoutDashboard },
+  { name: 'Messages', href: '/brand/messages', icon: MessageCircle },
+  { name: 'Products', href: '/brand/products', icon: Package },
+  { name: 'Services', href: '/brand/services', icon: Wrench },
   { name: 'Marketplace', href: '/brand/marketplace', icon: ShoppingCart },
-  { name: 'Campaigns',   href: '/brand/campaigns',   icon: Tag },
-  { name: 'Discounts',   href: '/brand/discounts',   icon: Ticket },
-  { name: 'Analytics',   href: '/brand/analytics',   icon: BarChart3 },
-  { name: 'Team',        href: '/brand/team',        icon: Users },
-  { name: 'Billing',     href: '/brand/billing',     icon: CreditCard },
-  { name: 'Settings',    href: '/brand/settings',    icon: Settings },
+  { name: 'Campaigns', href: '/brand/campaigns', icon: Tag },
+  { name: 'Discounts', href: '/brand/discounts', icon: Ticket },
+  { name: 'Analytics', href: '/brand/analytics', icon: BarChart3 },
+  { name: 'Team', href: '/brand/team', icon: Users },
+  { name: 'Billing', href: '/brand/billing', icon: CreditCard },
+  { name: 'Settings', href: '/brand/settings', icon: Settings },
 ]
 
 // Key items shown first in sidebar based on primary business category.
 // Dashboard + Settings always anchor start/end; these are the middle items.
 const CATEGORY_NAV_ORDER: Record<BusinessCategory, string[]> = {
-  BRAND:             ['Products', 'Marketplace', 'Campaigns', 'Discounts', 'Analytics', 'Messages', 'Services', 'Team', 'Billing'],
-  GEAR_SELLER:       ['Products', 'Marketplace', 'Campaigns', 'Discounts', 'Analytics', 'Messages', 'Services', 'Team', 'Billing'],
-  HELMET_SELLER:     ['Products', 'Marketplace', 'Campaigns', 'Discounts', 'Analytics', 'Messages', 'Services', 'Team', 'Billing'],
-  PARTS_SELLER:      ['Products', 'Marketplace', 'Campaigns', 'Discounts', 'Analytics', 'Messages', 'Services', 'Team', 'Billing'],
-  MARKETPLACE_SELLER:['Marketplace', 'Products', 'Campaigns', 'Discounts', 'Analytics', 'Messages', 'Services', 'Team', 'Billing'],
-  SERVICE_STORE:     ['Services', 'Messages', 'Campaigns', 'Analytics', 'Products', 'Discounts', 'Team', 'Billing'],
-  MECHANIC:          ['Services', 'Messages', 'Campaigns', 'Analytics', 'Products', 'Discounts', 'Team', 'Billing'],
-  CONSULTATION:      ['Services', 'Messages', 'Analytics', 'Campaigns', 'Products', 'Discounts', 'Team', 'Billing'],
-  CLUB:              ['Messages', 'Products', 'Services', 'Campaigns', 'Analytics', 'Discounts', 'Team', 'Billing'],
+  BRAND: [
+    'Products',
+    'Marketplace',
+    'Campaigns',
+    'Discounts',
+    'Analytics',
+    'Messages',
+    'Services',
+    'Team',
+    'Billing',
+  ],
+  GEAR_SELLER: [
+    'Products',
+    'Marketplace',
+    'Campaigns',
+    'Discounts',
+    'Analytics',
+    'Messages',
+    'Services',
+    'Team',
+    'Billing',
+  ],
+  HELMET_SELLER: [
+    'Products',
+    'Marketplace',
+    'Campaigns',
+    'Discounts',
+    'Analytics',
+    'Messages',
+    'Services',
+    'Team',
+    'Billing',
+  ],
+  PARTS_SELLER: [
+    'Products',
+    'Marketplace',
+    'Campaigns',
+    'Discounts',
+    'Analytics',
+    'Messages',
+    'Services',
+    'Team',
+    'Billing',
+  ],
+  MARKETPLACE_SELLER: [
+    'Marketplace',
+    'Products',
+    'Campaigns',
+    'Discounts',
+    'Analytics',
+    'Messages',
+    'Services',
+    'Team',
+    'Billing',
+  ],
+  SERVICE_STORE: [
+    'Services',
+    'Messages',
+    'Campaigns',
+    'Analytics',
+    'Products',
+    'Discounts',
+    'Team',
+    'Billing',
+  ],
+  MECHANIC: [
+    'Services',
+    'Messages',
+    'Campaigns',
+    'Analytics',
+    'Products',
+    'Discounts',
+    'Team',
+    'Billing',
+  ],
+  CONSULTATION: [
+    'Services',
+    'Messages',
+    'Analytics',
+    'Campaigns',
+    'Products',
+    'Discounts',
+    'Team',
+    'Billing',
+  ],
+  CLUB: [
+    'Messages',
+    'Products',
+    'Services',
+    'Campaigns',
+    'Analytics',
+    'Discounts',
+    'Team',
+    'Billing',
+  ],
 }
 
 // Icon and accent shown in the sidebar header per category
-const CATEGORY_META: Record<BusinessCategory, { icon: React.ComponentType<{ className?: string }>; label: string; color: string }> = {
-  BRAND:             { icon: Sparkles,   label: 'Brand',            color: 'from-amber-500 to-orange-500' },
-  GEAR_SELLER:       { icon: ShoppingBag,label: 'Gear Seller',      color: 'from-amber-500 to-yellow-500' },
-  HELMET_SELLER:     { icon: HardHat,    label: 'Helmet Seller',    color: 'from-amber-600 to-orange-500' },
-  PARTS_SELLER:      { icon: Package,    label: 'Parts Seller',     color: 'from-orange-500 to-red-500' },
-  MARKETPLACE_SELLER:{ icon: ShoppingCart,label: 'Marketplace',     color: 'from-blue-500 to-indigo-500' },
-  SERVICE_STORE:     { icon: Store,      label: 'Service Store',    color: 'from-emerald-500 to-teal-500' },
-  MECHANIC:          { icon: Wrench,     label: 'Mechanic',         color: 'from-slate-500 to-zinc-600' },
-  CONSULTATION:      { icon: BookOpen,   label: 'Consultation',     color: 'from-purple-500 to-violet-500' },
-  CLUB:              { icon: Users,      label: 'Club',             color: 'from-rose-500 to-pink-500' },
+const CATEGORY_META: Record<
+  BusinessCategory,
+  { icon: React.ComponentType<{ className?: string }>; label: string; color: string }
+> = {
+  BRAND: { icon: Sparkles, label: 'Brand', color: 'from-amber-500 to-orange-500' },
+  GEAR_SELLER: {
+    icon: ShoppingBag,
+    label: 'Gear Seller',
+    color: 'from-amber-500 to-yellow-500',
+  },
+  HELMET_SELLER: {
+    icon: HardHat,
+    label: 'Helmet Seller',
+    color: 'from-amber-600 to-orange-500',
+  },
+  PARTS_SELLER: {
+    icon: Package,
+    label: 'Parts Seller',
+    color: 'from-orange-500 to-red-500',
+  },
+  MARKETPLACE_SELLER: {
+    icon: ShoppingCart,
+    label: 'Marketplace',
+    color: 'from-blue-500 to-indigo-500',
+  },
+  SERVICE_STORE: {
+    icon: Store,
+    label: 'Service Store',
+    color: 'from-emerald-500 to-teal-500',
+  },
+  MECHANIC: { icon: Wrench, label: 'Mechanic', color: 'from-slate-500 to-zinc-600' },
+  CONSULTATION: {
+    icon: BookOpen,
+    label: 'Consultation',
+    color: 'from-purple-500 to-violet-500',
+  },
+  CLUB: { icon: Users, label: 'Club', color: 'from-rose-500 to-pink-500' },
 }
 
-function getNavigation(categories: BusinessCategory[]): { sidebar: NavItem[]; mobile: NavItem[] } {
+function getNavigation(categories: BusinessCategory[]): {
+  sidebar: NavItem[]
+  mobile: NavItem[]
+} {
   const primary = categories[0] ?? 'BRAND'
   const order = CATEGORY_NAV_ORDER[primary] ?? CATEGORY_NAV_ORDER.BRAND
   const byName = Object.fromEntries(ALL_NAV.map((n) => [n.name, n]))
 
   const dashboard = byName['Dashboard']!
-  const settings  = byName['Settings']!
+  const settings = byName['Settings']!
   const middle = order.map((name) => byName[name]).filter(Boolean) as NavItem[]
 
   const sidebar: NavItem[] = [dashboard, ...middle, settings]
@@ -108,25 +223,37 @@ function getNavigation(categories: BusinessCategory[]): { sidebar: NavItem[]; mo
 }
 
 const VERIFICATION_BADGE: Record<string, string> = {
-  PENDING:   'text-amber-400',
+  PENDING: 'text-amber-400',
   SUBMITTED: 'text-blue-400',
-  APPROVED:  'text-green-400',
-  REJECTED:  'text-destructive',
+  APPROVED: 'text-green-400',
+  REJECTED: 'text-destructive',
 }
 
 export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const { user, hasSession, isPending, error } = useAuth()
-  const { business, businesses, loading: businessLoading, selectBusiness } = useBusinessContext()
+  const {
+    business,
+    businesses,
+    loading: businessLoading,
+    selectBusiness,
+  } = useBusinessContext()
 
-  const hasBrandAccess = hasAnyRole(user, 'BRAND_OWNER', 'BRAND_ADMIN', 'BRAND_MODERATOR', 'ADMIN', 'CO_ADMIN')
+  const hasBrandAccess = hasAnyRole(
+    user,
+    'BRAND_OWNER',
+    'BRAND_ADMIN',
+    'BRAND_MODERATOR',
+    'ADMIN',
+    'CO_ADMIN',
+  )
   const isAdmin = hasAnyRole(user, 'ADMIN', 'CO_ADMIN')
   const isOnboardPath = pathname === ONBOARD_PATH
   const hasOnboardedBusiness = businesses.some((b) => b.onboardingCompleted)
 
   const { sidebar: navigation, mobile: mobileNav } = getNavigation(
-    (business?.categories ?? []) as BusinessCategory[]
+    (business?.categories ?? []) as BusinessCategory[],
   )
 
   const primaryCategory = (business?.categories?.[0] ?? 'BRAND') as BusinessCategory
@@ -135,12 +262,31 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isPending || businessLoading) return
-    if (!hasSession) { router.push('/login'); return }
+    if (!hasSession) {
+      router.push('/login')
+      return
+    }
     if (!user) return
     if (isOnboardPath) return
-    if (!hasBrandAccess && !businessLoading) { router.push(ONBOARD_PATH); return }
-    if (!businessLoading && !hasOnboardedBusiness && hasBrandAccess) { router.push(ONBOARD_PATH) }
-  }, [user, hasSession, isPending, businessLoading, businesses, hasBrandAccess, hasOnboardedBusiness, isOnboardPath, router, error])
+    if (!hasBrandAccess && !businessLoading) {
+      router.push(ONBOARD_PATH)
+      return
+    }
+    if (!businessLoading && !hasOnboardedBusiness && hasBrandAccess) {
+      router.push(ONBOARD_PATH)
+    }
+  }, [
+    user,
+    hasSession,
+    isPending,
+    businessLoading,
+    businesses,
+    hasBrandAccess,
+    hasOnboardedBusiness,
+    isOnboardPath,
+    router,
+    error,
+  ])
 
   if (isPending || (hasSession && !user) || businessLoading) {
     return (
@@ -152,13 +298,17 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
               <Skeleton className="h-6 w-24" />
             </div>
             <div className="flex-1 p-4 space-y-2">
-              {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-2xl" />)}
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-12 w-full rounded-2xl" />
+              ))}
             </div>
           </aside>
           <main className="flex-1 p-6">
             <Skeleton className="h-10 w-48 mb-6" />
             <div className="grid gap-4 md:grid-cols-3">
-              {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-40 rounded-xl" />)}
+              {[...Array(6)].map((_, i) => (
+                <Skeleton key={i} className="h-40 rounded-xl" />
+              ))}
             </div>
           </main>
         </div>
@@ -175,7 +325,12 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
       <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:w-72 lg:flex-col border-r border-border bg-card">
         {/* Logo + Business Selector */}
         <div className="flex h-16 items-center gap-2 px-4 border-b border-border">
-          <div className={cn('w-9 h-9 bg-linear-to-br rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.2)] shrink-0', catMeta.color)}>
+          <div
+            className={cn(
+              'w-9 h-9 bg-linear-to-br rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.2)] shrink-0',
+              catMeta.color,
+            )}
+          >
             <CatIcon className="w-4 h-4 text-white" />
           </div>
           {businesses.length > 1 ? (
@@ -183,12 +338,22 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
               <DropdownMenuTrigger asChild>
                 <button className="flex-1 min-w-0 flex items-center gap-1 text-left hover:opacity-80 transition-opacity">
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold truncate">{business?.displayName ?? 'Brand Portal'}</p>
+                    <p className="text-sm font-bold truncate">
+                      {business?.displayName ?? 'Brand Portal'}
+                    </p>
                     <p className="text-[10px] text-muted-foreground">
-                      <span className={VERIFICATION_BADGE[business?.verification ?? 'PENDING']}>
-                        {business?.verification === 'APPROVED'  ? '✓ Verified' :
-                         business?.verification === 'SUBMITTED' ? '⏳ Under Review' :
-                         business?.verification === 'REJECTED'  ? '✗ Rejected' : catMeta.label}
+                      <span
+                        className={
+                          VERIFICATION_BADGE[business?.verification ?? 'PENDING']
+                        }
+                      >
+                        {business?.verification === 'APPROVED'
+                          ? '✓ Verified'
+                          : business?.verification === 'SUBMITTED'
+                            ? '⏳ Under Review'
+                            : business?.verification === 'REJECTED'
+                              ? '✗ Rejected'
+                              : catMeta.label}
                       </span>
                     </p>
                   </div>
@@ -204,16 +369,28 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
                     <DropdownMenuItem
                       key={b.id}
                       onClick={() => selectBusiness(b.id)}
-                      className={cn('flex items-center gap-2', b.id === business?.id && 'bg-muted')}
+                      className={cn(
+                        'flex items-center gap-2',
+                        b.id === business?.id && 'bg-muted',
+                      )}
                     >
-                      <div className={cn('w-7 h-7 rounded-lg bg-linear-to-br flex items-center justify-center shrink-0 opacity-80', bMeta.color)}>
+                      <div
+                        className={cn(
+                          'w-7 h-7 rounded-lg bg-linear-to-br flex items-center justify-center shrink-0 opacity-80',
+                          bMeta.color,
+                        )}
+                      >
                         <BIcon className="w-3.5 h-3.5 text-white" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium truncate">{b.displayName}</p>
                         <p className="text-xs text-muted-foreground">{bMeta.label}</p>
                       </div>
-                      {b.id === business?.id && <Badge variant="secondary" className="text-[10px] px-1.5">Active</Badge>}
+                      {b.id === business?.id && (
+                        <Badge variant="secondary" className="text-[10px] px-1.5">
+                          Active
+                        </Badge>
+                      )}
                     </DropdownMenuItem>
                   )
                 })}
@@ -221,8 +398,12 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
             </DropdownMenu>
           ) : (
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold truncate">{business?.displayName ?? 'Brand Portal'}</p>
-              <p className="text-[10px] text-muted-foreground">{catMeta.label} · Revvie</p>
+              <p className="text-sm font-bold truncate">
+                {business?.displayName ?? 'Brand Portal'}
+              </p>
+              <p className="text-[10px] text-muted-foreground">
+                {catMeta.label} · Revvie
+              </p>
             </div>
           )}
         </div>
@@ -230,7 +411,9 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
           {navigation.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/brand/dashboard' && pathname.startsWith(item.href))
+            const isActive =
+              pathname === item.href ||
+              (item.href !== '/brand/dashboard' && pathname.startsWith(item.href))
             return (
               <Link
                 key={item.name}
@@ -252,7 +435,11 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
         {/* Actions */}
         <div className="p-4 border-t border-border space-y-2">
           {isAdmin && (
-            <Button className="w-full justify-start gap-2" variant="outline" onClick={() => router.push('/admin')}>
+            <Button
+              className="w-full justify-start gap-2"
+              variant="outline"
+              onClick={() => router.push('/admin')}
+            >
               <Shield className="w-4 h-4" />
               Admin Portal
             </Button>
@@ -269,7 +456,10 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
 
         {/* User Profile */}
         <div className="p-4 border-t border-border">
-          <Link href="/brand/settings" className="flex items-center gap-3 p-2 rounded-2xl hover:bg-muted transition-colors">
+          <Link
+            href="/brand/settings"
+            className="flex items-center gap-3 p-2 rounded-2xl hover:bg-muted transition-colors"
+          >
             <Avatar>
               <AvatarFallback className="bg-amber-500 text-white">
                 {user.name?.charAt(0) || user.email?.charAt(0) || 'B'}
@@ -289,21 +479,36 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-40 h-16 bg-background/80 backdrop-blur-md border-b border-border">
           <div className="flex items-center justify-between h-full px-4 lg:px-6">
             <Link href="/brand/dashboard" className="flex items-center gap-2 lg:hidden">
-              <div className={cn('w-8 h-8 bg-linear-to-br rounded-xl flex items-center justify-center', catMeta.color)}>
+              <div
+                className={cn(
+                  'w-8 h-8 bg-linear-to-br rounded-xl flex items-center justify-center',
+                  catMeta.color,
+                )}
+              >
                 <CatIcon className="w-4 h-4 text-white" />
               </div>
-              <span className="text-lg font-bold text-foreground">{business?.displayName ?? 'Brand Portal'}</span>
+              <span className="text-lg font-bold text-foreground">
+                {business?.displayName ?? 'Brand Portal'}
+              </span>
             </Link>
 
             <div className="hidden lg:block">
               <h1 className="text-xl font-semibold">
-                {navigation.find((n) => pathname === n.href || (n.href !== '/brand/dashboard' && pathname.startsWith(n.href)))?.name || 'Brand Portal'}
+                {navigation.find(
+                  (n) =>
+                    pathname === n.href ||
+                    (n.href !== '/brand/dashboard' && pathname.startsWith(n.href)),
+                )?.name || 'Brand Portal'}
               </h1>
             </div>
 
             <div className="flex items-center gap-2">
               {isAdmin && (
-                <Button variant="outline" className="inline-flex items-center gap-2 h-9 px-3" onClick={() => router.push('/admin')}>
+                <Button
+                  variant="outline"
+                  className="inline-flex items-center gap-2 h-9 px-3"
+                  onClick={() => router.push('/admin')}
+                >
                   <Shield className="w-4 h-4" />
                   <span className="hidden sm:inline">Admin</span>
                 </Button>
@@ -322,12 +527,17 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
       <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-background border-t border-border">
         <div className="flex items-center justify-around h-16">
           {mobileNav.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/brand/dashboard' && pathname.startsWith(item.href))
+            const isActive =
+              pathname === item.href ||
+              (item.href !== '/brand/dashboard' && pathname.startsWith(item.href))
             return (
               <Link
                 key={item.name}
                 href={item.href}
-                className={cn('flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors', isActive ? 'text-amber-500' : 'text-muted-foreground')}
+                className={cn(
+                  'flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors',
+                  isActive ? 'text-amber-500' : 'text-muted-foreground',
+                )}
               >
                 <item.icon className={cn('w-5 h-5', isActive && 'stroke-[2.5px]')} />
                 <span className="text-[10px] font-medium">{item.name}</span>

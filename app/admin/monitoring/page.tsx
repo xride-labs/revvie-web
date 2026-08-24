@@ -1,13 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,7 +12,6 @@ import {
   Server,
   Bug,
 } from 'lucide-react'
-import { toast } from 'sonner'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN || ''
@@ -55,20 +48,20 @@ export default function AdminMonitoringPage() {
 
   const runChecks = async () => {
     setChecking(true)
-    
+
     const newServices: ServiceHealth[] = []
     const apiHealth = await fetchHealth(`${API_URL}/health`)
 
     newServices.push({
       name: 'API Server',
       description: 'Core Express Server',
-      status: apiHealth.ok ? (apiHealth.data?.status || 'up') : 'down',
+      status: apiHealth.ok ? apiHealth.data?.status || 'up' : 'down',
       latencyMs: apiHealth.latencyMs,
     })
 
     if (apiHealth.data?.checks) {
       const { postgres, mongodb, redis } = apiHealth.data.checks
-      
+
       newServices.push({
         name: 'PostgreSQL',
         description: 'Primary Relational Database',
@@ -103,7 +96,9 @@ export default function AdminMonitoringPage() {
     setChecking(false)
   }
 
-  useEffect(() => { runChecks() }, [])
+  useEffect(() => {
+    runChecks()
+  }, [])
 
   const allUp = services.every((s) => s.status === 'up' || s.status === 'not_configured')
   const hasSentry = !!SENTRY_DSN
@@ -132,17 +127,37 @@ export default function AdminMonitoringPage() {
       </div>
 
       {/* Overall status banner */}
-      <Card className={allUp ? 'border-green-200 bg-green-50/40 dark:bg-green-950/20' : 'border-red-200 bg-red-50/40 dark:bg-red-950/20'}>
+      <Card
+        className={
+          allUp
+            ? 'border-green-200 bg-green-50/40 dark:bg-green-950/20'
+            : 'border-red-200 bg-red-50/40 dark:bg-red-950/20'
+        }
+      >
         <CardContent className="p-4 flex items-center gap-3">
-          {allUp
-            ? <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
-            : <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />}
+          {allUp ? (
+            <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+          ) : (
+            <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+          )}
           <div>
             <p className="font-semibold text-sm">
-              {checking ? 'Checking services…' : allUp ? 'All monitored systems operational' : 'One or more services degraded'}
+              {checking
+                ? 'Checking services…'
+                : allUp
+                  ? 'All monitored systems operational'
+                  : 'One or more services degraded'}
             </p>
             <p className="text-xs text-muted-foreground">
-              {services.filter(s => s.status === 'up' || s.status === 'ok' || s.status === 'not_configured').length}/{services.length} services healthy
+              {
+                services.filter(
+                  (s) =>
+                    s.status === 'up' ||
+                    s.status === 'ok' ||
+                    s.status === 'not_configured',
+                ).length
+              }
+              /{services.length} services healthy
             </p>
           </div>
         </CardContent>
@@ -150,7 +165,9 @@ export default function AdminMonitoringPage() {
 
       {/* Health checks */}
       <div>
-        <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">Service Health</h3>
+        <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">
+          Service Health
+        </h3>
         <div className="grid gap-3 md:grid-cols-2">
           {services.map((svc) => (
             <Card key={svc.name}>
@@ -158,12 +175,23 @@ export default function AdminMonitoringPage() {
                 <Server className="w-5 h-5 text-muted-foreground shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm">{svc.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">{svc.description}</p>
-                  {svc.error && <p className="text-xs text-red-500 mt-1 line-clamp-1" title={svc.error}>{svc.error}</p>}
+                  <p className="text-xs text-muted-foreground truncate">
+                    {svc.description}
+                  </p>
+                  {svc.error && (
+                    <p
+                      className="text-xs text-red-500 mt-1 line-clamp-1"
+                      title={svc.error}
+                    >
+                      {svc.error}
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {svc.latencyMs != null && svc.status === 'up' && (
-                    <span className="text-xs text-muted-foreground">{svc.latencyMs}ms</span>
+                    <span className="text-xs text-muted-foreground">
+                      {svc.latencyMs}ms
+                    </span>
                   )}
                   {svc.status === 'checking' && (
                     <Badge variant="secondary" className="gap-1">
@@ -200,7 +228,9 @@ export default function AdminMonitoringPage() {
       {/* Sentry */}
       {hasSentry && (
         <div>
-          <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">Error Tracking — Sentry</h3>
+          <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">
+            Error Tracking — Sentry
+          </h3>
           <Card>
             <CardContent className="p-4 flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-950 flex items-center justify-center shrink-0">
@@ -208,7 +238,9 @@ export default function AdminMonitoringPage() {
               </div>
               <div className="flex-1">
                 <p className="font-medium text-sm">Sentry is configured</p>
-                <p className="text-xs text-muted-foreground">DSN is set — errors are being captured.</p>
+                <p className="text-xs text-muted-foreground">
+                  DSN is set — errors are being captured.
+                </p>
               </div>
               {SENTRY_ORG && SENTRY_PROJECT && (
                 <Button variant="outline" size="sm" asChild>

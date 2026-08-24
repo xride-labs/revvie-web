@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -29,9 +29,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Wrench, Plus, Loader2, MoreHorizontal, Trash2, Pencil, ToggleLeft, ToggleRight } from 'lucide-react'
+import {
+  Wrench,
+  Plus,
+  Loader2,
+  MoreHorizontal,
+  Trash2,
+  Pencil,
+  ToggleLeft,
+  ToggleRight,
+} from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
-import { businessApi, type ServiceListing, type ServiceCategory } from '@/lib/server/business'
+import {
+  useGetServicesQuery,
+  useCreateServiceMutation,
+  useUpdateServiceMutation,
+  useDeleteServiceMutation,
+} from '@/features/business/api'
+import { useBusinessContext } from '@/contexts/business-context'
+import type { ServiceListing, ServiceCategory } from '@/entities/business/model'
 
 const SERVICE_CATEGORIES: { value: ServiceCategory; label: string }[] = [
   { value: 'GENERAL_SERVICE', label: 'General Service' },
@@ -57,36 +73,24 @@ const EMPTY_FORM = {
 
 export default function BrandServicesPage() {
   const { success: successToast, error: errorToast } = useToast()
-  const [services, setServices] = useState<ServiceListing[]>([])
-  const [loading, setLoading] = useState(true)
-  const [businessId, setBusinessId] = useState<string | null>(null)
+  const { business, loading: businessLoading } = useBusinessContext()
+  const businessId = business?.id ?? null
+  const { data: services = [], isLoading: servicesLoading } = useGetServicesQuery(
+    businessId ?? '',
+    { skip: !businessId },
+  )
+  const [createService, { isLoading: creating }] = useCreateServiceMutation()
+  const [updateService, { isLoading: updating }] = useUpdateServiceMutation()
+  const [deleteService] = useDeleteServiceMutation()
+  const saving = creating || updating
+  const loading = businessLoading || (!!businessId && servicesLoading)
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<ServiceListing | null>(null)
   const [form, setForm] = useState(EMPTY_FORM)
-  const [saving, setSaving] = useState(false)
 
   const [deleteTarget, setDeleteTarget] = useState<ServiceListing | null>(null)
   const [deleting, setDeleting] = useState(false)
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const businesses = await businessApi.getMyBusinesses()
-        if (businesses.length > 0) {
-          const id = businesses[0].id
-          setBusinessId(id)
-          const items = await businessApi.getServices(id)
-          setServices(items)
-        }
-      } catch {
-        // no-op
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
-  }, [])
 
   const openCreate = () => {
     setEditTarget(null)
@@ -108,7 +112,6 @@ export default function BrandServicesPage() {
 
   const handleSave = async () => {
     if (!businessId) return
-    setSaving(true)
     try {
       const payload = {
         title: form.title.trim(),
@@ -116,29 +119,33 @@ export default function BrandServicesPage() {
         category: form.category,
         priceRange: form.priceRange.trim() || null,
         duration: form.duration.trim() || null,
+        isActive: editTarget?.isActive ?? true,
       }
       if (editTarget) {
-        const updated = await businessApi.updateService(businessId, editTarget.id, payload)
-        setServices((prev) => prev.map((s) => s.id === updated.id ? updated : s))
+        await updateService({
+          businessId,
+          serviceId: editTarget.id,
+          data: payload,
+        }).unwrap()
         successToast('Service updated')
       } else {
-        const created = await businessApi.createService(businessId, payload)
-        setServices((prev) => [...prev, created])
+        await createService({ businessId, data: payload }).unwrap()
         successToast('Service added')
       }
       setDialogOpen(false)
     } catch {
       errorToast('Failed to save service')
-    } finally {
-      setSaving(false)
     }
   }
 
   const handleToggleActive = async (s: ServiceListing) => {
     if (!businessId) return
     try {
-      const updated = await businessApi.updateService(businessId, s.id, { isActive: !s.isActive })
-      setServices((prev) => prev.map((item) => item.id === updated.id ? updated : item))
+      await updateService({
+        businessId,
+        serviceId: s.id,
+        data: { isActive: !s.isActive },
+      }).unwrap()
     } catch {
       errorToast('Failed to update service')
     }
@@ -148,8 +155,7 @@ export default function BrandServicesPage() {
     if (!businessId || !deleteTarget) return
     setDeleting(true)
     try {
-      await businessApi.deleteService(businessId, deleteTarget.id)
-      setServices((prev) => prev.filter((s) => s.id !== deleteTarget.id))
+      await deleteService({ businessId, serviceId: deleteTarget.id }).unwrap()
       successToast('Service deleted')
     } catch {
       errorToast('Failed to delete service')
@@ -168,7 +174,10 @@ export default function BrandServicesPage() {
             List the services your garage or workshop offers
           </p>
         </div>
-        <Button className="bg-amber-500 hover:bg-amber-600 text-white" onClick={openCreate}>
+        <Button
+          className="bg-amber-500 hover:bg-amber-600 text-white"
+          onClick={openCreate}
+        >
           <Plus className="w-4 h-4 mr-2" /> Add Service
         </Button>
       </div>
@@ -183,7 +192,8 @@ export default function BrandServicesPage() {
             <Wrench className="w-14 h-14 text-muted-foreground/30 mx-auto mb-4" />
             <h3 className="font-semibold text-lg mb-2">No services listed yet</h3>
             <p className="text-muted-foreground text-sm max-w-xs mx-auto mb-6">
-              Add the services you offer — oil changes, brake work, custom mods — so riders can find and contact you.
+              Add the services you offer — oil changes, brake work, custom mods — so
+              riders can find and contact you.
             </p>
             <Button variant="outline" onClick={openCreate}>
               <Plus className="w-4 h-4 mr-2" /> Add your first service
@@ -202,7 +212,8 @@ export default function BrandServicesPage() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="font-medium text-sm">{s.title}</p>
                     <Badge variant="outline" className="text-xs">
-                      {SERVICE_CATEGORIES.find((c) => c.value === s.category)?.label ?? s.category}
+                      {SERVICE_CATEGORIES.find((c) => c.value === s.category)?.label ??
+                        s.category}
                     </Badge>
                     {!s.isActive && (
                       <Badge variant="outline" className="text-xs text-muted-foreground">
@@ -211,7 +222,9 @@ export default function BrandServicesPage() {
                     )}
                   </div>
                   {s.description && (
-                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{s.description}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                      {s.description}
+                    </p>
                   )}
                   <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                     {s.priceRange && <span>₹ {s.priceRange}</span>}
@@ -229,9 +242,15 @@ export default function BrandServicesPage() {
                       <Pencil className="w-4 h-4 mr-2" /> Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleToggleActive(s)}>
-                      {s.isActive
-                        ? <><ToggleLeft className="w-4 h-4 mr-2" /> Hide from profile</>
-                        : <><ToggleRight className="w-4 h-4 mr-2" /> Show on profile</>}
+                      {s.isActive ? (
+                        <>
+                          <ToggleLeft className="w-4 h-4 mr-2" /> Hide from profile
+                        </>
+                      ) : (
+                        <>
+                          <ToggleRight className="w-4 h-4 mr-2" /> Show on profile
+                        </>
+                      )}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -270,18 +289,27 @@ export default function BrandServicesPage() {
               <Label>Category</Label>
               <Select
                 value={form.category}
-                onValueChange={(v) => setForm((f) => ({ ...f, category: v as ServiceCategory }))}
+                onValueChange={(v) =>
+                  setForm((f) => ({ ...f, category: v as ServiceCategory }))
+                }
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {SERVICE_CATEGORIES.map((c) => (
-                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                    <SelectItem key={c.value} value={c.value}>
+                      {c.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="grid gap-1.5">
-              <Label>Description <span className="text-muted-foreground text-xs">(optional)</span></Label>
+              <Label>
+                Description{' '}
+                <span className="text-muted-foreground text-xs">(optional)</span>
+              </Label>
               <Textarea
                 placeholder="What's included, any conditions…"
                 rows={3}
@@ -291,7 +319,10 @@ export default function BrandServicesPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-1.5">
-                <Label>Price Range <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                <Label>
+                  Price Range{' '}
+                  <span className="text-muted-foreground text-xs">(optional)</span>
+                </Label>
                 <Input
                   placeholder="e.g. ₹500 – ₹1500"
                   value={form.priceRange}
@@ -299,7 +330,10 @@ export default function BrandServicesPage() {
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label>Duration <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                <Label>
+                  Duration{' '}
+                  <span className="text-muted-foreground text-xs">(optional)</span>
+                </Label>
                 <Input
                   placeholder="e.g. 2–3 hours"
                   value={form.duration}
@@ -309,13 +343,28 @@ export default function BrandServicesPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={saving}>Cancel</Button>
+            <Button
+              variant="outline"
+              onClick={() => setDialogOpen(false)}
+              disabled={saving}
+            >
+              Cancel
+            </Button>
             <Button
               className="bg-amber-500 hover:bg-amber-600 text-white"
               onClick={handleSave}
               disabled={saving || !form.title.trim()}
             >
-              {saving ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Saving…</> : editTarget ? 'Save Changes' : 'Add Service'}
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Saving…
+                </>
+              ) : editTarget ? (
+                'Save Changes'
+              ) : (
+                'Add Service'
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -327,13 +376,27 @@ export default function BrandServicesPage() {
           <DialogHeader>
             <DialogTitle>Delete service?</DialogTitle>
             <DialogDescription>
-              <span className="font-medium">{deleteTarget?.title}</span> will be permanently removed.
+              <span className="font-medium">{deleteTarget?.title}</span> will be
+              permanently removed.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={deleting}>Cancel</Button>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteTarget(null)}
+              disabled={deleting}
+            >
+              Cancel
+            </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
-              {deleting ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Deleting…</> : 'Delete'}
+              {deleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Deleting…
+                </>
+              ) : (
+                'Delete'
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

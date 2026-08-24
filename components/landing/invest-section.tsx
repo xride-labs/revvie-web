@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, type Variants } from 'motion/react'
 import {
   TrendingUp,
   Globe,
@@ -306,7 +306,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 export function InvestSection() {
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -317,7 +317,7 @@ export function InvestSection() {
     },
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
       opacity: 1,

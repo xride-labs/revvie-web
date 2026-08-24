@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   Card,
   CardContent,
@@ -49,12 +49,16 @@ import {
   Calendar,
   Trophy,
 } from 'lucide-react'
-import { useAdminClubs } from '@/store/features/admin'
+import {
+  useGetClubsQuery,
+  useVerifyClubMutation,
+  useDeleteClubMutation,
+  usePerformBulkActionMutation,
+} from '@/features/admin/api'
 import { AdminCRUDPopover, CRUDActionBuilders } from '@/components/admin/crud-popover'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useBulkSelection } from '@/hooks/use-bulk-selection'
 import { BulkActionBar } from '@/components/bulk-action-bar'
-import { performBulkAction } from '@/lib/server/admin'
 import { toast } from 'sonner'
 
 interface AdminClub {
@@ -74,14 +78,6 @@ interface AdminClub {
 }
 
 export default function AdminClubsPage() {
-  const {
-    clubs: rawClubs,
-    pagination,
-    fetchClubs,
-    verifyClub: dispatchVerifyClub,
-    deleteClub: dispatchDeleteClub,
-  } = useAdminClubs()
-
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [verifiedFilter, setVerifiedFilter] = useState<string>('all')
@@ -89,50 +85,66 @@ export default function AdminClubsPage() {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
   const [isVerifyDialogOpen, setIsVerifyDialogOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
-
-  const clubs: AdminClub[] = rawClubs.map((club) => ({
-    id: club.id,
-    name: club.name,
-    description: club.description,
-    location: club.location,
-    memberCount: club.memberCount ?? club._count?.members ?? 0,
-    ridesCount: 0,
-    verified: club.verified,
-    isPublic: club.isPublic,
-    owner: {
-      id: club.owner?.id ?? '',
-      name: club.owner?.name ?? 'Unknown',
-      image: club.owner?.image ?? null,
-    },
-    reputation: club.reputation,
-    establishedAt: club.establishedAt,
-    status: club.verified ? 'active' : 'pending',
-    createdAt: club.createdAt,
-  }))
-
-  const doFetch = useCallback(() => {
-    const params: Record<string, boolean | string> = {
-      page: String(currentPage),
-      limit: '20',
-    }
-    if (verifiedFilter === 'verified') params.verified = true
-    if (verifiedFilter === 'unverified') params.verified = false
-    if (searchQuery) params.search = searchQuery
-    fetchClubs(params)
-  }, [verifiedFilter, searchQuery, currentPage, fetchClubs])
+  const [debouncedSearch, setDebouncedSearch] = useState('')
 
   useEffect(() => {
-    doFetch()
-  }, [doFetch])
+    const timeout = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 400)
+    return () => clearTimeout(timeout)
+  }, [searchQuery])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [debouncedSearch, verifiedFilter])
+
+  const queryParams = useMemo(
+    () => ({
+      page: currentPage,
+      limit: 20,
+      ...(verifiedFilter === 'verified' ? { verified: true } : {}),
+      ...(verifiedFilter === 'unverified' ? { verified: false } : {}),
+      ...(debouncedSearch ? { search: debouncedSearch } : {}),
+    }),
+    [currentPage, verifiedFilter, debouncedSearch],
+  )
+
+  const { data } = useGetClubsQuery(queryParams)
+  const [verifyClubMutation] = useVerifyClubMutation()
+  const [deleteClubMutation] = useDeleteClubMutation()
+  const [performBulkActionMutation] = usePerformBulkActionMutation()
+
+  const clubs: AdminClub[] = useMemo(
+    () =>
+      (data?.items ?? []).map((club) => ({
+        id: club.id,
+        name: club.name,
+        description: club.description,
+        location: club.location,
+        memberCount: club.memberCount ?? club._count?.members ?? 0,
+        ridesCount: 0,
+        verified: club.verified,
+        isPublic: club.isPublic,
+        owner: {
+          id: club.owner?.id ?? '',
+          name: club.owner?.name ?? 'Unknown',
+          image: club.owner?.image ?? null,
+        },
+        reputation: club.reputation,
+        establishedAt: club.establishedAt,
+        status: club.verified ? 'active' : 'pending',
+        createdAt: club.createdAt,
+      })),
+    [data],
+  )
+  const pagination = data?.pagination ?? { page: 1, limit: 20, total: 0, totalPages: 1 }
 
   const handleVerifyClub = async (clubId: string) => {
-    await dispatchVerifyClub(clubId)
+    await verifyClubMutation(clubId)
     setIsVerifyDialogOpen(false)
   }
 
   const handleDeleteClub = async (club: AdminClub) => {
     if (!confirm(`Delete club "${club.name}"? This cannot be undone.`)) return
-    await dispatchDeleteClub(club.id)
+    await deleteClubMutation(club.id)
   }
 
   // ── Bulk verify (super-admin) ──────────────────────────────────────────────
@@ -144,25 +156,21 @@ export default function AdminClubsPage() {
     const ids = sel.selectedIds
     setBulkBusy('verify')
     try {
-      const result = await performBulkAction({ module: 'clubs', action: 'verify', ids })
-      toast.success(`${result.processed} club${result.processed === 1 ? '' : 's'} verified`)
+      const result = await performBulkActionMutation({
+        module: 'clubs',
+        action: 'verify',
+        ids,
+      }).unwrap()
+      toast.success(
+        `${result.processed} club${result.processed === 1 ? '' : 's'} verified`,
+      )
       sel.clear()
-      doFetch()
     } catch {
       toast.error('Bulk verify failed — try again')
     } finally {
       setBulkBusy(null)
     }
   }
-
-  // Debounced server-side search
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (currentPage === 1) doFetch()
-      else setCurrentPage(1)
-    }, 400)
-    return () => clearTimeout(timeout)
-  }, [searchQuery, currentPage, doFetch])
 
   const stats = {
     total: clubs.length,
@@ -397,15 +405,15 @@ export default function AdminClubsPage() {
                           ...(club.verified
                             ? []
                             : [
-                              CRUDActionBuilders.verify(() => {
-                                setSelectedClub(club)
-                                setIsVerifyDialogOpen(true)
-                              }),
-                            ]),
+                                CRUDActionBuilders.verify(() => {
+                                  setSelectedClub(club)
+                                  setIsVerifyDialogOpen(true)
+                                }),
+                              ]),
                           CRUDActionBuilders.delete(
                             () => handleDeleteClub(club),
                             false,
-                            false
+                            false,
                           ),
                         ]}
                       />

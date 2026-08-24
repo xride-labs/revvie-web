@@ -2,13 +2,13 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion, type Variants } from 'motion/react'
 import { Smartphone, Map, Shield, Compass, Download, ArrowRight } from 'lucide-react'
 
 export function HeroSection() {
   const shouldReduceMotion = useReducedMotion()
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -19,7 +19,7 @@ export function HeroSection() {
     },
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
       opacity: 1,
@@ -29,7 +29,7 @@ export function HeroSection() {
   }
 
   // Floating animation for 3D assets
-  const floatVariants = {
+  const floatVariants: Variants = {
     float1: {
       y: [0, -20, 0],
       rotate: [0, 5, 0],
@@ -63,18 +63,34 @@ export function HeroSection() {
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           className="absolute top-1/4 -left-32 w-96 h-96 bg-linear-to-r from-brand-red-light/20 to-brand-red/10 rounded-full blur-3xl"
-          animate={shouldReduceMotion ? { opacity: 0.45 } : { x: [0, 50, 0], y: [0, 30, 0] }}
-          transition={{ duration: 15, repeat: shouldReduceMotion ? 0 : Infinity, ease: 'easeInOut' }}
+          animate={
+            shouldReduceMotion ? { opacity: 0.45 } : { x: [0, 50, 0], y: [0, 30, 0] }
+          }
+          transition={{
+            duration: 15,
+            repeat: shouldReduceMotion ? 0 : Infinity,
+            ease: 'easeInOut',
+          }}
         />
         <motion.div
           className="absolute bottom-1/4 -right-32 w-125 h-125 bg-linear-to-l from-brand-teal/15 to-transparent rounded-full blur-3xl"
-          animate={shouldReduceMotion ? { opacity: 0.35 } : { x: [0, -40, 0], y: [0, -20, 0] }}
-          transition={{ duration: 18, repeat: shouldReduceMotion ? 0 : Infinity, ease: 'easeInOut' }}
+          animate={
+            shouldReduceMotion ? { opacity: 0.35 } : { x: [0, -40, 0], y: [0, -20, 0] }
+          }
+          transition={{
+            duration: 18,
+            repeat: shouldReduceMotion ? 0 : Infinity,
+            ease: 'easeInOut',
+          }}
         />
         <motion.div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200 h-200 bg-neon-green/5 rounded-full blur-3xl"
           animate={shouldReduceMotion ? { opacity: 0.25 } : { scale: [1, 1.1, 1] }}
-          transition={{ duration: 10, repeat: shouldReduceMotion ? 0 : Infinity, ease: 'easeInOut' }}
+          transition={{
+            duration: 10,
+            repeat: shouldReduceMotion ? 0 : Infinity,
+            ease: 'easeInOut',
+          }}
         />
       </div>
 
@@ -160,7 +176,10 @@ export function HeroSection() {
             className="relative h-125 lg:h-150 flex items-center justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: shouldReduceMotion ? 0.2 : 1, delay: shouldReduceMotion ? 0 : 0.5 }}
+            transition={{
+              duration: shouldReduceMotion ? 0.2 : 1,
+              delay: shouldReduceMotion ? 0 : 0.5,
+            }}
           >
             {/* Helmet asset */}
             <motion.div
@@ -227,7 +246,11 @@ export function HeroSection() {
                 <motion.div
                   className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-[#37c8c3] flex items-center justify-center"
                   animate={shouldReduceMotion ? { rotate: 0 } : { rotate: 360 }}
-                  transition={{ duration: 8, repeat: shouldReduceMotion ? 0 : Infinity, ease: 'linear' }}
+                  transition={{
+                    duration: 8,
+                    repeat: shouldReduceMotion ? 0 : Infinity,
+                    ease: 'linear',
+                  }}
                 >
                   <div className="w-6 h-6 rounded-full bg-[#37c8c3]" />
                 </motion.div>
@@ -253,7 +276,11 @@ export function HeroSection() {
                       strokeLinecap="round"
                       initial={{ pathLength: 0 }}
                       animate={shouldReduceMotion ? { pathLength: 1 } : { pathLength: 1 }}
-                      transition={{ duration: 2, repeat: shouldReduceMotion ? 0 : Infinity, repeatDelay: 1 }}
+                      transition={{
+                        duration: 2,
+                        repeat: shouldReduceMotion ? 0 : Infinity,
+                        repeatDelay: 1,
+                      }}
                     />
                   </svg>
                   {/* Dots on route */}
@@ -262,8 +289,14 @@ export function HeroSection() {
                       <motion.div
                         key={i}
                         className="w-3 h-3 rounded-full bg-brand-red-light border border-surface"
-                        animate={shouldReduceMotion ? { scale: 1 } : { scale: [1, 1.2, 1] }}
-                        transition={{ duration: 1, delay: i * 0.2, repeat: shouldReduceMotion ? 0 : Infinity }}
+                        animate={
+                          shouldReduceMotion ? { scale: 1 } : { scale: [1, 1.2, 1] }
+                        }
+                        transition={{
+                          duration: 1,
+                          delay: i * 0.2,
+                          repeat: shouldReduceMotion ? 0 : Infinity,
+                        }}
                       />
                     ))}
                   </div>
@@ -280,7 +313,11 @@ export function HeroSection() {
               <div className="w-full h-full bg-surface rounded-3xl shadow-[4px_4px_0px_#1a8a86] flex items-center justify-center border-2 border-border group hover:border-brand-teal transition-colors">
                 <motion.div
                   animate={shouldReduceMotion ? { rotate: 0 } : { rotate: [0, 360] }}
-                  transition={{ duration: 20, repeat: shouldReduceMotion ? 0 : Infinity, ease: 'linear' }}
+                  transition={{
+                    duration: 20,
+                    repeat: shouldReduceMotion ? 0 : Infinity,
+                    ease: 'linear',
+                  }}
                 >
                   <Compass className="w-12 h-12 sm:w-14 sm:h-14 text-[#37c8c3]" />
                 </motion.div>
@@ -294,19 +331,19 @@ export function HeroSection() {
                 shouldReduceMotion
                   ? { y: 0, rotate: 0 }
                   : {
-                    y: [0, -12, 0],
-                    rotate: [0, -8, 0],
-                  }
+                      y: [0, -12, 0],
+                      rotate: [0, -8, 0],
+                    }
               }
               transition={
                 shouldReduceMotion
                   ? { duration: 0.2 }
                   : {
-                    duration: 5,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                    delay: 0.8,
-                  }
+                      duration: 5,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                      delay: 0.8,
+                    }
               }
             >
               <div className="w-full h-full bg-primary rounded-2xl shadow-[6px_6px_0px_#850000] flex items-center justify-center border-2 border-primary">
@@ -328,7 +365,11 @@ export function HeroSection() {
         <div className="w-6 h-10 border-2 border-text-secondary/30 rounded-full flex justify-center pt-2">
           <motion.div
             className="w-1.5 h-3 bg-text-secondary/50 rounded-full"
-            animate={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: [1, 0, 1], y: [0, 4, 0] }}
+            animate={
+              shouldReduceMotion
+                ? { opacity: 1, y: 0 }
+                : { opacity: [1, 0, 1], y: [0, 4, 0] }
+            }
             transition={{ duration: 2, repeat: shouldReduceMotion ? 0 : Infinity }}
           />
         </div>

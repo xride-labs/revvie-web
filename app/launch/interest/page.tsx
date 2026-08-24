@@ -46,7 +46,8 @@ export default function LaunchInterestPage() {
         <section className="rounded-3xl border border-white/12 bg-[#11161f]/90 p-4 shadow-[0_35px_80px_rgba(0,0,0,0.45)] md:p-6">
           <h1 className="text-2xl font-semibold md:text-3xl">Launch Interest Form</h1>
           <p className="mt-2 text-sm text-white/70 md:text-base">
-            Fill out the official form below. Your response goes straight into the launch intake queue.
+            Fill out the official form below. Your response goes straight into the launch
+            intake queue.
           </p>
 
           <div className="mt-5 overflow-hidden rounded-2xl border border-white/12 bg-black/35">

@@ -1,8 +1,8 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { Smartphone } from 'lucide-react'
-import { useReducedMotion } from 'framer-motion'
+import { useReducedMotion } from 'motion/react'
 
 export function DownloadBanner() {
   const shouldReduceMotion = useReducedMotion()
@@ -15,12 +15,20 @@ export function DownloadBanner() {
       {/* Animated noise/glow effects */}
       <motion.div
         className="absolute top-0 right-0 w-125 h-125 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"
-        animate={shouldReduceMotion ? { opacity: 0.35 } : { scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
+        animate={
+          shouldReduceMotion
+            ? { opacity: 0.35 }
+            : { scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }
+        }
         transition={{ duration: 6, repeat: shouldReduceMotion ? 0 : Infinity }}
       />
       <motion.div
         className="absolute bottom-0 left-0 w-96 h-96 bg-black/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3"
-        animate={shouldReduceMotion ? { opacity: 0.25 } : { scale: [1.15, 1, 1.15], opacity: [0.3, 0.5, 0.3] }}
+        animate={
+          shouldReduceMotion
+            ? { opacity: 0.25 }
+            : { scale: [1.15, 1, 1.15], opacity: [0.3, 0.5, 0.3] }
+        }
         transition={{ duration: 8, repeat: shouldReduceMotion ? 0 : Infinity }}
       />
 
@@ -227,8 +235,16 @@ export function DownloadBanner() {
           >
             <motion.div
               className="w-24 h-24 rounded-3xl bg-black border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,0.5)] flex items-center justify-center"
-              animate={shouldReduceMotion ? { y: 0, rotate: 0 } : { y: [0, -10, 0], rotate: [0, 5, 0] }}
-              transition={{ duration: 4, repeat: shouldReduceMotion ? 0 : Infinity, ease: 'easeInOut' }}
+              animate={
+                shouldReduceMotion
+                  ? { y: 0, rotate: 0 }
+                  : { y: [0, -10, 0], rotate: [0, 5, 0] }
+              }
+              transition={{
+                duration: 4,
+                repeat: shouldReduceMotion ? 0 : Infinity,
+                ease: 'easeInOut',
+              }}
             >
               <Smartphone className="w-12 h-12 text-white" />
             </motion.div>

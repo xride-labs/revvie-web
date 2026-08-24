@@ -1,7 +1,7 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
-import { motion } from 'framer-motion'
+import { motion, type Variants } from 'motion/react'
 import Image from 'next/image'
 
 const steps = [
@@ -36,7 +36,7 @@ const steps = [
 ]
 
 export function HowItWorksSection() {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -47,7 +47,7 @@ export function HowItWorksSection() {
     },
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
@@ -56,7 +56,7 @@ export function HowItWorksSection() {
     },
   }
 
-  const stepVariants = {
+  const stepVariants: Variants = {
     hidden: { opacity: 0, x: 100 },
     visible: (custom: unknown) => {
       const i = typeof custom === 'number' ? custom : 0
@@ -72,7 +72,7 @@ export function HowItWorksSection() {
     },
   }
 
-  const imageVariants = {
+  const imageVariants: Variants = {
     hidden: { opacity: 0, x: -100 },
     visible: (custom: unknown) => {
       const i = typeof custom === 'number' ? custom : 0

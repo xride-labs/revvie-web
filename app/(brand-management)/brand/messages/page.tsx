@@ -1,19 +1,14 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import {
-  MessageCircle,
-  Send,
-  Loader2,
-  Search,
-  ArrowLeft,
-} from 'lucide-react'
+import { MessageCircle, Send, Loader2, Search, ArrowLeft } from 'lucide-react'
 import { apiAuthenticated } from '@/lib/server/base'
+import { formatRelativeTime, useNow } from '@/shared/lib/relative-time'
 import { cn } from '@/lib/utils'
 
 interface Participant {
@@ -59,21 +54,30 @@ async function getConversations(): Promise<Conversation[]> {
 
 async function getMessages(conversationId: string): Promise<Message[]> {
   try {
-    const res = await apiAuthenticated.raw.get(`/chat/conversations/${conversationId}/messages`, {
-      params: { limit: 50 },
-    })
+    const res = await apiAuthenticated.raw.get(
+      `/chat/conversations/${conversationId}/messages`,
+      {
+        params: { limit: 50 },
+      },
+    )
     return res.data?.data?.messages ?? res.data?.data ?? []
   } catch {
     return []
   }
 }
 
-async function sendMessage(conversationId: string, text: string): Promise<Message | null> {
+async function sendMessage(
+  conversationId: string,
+  text: string,
+): Promise<Message | null> {
   try {
-    const res = await apiAuthenticated.raw.post(`/chat/conversations/${conversationId}/messages`, {
-      text,
-      messageType: 'TEXT',
-    })
+    const res = await apiAuthenticated.raw.post(
+      `/chat/conversations/${conversationId}/messages`,
+      {
+        text,
+        messageType: 'TEXT',
+      },
+    )
     return res.data?.data?.message ?? res.data?.data ?? null
   } catch {
     return null
@@ -81,6 +85,7 @@ async function sendMessage(conversationId: string, text: string): Promise<Messag
 }
 
 export default function BrandMessagesPage() {
+  const now = useNow()
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -124,7 +129,15 @@ export default function BrandMessagesPage() {
       setConversations((prev) =>
         prev.map((c) =>
           c._id === selected._id
-            ? { ...c, lastMessage: { text, messageType: 'TEXT', createdAt: new Date().toISOString() }, updatedAt: new Date().toISOString() }
+            ? {
+                ...c,
+                lastMessage: {
+                  text,
+                  messageType: 'TEXT',
+                  createdAt: new Date().toISOString(),
+                },
+                updatedAt: new Date().toISOString(),
+              }
             : c,
         ),
       )
@@ -141,26 +154,18 @@ export default function BrandMessagesPage() {
   const getOtherParticipant = (c: Conversation) =>
     c.participants.find((p) => p.name) ?? c.participants[0]
 
-  const formatTime = (iso?: string) => {
-    if (!iso) return ''
-    try {
-      const diff = Date.now() - new Date(iso).getTime()
-      const mins = Math.floor(diff / 60000)
-      if (mins < 1) return 'just now'
-      if (mins < 60) return `${mins}m ago`
-      const hrs = Math.floor(mins / 60)
-      if (hrs < 24) return `${hrs}h ago`
-      return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
-    } catch {
-      return ''
-    }
-  }
+  const formatTime = (iso?: string) => formatRelativeTime(iso, now)
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 h-[calc(100vh-64px)]">
       <div className="flex h-full gap-4">
         {/* Conversation list */}
-        <Card className={cn('flex flex-col w-full lg:w-80 shrink-0', selected ? 'hidden lg:flex' : 'flex')}>
+        <Card
+          className={cn(
+            'flex flex-col w-full lg:w-80 shrink-0',
+            selected ? 'hidden lg:flex' : 'flex',
+          )}
+        >
           <div className="p-4 border-b border-border">
             <h2 className="font-bold text-lg mb-3">Messages</h2>
             <div className="relative">
@@ -182,9 +187,11 @@ export default function BrandMessagesPage() {
             ) : filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center px-4">
                 <MessageCircle className="w-12 h-12 text-muted-foreground/30 mb-3" />
-                <p className="text-sm text-muted-foreground font-medium">No conversations yet</p>
+                <p className="text-sm text-muted-foreground font-medium">
+                  No conversations yet
+                </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  When riders message your brand you'll see them here.
+                  When riders message your brand you&apos;ll see them here.
                 </p>
               </div>
             ) : (
@@ -208,7 +215,9 @@ export default function BrandMessagesPage() {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-medium text-sm truncate">{other?.name ?? 'Rider'}</span>
+                        <span className="font-medium text-sm truncate">
+                          {other?.name ?? 'Rider'}
+                        </span>
                         <span className="text-[10px] text-muted-foreground shrink-0">
                           {formatTime(c.lastMessage?.createdAt ?? c.updatedAt)}
                         </span>
@@ -216,7 +225,7 @@ export default function BrandMessagesPage() {
                       <p className="text-xs text-muted-foreground truncate mt-0.5">
                         {c.lastMessage?.messageType === 'IMAGE'
                           ? '📷 Photo'
-                          : c.lastMessage?.text ?? 'No messages yet'}
+                          : (c.lastMessage?.text ?? 'No messages yet')}
                       </p>
                     </div>
                     {(c.unreadCount ?? 0) > 0 && (
@@ -268,7 +277,9 @@ export default function BrandMessagesPage() {
               ) : messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
                   <MessageCircle className="w-10 h-10 text-muted-foreground/30 mb-3" />
-                  <p className="text-sm text-muted-foreground">No messages yet. Say hello!</p>
+                  <p className="text-sm text-muted-foreground">
+                    No messages yet. Say hello!
+                  </p>
                 </div>
               ) : (
                 messages.map((msg) => {
@@ -276,7 +287,10 @@ export default function BrandMessagesPage() {
                   return (
                     <div
                       key={msg._id}
-                      className={cn('flex gap-2', isFromBusiness ? 'justify-end' : 'justify-start')}
+                      className={cn(
+                        'flex gap-2',
+                        isFromBusiness ? 'justify-end' : 'justify-start',
+                      )}
                     >
                       {!isFromBusiness && (
                         <Avatar className="w-7 h-7 shrink-0 mt-1">
@@ -287,7 +301,9 @@ export default function BrandMessagesPage() {
                       )}
                       <div className="max-w-[70%]">
                         {msg.senderName && !isFromBusiness && (
-                          <p className="text-[10px] text-muted-foreground mb-1 ml-1">{msg.senderName}</p>
+                          <p className="text-[10px] text-muted-foreground mb-1 ml-1">
+                            {msg.senderName}
+                          </p>
                         )}
                         <div
                           className={cn(
@@ -347,7 +363,9 @@ export default function BrandMessagesPage() {
           <div className="hidden lg:flex flex-1 items-center justify-center">
             <div className="text-center">
               <MessageCircle className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4" />
-              <p className="text-lg font-semibold text-muted-foreground">Select a conversation</p>
+              <p className="text-lg font-semibold text-muted-foreground">
+                Select a conversation
+              </p>
               <p className="text-sm text-muted-foreground mt-1">
                 Choose a conversation from the list to start messaging
               </p>

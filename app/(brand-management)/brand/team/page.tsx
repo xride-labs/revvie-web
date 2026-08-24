@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -32,76 +32,76 @@ import {
 import { Users, Plus, Loader2, MoreHorizontal, Trash2, ShieldCheck } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import {
-  businessApi,
-  type BrandTeamMember,
-  type BrandMemberRole,
-} from '@/lib/server/business'
+  useGetTeamMembersQuery,
+  useInviteTeamMemberMutation,
+  useUpdateTeamMemberRoleMutation,
+  useRemoveTeamMemberMutation,
+} from '@/features/business/api'
+import { useBusinessContext } from '@/contexts/business-context'
+import type { BrandTeamMember, BrandMemberRole } from '@/entities/business/model'
 
 const ROLE_BADGE: Record<BrandMemberRole, { label: string; className: string }> = {
-  OWNER: { label: 'Owner', className: 'text-amber-500 border-amber-500/30 bg-amber-500/5' },
+  OWNER: {
+    label: 'Owner',
+    className: 'text-amber-500 border-amber-500/30 bg-amber-500/5',
+  },
   ADMIN: { label: 'Admin', className: 'text-blue-400 border-blue-400/30 bg-blue-400/5' },
-  MODERATOR: { label: 'Moderator', className: 'text-purple-400 border-purple-400/30 bg-purple-400/5' },
+  MODERATOR: {
+    label: 'Moderator',
+    className: 'text-purple-400 border-purple-400/30 bg-purple-400/5',
+  },
   MEMBER: { label: 'Member', className: 'text-muted-foreground border-border' },
 }
 
 export default function BrandTeamPage() {
   const { success: successToast, error: errorToast } = useToast()
-  const [members, setMembers] = useState<BrandTeamMember[]>([])
-  const [loading, setLoading] = useState(true)
-  const [businessId, setBusinessId] = useState<string | null>(null)
+  const { business, loading: businessLoading } = useBusinessContext()
+  const businessId = business?.id ?? null
+  const { data: members = [], isLoading: membersLoading } = useGetTeamMembersQuery(
+    businessId ?? '',
+    { skip: !businessId },
+  )
+  const [inviteTeamMember, { isLoading: inviting }] = useInviteTeamMemberMutation()
+  const [updateTeamMemberRole] = useUpdateTeamMemberRoleMutation()
+  const [removeTeamMember, { isLoading: removing }] = useRemoveTeamMemberMutation()
+  const loading = businessLoading || (!!businessId && membersLoading)
 
   const [inviteOpen, setInviteOpen] = useState(false)
   const [inviteEmail, setInviteEmail] = useState('')
-  const [inviteRole, setInviteRole] = useState<Exclude<BrandMemberRole, 'OWNER'>>('MEMBER')
-  const [inviting, setInviting] = useState(false)
+  const [inviteRole, setInviteRole] =
+    useState<Exclude<BrandMemberRole, 'OWNER'>>('MEMBER')
 
   const [removeTarget, setRemoveTarget] = useState<BrandTeamMember | null>(null)
-  const [removing, setRemoving] = useState(false)
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const businesses = await businessApi.getMyBusinesses()
-        if (businesses.length > 0) {
-          const id = businesses[0].id
-          setBusinessId(id)
-          const items = await businessApi.getTeamMembers(id)
-          setMembers(items)
-        }
-      } catch {
-        // no-op
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
-  }, [])
 
   const handleInvite = async () => {
     if (!businessId || !inviteEmail.trim()) return
-    setInviting(true)
     try {
-      const member = await businessApi.inviteTeamMember(businessId, inviteEmail.trim(), inviteRole)
-      setMembers((prev) => {
-        const exists = prev.find((m) => m.userId === member.userId)
-        return exists ? prev.map((m) => m.userId === member.userId ? member : m) : [...prev, member]
+      await inviteTeamMember({
+        businessId,
+        data: { email: inviteEmail.trim(), role: inviteRole },
+      }).unwrap()
+      successToast('Member added', {
+        description: `${inviteEmail} joined as ${inviteRole.toLowerCase()}`,
       })
-      successToast('Member added', { description: `${inviteEmail} joined as ${inviteRole.toLowerCase()}` })
       setInviteOpen(false)
       setInviteEmail('')
       setInviteRole('MEMBER')
     } catch (err) {
       errorToast(err instanceof Error ? err.message : 'Failed to add member')
-    } finally {
-      setInviting(false)
     }
   }
 
-  const handleRoleChange = async (member: BrandTeamMember, role: Exclude<BrandMemberRole, 'OWNER'>) => {
+  const handleRoleChange = async (
+    member: BrandTeamMember,
+    role: Exclude<BrandMemberRole, 'OWNER'>,
+  ) => {
     if (!businessId) return
     try {
-      const updated = await businessApi.updateTeamMemberRole(businessId, member.userId, role)
-      setMembers((prev) => prev.map((m) => m.userId === updated.userId ? updated : m))
+      await updateTeamMemberRole({
+        businessId,
+        userId: member.userId,
+        data: { role },
+      }).unwrap()
       successToast('Role updated')
     } catch {
       errorToast('Failed to update role')
@@ -110,15 +110,12 @@ export default function BrandTeamPage() {
 
   const handleRemove = async () => {
     if (!businessId || !removeTarget) return
-    setRemoving(true)
     try {
-      await businessApi.removeTeamMember(businessId, removeTarget.userId)
-      setMembers((prev) => prev.filter((m) => m.userId !== removeTarget.userId))
+      await removeTeamMember({ businessId, userId: removeTarget.userId }).unwrap()
       successToast('Member removed')
     } catch {
       errorToast('Failed to remove member')
     } finally {
-      setRemoving(false)
       setRemoveTarget(null)
     }
   }
@@ -150,7 +147,8 @@ export default function BrandTeamPage() {
             <Users className="w-14 h-14 text-muted-foreground/30 mx-auto mb-4" />
             <h3 className="font-semibold text-lg mb-2">Just you so far</h3>
             <p className="text-muted-foreground text-sm max-w-xs mx-auto mb-6">
-              Invite team members to help manage your brand portal, campaigns, and customer messages.
+              Invite team members to help manage your brand portal, campaigns, and
+              customer messages.
             </p>
             <Button variant="outline" onClick={() => setInviteOpen(true)}>
               <Plus className="w-4 h-4 mr-2" /> Invite someone
@@ -162,7 +160,9 @@ export default function BrandTeamPage() {
           <CardContent className="p-0 divide-y divide-border">
             {members.map((m) => {
               const badge = ROLE_BADGE[m.role]
-              const initials = (m.user.name ?? m.user.email ?? 'U').charAt(0).toUpperCase()
+              const initials = (m.user.name ?? m.user.email ?? 'U')
+                .charAt(0)
+                .toUpperCase()
               return (
                 <div key={m.id} className="flex items-center gap-3 px-4 py-3">
                   <Avatar>
@@ -172,10 +172,16 @@ export default function BrandTeamPage() {
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium text-sm truncate">{m.user.name ?? 'Unknown'}</p>
-                      {m.role === 'OWNER' && <ShieldCheck className="w-3.5 h-3.5 text-amber-500 shrink-0" />}
+                      <p className="font-medium text-sm truncate">
+                        {m.user.name ?? 'Unknown'}
+                      </p>
+                      {m.role === 'OWNER' && (
+                        <ShieldCheck className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                      )}
                     </div>
-                    <p className="text-xs text-muted-foreground truncate">{m.user.email}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {m.user.email}
+                    </p>
                   </div>
                   <Badge variant="outline" className={`text-xs ${badge.className}`}>
                     {badge.label}
@@ -191,7 +197,10 @@ export default function BrandTeamPage() {
                         {(['ADMIN', 'MODERATOR', 'MEMBER'] as const)
                           .filter((r) => r !== m.role)
                           .map((r) => (
-                            <DropdownMenuItem key={r} onClick={() => handleRoleChange(m, r)}>
+                            <DropdownMenuItem
+                              key={r}
+                              onClick={() => handleRoleChange(m, r)}
+                            >
                               Make {r.toLowerCase()}
                             </DropdownMenuItem>
                           ))}
@@ -239,14 +248,20 @@ export default function BrandTeamPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ADMIN">Admin — full portal access</SelectItem>
-                  <SelectItem value="MODERATOR">Moderator — manage messages & inquiries</SelectItem>
+                  <SelectItem value="MODERATOR">
+                    Moderator — manage messages & inquiries
+                  </SelectItem>
                   <SelectItem value="MEMBER">Member — view-only access</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setInviteOpen(false)} disabled={inviting}>
+            <Button
+              variant="outline"
+              onClick={() => setInviteOpen(false)}
+              disabled={inviting}
+            >
               Cancel
             </Button>
             <Button
@@ -254,7 +269,14 @@ export default function BrandTeamPage() {
               onClick={handleInvite}
               disabled={inviting || !inviteEmail.trim()}
             >
-              {inviting ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Inviting…</> : 'Add Member'}
+              {inviting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Inviting…
+                </>
+              ) : (
+                'Add Member'
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -266,16 +288,29 @@ export default function BrandTeamPage() {
           <DialogHeader>
             <DialogTitle>Remove member?</DialogTitle>
             <DialogDescription>
-              <span className="font-medium">{removeTarget?.user.name ?? removeTarget?.user.email}</span> will
-              lose access to this brand portal.
+              <span className="font-medium">
+                {removeTarget?.user.name ?? removeTarget?.user.email}
+              </span>{' '}
+              will lose access to this brand portal.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRemoveTarget(null)} disabled={removing}>
+            <Button
+              variant="outline"
+              onClick={() => setRemoveTarget(null)}
+              disabled={removing}
+            >
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleRemove} disabled={removing}>
-              {removing ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Removing…</> : 'Remove'}
+              {removing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Removing…
+                </>
+              ) : (
+                'Remove'
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

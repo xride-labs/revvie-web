@@ -8,9 +8,21 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Upload, CheckCircle2, Clock, AlertCircle, Loader2, MapPin, Navigation } from 'lucide-react'
+import {
+  Upload,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  Loader2,
+  MapPin,
+  Navigation,
+} from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
-import { businessApi, type BusinessCategory } from '@/lib/server/business'
+import {
+  useUpdateBusinessMutation,
+  useSubmitBusinessMutation,
+} from '@/features/business/api'
+import type { BusinessCategory } from '@/entities/business/model'
 import { mapApiError } from '@/lib/errors'
 import { useBusinessContext } from '@/contexts/business-context'
 
@@ -27,7 +39,10 @@ const BRAND_CATEGORIES: { value: BusinessCategory; label: string }[] = [
 
 type VerificationStatus = 'PENDING' | 'SUBMITTED' | 'APPROVED' | 'REJECTED'
 
-const VERIFICATION_CONFIG: Record<VerificationStatus, { label: string; color: string; icon: React.ElementType }> = {
+const VERIFICATION_CONFIG: Record<
+  VerificationStatus,
+  { label: string; color: string; icon: React.ElementType }
+> = {
   PENDING: { label: 'Not submitted', color: 'text-muted-foreground', icon: Clock },
   SUBMITTED: { label: 'Under review', color: 'text-amber-500', icon: Clock },
   APPROVED: { label: 'Verified', color: 'text-green-500', icon: CheckCircle2 },
@@ -37,8 +52,8 @@ const VERIFICATION_CONFIG: Record<VerificationStatus, { label: string; color: st
 export default function BrandSettingsPage() {
   const { success: successToast, error: errorToast } = useToast()
   const { business, reload } = useBusinessContext()
-  const [isSaving, setIsSaving] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [updateBusiness, { isLoading: isSaving }] = useUpdateBusinessMutation()
+  const [submitBusiness, { isLoading: isSubmitting }] = useSubmitBusinessMutation()
   const [locating, setLocating] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [profile, setProfile] = useState({
@@ -67,14 +82,14 @@ export default function BrandSettingsPage() {
       email: business.email ?? '',
       phone: business.phone ?? '',
       websiteUrl: business.websiteUrl ?? '',
-      addressLine1: (business as any).addressLine1 ?? '',
-      addressLine2: (business as any).addressLine2 ?? '',
+      addressLine1: business.addressLine1 ?? '',
+      addressLine2: business.addressLine2 ?? '',
       city: business.city ?? '',
-      region: (business as any).region ?? '',
+      region: business.region ?? '',
       country: business.country ?? 'India',
       description: business.description ?? '',
-      latitude: (business as any).latitude != null ? String((business as any).latitude) : '',
-      longitude: (business as any).longitude != null ? String((business as any).longitude) : '',
+      latitude: business.latitude != null ? String(business.latitude) : '',
+      longitude: business.longitude != null ? String(business.longitude) : '',
     })
   }, [business?.id])
 
@@ -112,14 +127,18 @@ export default function BrandSettingsPage() {
               city: addr.city || addr.town || addr.village || addr.county || p.city,
               region: addr.state || p.region,
               country: addr.country || p.country,
-              addressLine1: addr.road ? `${addr.house_number ? addr.house_number + ' ' : ''}${addr.road}` : p.addressLine1,
+              addressLine1: addr.road
+                ? `${addr.house_number ? addr.house_number + ' ' : ''}${addr.road}`
+                : p.addressLine1,
             }))
           }
         } catch {
           // Reverse geocode failed — coordinates still set
         }
         setLocating(false)
-        successToast('Location detected', { description: 'Review the address fields and save.' })
+        successToast('Location detected', {
+          description: 'Review the address fields and save.',
+        })
       },
       () => {
         setLocating(false)
@@ -132,47 +151,46 @@ export default function BrandSettingsPage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!business) return
-    setIsSaving(true)
     setFieldErrors({})
     try {
-      await businessApi.updateBusiness(business.id, {
-        displayName: profile.displayName || undefined,
-        tagline: profile.tagline || null,
-        categories: profile.categories.length > 0 ? profile.categories : undefined,
-        email: profile.email || null,
-        phone: profile.phone || null,
-        websiteUrl: profile.websiteUrl || null,
-        addressLine1: (profile.addressLine1 || null) as any,
-        addressLine2: (profile.addressLine2 || null) as any,
-        city: profile.city || null,
-        region: (profile.region || null) as any,
-        country: profile.country || null,
-        latitude: profile.latitude ? parseFloat(profile.latitude) : null as any,
-        longitude: profile.longitude ? parseFloat(profile.longitude) : null as any,
-        description: profile.description || null,
-      })
+      await updateBusiness({
+        id: business.id,
+        data: {
+          displayName: profile.displayName || undefined,
+          tagline: profile.tagline || null,
+          categories: profile.categories.length > 0 ? profile.categories : undefined,
+          email: profile.email || null,
+          phone: profile.phone || null,
+          websiteUrl: profile.websiteUrl || null,
+          addressLine1: profile.addressLine1 || null,
+          addressLine2: profile.addressLine2 || null,
+          city: profile.city || null,
+          region: profile.region || null,
+          country: profile.country || null,
+          latitude: profile.latitude ? parseFloat(profile.latitude) : null,
+          longitude: profile.longitude ? parseFloat(profile.longitude) : null,
+          description: profile.description || null,
+        },
+      }).unwrap()
       await reload()
       successToast('Brand profile saved')
     } catch (err) {
       const mapped = mapApiError(err)
       if (mapped.fieldErrors) setFieldErrors(mapped.fieldErrors)
       errorToast(mapped.message)
-    } finally {
-      setIsSaving(false)
     }
   }
 
   const handleSubmitVerification = async () => {
     if (!business) return
-    setIsSubmitting(true)
     try {
-      await businessApi.submitBusiness(business.id)
+      await submitBusiness(business.id).unwrap()
       await reload()
-      successToast('Submitted for verification!', { description: 'Admin will review your profile within 2-3 business days.' })
+      successToast('Submitted for verification!', {
+        description: 'Admin will review your profile within 2-3 business days.',
+      })
     } catch (err) {
       errorToast(err instanceof Error ? err.message : 'Submission failed')
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -208,10 +226,14 @@ export default function BrandSettingsPage() {
               </div>
             </div>
             {verificationStatus === 'PENDING' && (
-              <Badge variant="outline" className="text-amber-500 border-amber-500/30">Action needed</Badge>
+              <Badge variant="outline" className="text-amber-500 border-amber-500/30">
+                Action needed
+              </Badge>
             )}
             {verificationStatus === 'REJECTED' && business.verificationNotes && (
-              <p className="text-xs text-destructive max-w-xs text-right">{business.verificationNotes}</p>
+              <p className="text-xs text-destructive max-w-xs text-right">
+                {business.verificationNotes}
+              </p>
             )}
           </div>
         </CardContent>
@@ -230,14 +252,23 @@ export default function BrandSettingsPage() {
                 <Input
                   placeholder="Your brand name"
                   value={profile.displayName}
-                  onChange={(e) => setProfile({ ...profile, displayName: e.target.value })}
+                  onChange={(e) =>
+                    setProfile({ ...profile, displayName: e.target.value })
+                  }
                   aria-invalid={!!fieldErrors.displayName}
                 />
-                {fieldErrors.displayName && <p className="text-xs text-destructive">{fieldErrors.displayName}</p>}
+                {fieldErrors.displayName && (
+                  <p className="text-xs text-destructive">{fieldErrors.displayName}</p>
+                )}
               </div>
 
               <div className="col-span-2 space-y-1.5">
-                <Label>Categories <span className="text-muted-foreground text-xs">(select all that apply)</span></Label>
+                <Label>
+                  Categories{' '}
+                  <span className="text-muted-foreground text-xs">
+                    (select all that apply)
+                  </span>
+                </Label>
                 <div className="flex flex-wrap gap-2">
                   {BRAND_CATEGORIES.map((c) => (
                     <button
@@ -270,7 +301,9 @@ export default function BrandSettingsPage() {
                   rows={3}
                   placeholder="Tell riders about your brand..."
                   value={profile.description}
-                  onChange={(e) => setProfile({ ...profile, description: e.target.value })}
+                  onChange={(e) =>
+                    setProfile({ ...profile, description: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -288,7 +321,9 @@ export default function BrandSettingsPage() {
                   onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                   aria-invalid={!!fieldErrors.email}
                 />
-                {fieldErrors.email && <p className="text-xs text-destructive">{fieldErrors.email}</p>}
+                {fieldErrors.email && (
+                  <p className="text-xs text-destructive">{fieldErrors.email}</p>
+                )}
               </div>
               <div className="space-y-1.5">
                 <Label>Phone</Label>
@@ -298,7 +333,9 @@ export default function BrandSettingsPage() {
                   onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                   aria-invalid={!!fieldErrors.phone}
                 />
-                {fieldErrors.phone && <p className="text-xs text-destructive">{fieldErrors.phone}</p>}
+                {fieldErrors.phone && (
+                  <p className="text-xs text-destructive">{fieldErrors.phone}</p>
+                )}
               </div>
               <div className="col-span-2 space-y-1.5">
                 <Label>Website</Label>
@@ -308,7 +345,9 @@ export default function BrandSettingsPage() {
                   onChange={(e) => setProfile({ ...profile, websiteUrl: e.target.value })}
                   aria-invalid={!!fieldErrors.websiteUrl}
                 />
-                {fieldErrors.websiteUrl && <p className="text-xs text-destructive">{fieldErrors.websiteUrl}</p>}
+                {fieldErrors.websiteUrl && (
+                  <p className="text-xs text-destructive">{fieldErrors.websiteUrl}</p>
+                )}
               </div>
             </div>
 
@@ -329,7 +368,11 @@ export default function BrandSettingsPage() {
                   onClick={detectLocation}
                   disabled={locating}
                 >
-                  {locating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Navigation className="w-3 h-3" />}
+                  {locating ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <Navigation className="w-3 h-3" />
+                  )}
                   {locating ? 'Detecting…' : 'Use My Location'}
                 </Button>
               </div>
@@ -340,7 +383,9 @@ export default function BrandSettingsPage() {
                   <Input
                     placeholder="Street address, shop number"
                     value={profile.addressLine1}
-                    onChange={(e) => setProfile({ ...profile, addressLine1: e.target.value })}
+                    onChange={(e) =>
+                      setProfile({ ...profile, addressLine1: e.target.value })
+                    }
                   />
                 </div>
                 <div className="col-span-2 space-y-1.5">
@@ -348,7 +393,9 @@ export default function BrandSettingsPage() {
                   <Input
                     placeholder="Building, area, landmark"
                     value={profile.addressLine2}
-                    onChange={(e) => setProfile({ ...profile, addressLine2: e.target.value })}
+                    onChange={(e) =>
+                      setProfile({ ...profile, addressLine2: e.target.value })
+                    }
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -379,7 +426,10 @@ export default function BrandSettingsPage() {
 
               {/* Map preview */}
               {mapEmbedUrl && (
-                <div className="rounded-xl overflow-hidden border border-border" style={{ height: 200 }}>
+                <div
+                  className="rounded-xl overflow-hidden border border-border"
+                  style={{ height: 200 }}
+                >
                   <iframe
                     src={mapEmbedUrl}
                     width="100%"
@@ -407,15 +457,28 @@ export default function BrandSettingsPage() {
                   <Input
                     placeholder="72.8777"
                     value={profile.longitude}
-                    onChange={(e) => setProfile({ ...profile, longitude: e.target.value })}
+                    onChange={(e) =>
+                      setProfile({ ...profile, longitude: e.target.value })
+                    }
                     className="font-mono text-xs"
                   />
                 </div>
               </div>
             </div>
 
-            <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white" disabled={isSaving}>
-              {isSaving ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Saving...</> : 'Save Profile'}
+            <Button
+              type="submit"
+              className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Saving...
+                </>
+              ) : (
+                'Save Profile'
+              )}
             </Button>
           </form>
         </CardContent>
@@ -428,24 +491,36 @@ export default function BrandSettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Upload your business registration, GST certificate, or brand authorization letter to get verified and go live on the marketplace.
+            Upload your business registration, GST certificate, or brand authorization
+            letter to get verified and go live on the marketplace.
           </p>
           <div className="border-2 border-dashed rounded-xl p-8 text-center">
             <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
             <p className="text-sm font-medium mb-1">Upload documents</p>
             <p className="text-xs text-muted-foreground">PDF, JPG, PNG up to 10MB each</p>
-            <Button variant="outline" size="sm" className="mt-4">Choose Files</Button>
+            <Button variant="outline" size="sm" className="mt-4">
+              Choose Files
+            </Button>
           </div>
           <Button
             className="w-full bg-amber-500 hover:bg-amber-600 text-white"
             disabled={!canSubmit || isSubmitting}
             onClick={handleSubmitVerification}
           >
-            {isSubmitting ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Submitting...</> : 'Submit for Verification'}
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                Submitting...
+              </>
+            ) : (
+              'Submit for Verification'
+            )}
           </Button>
           {!canSubmit && (
             <p className="text-xs text-center text-muted-foreground">
-              {verificationStatus === 'SUBMITTED' ? 'Already submitted — awaiting admin review' : 'Already verified'}
+              {verificationStatus === 'SUBMITTED'
+                ? 'Already submitted — awaiting admin review'
+                : 'Already verified'}
             </p>
           )}
         </CardContent>

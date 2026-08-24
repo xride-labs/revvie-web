@@ -65,10 +65,17 @@ export function AppLayout({ children }: AppLayoutProps) {
     'BRAND_MODERATOR',
     'CO_ADMIN',
     'ADMIN',
-    'MODERATOR'
+    'MODERATOR',
   )
   const isAdmin = hasAnyRole(user, 'ADMIN', 'CO_ADMIN', 'MODERATOR')
-  const hasBrandAccess = hasAnyRole(user, 'BRAND_OWNER', 'BRAND_ADMIN', 'BRAND_MODERATOR', 'ADMIN', 'CO_ADMIN')
+  const hasBrandAccess = hasAnyRole(
+    user,
+    'BRAND_OWNER',
+    'BRAND_ADMIN',
+    'BRAND_MODERATOR',
+    'ADMIN',
+    'CO_ADMIN',
+  )
 
   useEffect(() => {
     if (debugAuth) {
@@ -110,16 +117,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       router.push('/')
       return
     }
-  }, [
-    user,
-    hasSession,
-    isPending,
-    router,
-    hasManagerAccess,
-    pathname,
-    error,
-    debugAuth,
-  ])
+  }, [user, hasSession, isPending, router, hasManagerAccess, pathname, error, debugAuth])
 
   if (isPending || (hasSession && !user)) {
     return (
@@ -165,7 +163,9 @@ export function AppLayout({ children }: AppLayoutProps) {
                 {activeClub.name.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold truncate leading-tight">{activeClub.name}</p>
+                <p className="text-sm font-bold truncate leading-tight">
+                  {activeClub.name}
+                </p>
                 <p className="text-[10px] text-muted-foreground">Club Management</p>
               </div>
             </>
@@ -175,7 +175,9 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <span className="text-white font-bold text-base">⚡</span>
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-bold uppercase tracking-wide leading-tight">Revvie</p>
+                <p className="text-sm font-bold uppercase tracking-wide leading-tight">
+                  Revvie
+                </p>
                 <p className="text-[10px] text-muted-foreground">Club Portal</p>
               </div>
             </>
@@ -193,30 +195,43 @@ export function AppLayout({ children }: AppLayoutProps) {
                       <Users className="w-3.5 h-3.5 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold truncate">{activeClub?.name ?? 'Select Club'}</p>
-                      <p className="text-[10px] text-muted-foreground">{activeClub?.membersCount ?? 0} members</p>
+                      <p className="text-xs font-semibold truncate">
+                        {activeClub?.name ?? 'Select Club'}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {activeClub?.memberCount ?? 0} members
+                      </p>
                     </div>
                     <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-64">
-                  <p className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Your Clubs</p>
+                  <p className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    Your Clubs
+                  </p>
                   <DropdownMenuSeparator />
                   {clubs.map((c) => (
                     <DropdownMenuItem
                       key={c.id}
                       onClick={() => selectClub(c.id)}
-                      className={cn('flex items-center gap-2', c.id === activeClub?.id && 'bg-muted')}
+                      className={cn(
+                        'flex items-center gap-2',
+                        c.id === activeClub?.id && 'bg-muted',
+                      )}
                     >
                       <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                         <Users className="w-3.5 h-3.5 text-primary" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium truncate">{c.name}</p>
-                        <p className="text-xs text-muted-foreground">{c.membersCount ?? 0} members</p>
+                        <p className="text-xs text-muted-foreground">
+                          {c.memberCount ?? 0} members
+                        </p>
                       </div>
                       {c.id === activeClub?.id && (
-                        <Badge variant="secondary" className="text-[10px] px-1.5">Active</Badge>
+                        <Badge variant="secondary" className="text-[10px] px-1.5">
+                          Active
+                        </Badge>
                       )}
                     </DropdownMenuItem>
                   ))}
@@ -233,7 +248,9 @@ export function AppLayout({ children }: AppLayoutProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold truncate">{activeClub?.name}</p>
-                  <p className="text-[10px] text-muted-foreground">{activeClub?.membersCount ?? 0} members</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {activeClub?.memberCount ?? 0} members
+                  </p>
                 </div>
               </div>
             )}

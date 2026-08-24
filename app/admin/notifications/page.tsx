@@ -43,28 +43,28 @@ import {
   AlertTriangle,
   type LucideIcon,
 } from 'lucide-react'
-import { adminApi, type AdminNotificationRecord } from '@/lib/server/admin'
+import { useGetNotificationsQuery } from '@/features/admin/api'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 const TYPE_ICON: Record<string, { icon: LucideIcon; color: string }> = {
-  RIDE_INVITE:          { icon: MapPin,        color: 'text-blue-500' },
-  RIDE_JOIN_REQUEST:    { icon: MapPin,        color: 'text-amber-500' },
-  RIDE_JOIN_ACCEPTED:   { icon: CalendarCheck, color: 'text-green-500' },
-  RIDE_REMINDER:        { icon: Clock,         color: 'text-blue-400' },
-  RIDE_CANCELLED:       { icon: AlertTriangle, color: 'text-red-500' },
-  CLUB_INVITE:          { icon: Users,         color: 'text-purple-500' },
-  CLUB_JOIN_REQUEST:    { icon: Users,         color: 'text-amber-500' },
-  CLUB_JOIN_ACCEPTED:   { icon: Users,         color: 'text-green-500' },
-  CLUB_ANNOUNCEMENT:    { icon: Megaphone,     color: 'text-amber-500' },
-  MARKETPLACE_MESSAGE:  { icon: ShoppingBag,   color: 'text-indigo-500' },
-  LISTING_SOLD:         { icon: ShoppingBag,   color: 'text-green-500' },
-  LISTING_OFFER:        { icon: ShoppingBag,   color: 'text-blue-500' },
-  LISTING_INTERESTED:   { icon: ShoppingBag,   color: 'text-amber-500' },
-  MESSAGE:              { icon: MessageSquare, color: 'text-cyan-500' },
-  FOLLOW:               { icon: UserPlus,      color: 'text-violet-500' },
-  COMMENT:              { icon: MessageSquare, color: 'text-slate-500' },
-  LIKE:                 { icon: Heart,         color: 'text-red-500' },
-  FRIEND_REQUEST:       { icon: UserPlus,      color: 'text-pink-500' },
+  RIDE_INVITE: { icon: MapPin, color: 'text-blue-500' },
+  RIDE_JOIN_REQUEST: { icon: MapPin, color: 'text-amber-500' },
+  RIDE_JOIN_ACCEPTED: { icon: CalendarCheck, color: 'text-green-500' },
+  RIDE_REMINDER: { icon: Clock, color: 'text-blue-400' },
+  RIDE_CANCELLED: { icon: AlertTriangle, color: 'text-red-500' },
+  CLUB_INVITE: { icon: Users, color: 'text-purple-500' },
+  CLUB_JOIN_REQUEST: { icon: Users, color: 'text-amber-500' },
+  CLUB_JOIN_ACCEPTED: { icon: Users, color: 'text-green-500' },
+  CLUB_ANNOUNCEMENT: { icon: Megaphone, color: 'text-amber-500' },
+  MARKETPLACE_MESSAGE: { icon: ShoppingBag, color: 'text-indigo-500' },
+  LISTING_SOLD: { icon: ShoppingBag, color: 'text-green-500' },
+  LISTING_OFFER: { icon: ShoppingBag, color: 'text-blue-500' },
+  LISTING_INTERESTED: { icon: ShoppingBag, color: 'text-amber-500' },
+  MESSAGE: { icon: MessageSquare, color: 'text-cyan-500' },
+  FOLLOW: { icon: UserPlus, color: 'text-violet-500' },
+  COMMENT: { icon: MessageSquare, color: 'text-slate-500' },
+  LIKE: { icon: Heart, color: 'text-red-500' },
+  FRIEND_REQUEST: { icon: UserPlus, color: 'text-pink-500' },
 }
 
 const TYPE_OPTIONS = [
@@ -89,51 +89,38 @@ const TYPE_OPTIONS = [
 ] as const
 
 export default function AdminNotificationsPage() {
-  const [notifications, setNotifications] = useState<AdminNotificationRecord[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
   const [searchQuery, setSearchQuery] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
   const [unreadOnly, setUnreadOnly] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [totalItems, setTotalItems] = useState(0)
+  // Debounced so a search keystroke doesn't fire a request on every character.
+  const [debouncedSearch, setDebouncedSearch] = useState('')
 
   useEffect(() => {
-    let isMounted = true
-    setIsLoading(true)
-    setError(null)
+    const timeout = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 350)
+    return () => clearTimeout(timeout)
+  }, [searchQuery])
 
-    const params: Record<string, string | number | boolean> = {
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [debouncedSearch, typeFilter, unreadOnly])
+
+  const queryParams = useMemo(
+    () => ({
       page: currentPage,
       limit: 25,
-    }
-    if (typeFilter !== 'all') params.type = typeFilter
-    if (unreadOnly === 'unread') params.unreadOnly = true
-    if (searchQuery.trim()) params.search = searchQuery.trim()
+      ...(typeFilter !== 'all' ? { type: typeFilter } : {}),
+      ...(unreadOnly === 'unread' ? { unreadOnly: true } : {}),
+      ...(debouncedSearch ? { search: debouncedSearch } : {}),
+    }),
+    [currentPage, typeFilter, unreadOnly, debouncedSearch],
+  )
 
-    adminApi
-      .getNotifications(params)
-      .then((response) => {
-        if (!isMounted) return
-        setNotifications(response.items)
-        setTotalPages(response.pagination.totalPages)
-        setTotalItems(response.pagination.total)
-      })
-      .catch((err) => {
-        if (!isMounted) return
-        setError(err instanceof Error ? err.message : 'Failed to load notifications')
-      })
-      .finally(() => {
-        if (!isMounted) return
-        setIsLoading(false)
-      })
+  const { data, isLoading, isError } = useGetNotificationsQuery(queryParams)
 
-    return () => {
-      isMounted = false
-    }
-  }, [currentPage, searchQuery, typeFilter, unreadOnly])
+  const notifications = useMemo(() => data?.items ?? [], [data])
+  const totalPages = data?.pagination.totalPages ?? 1
+  const totalItems = data?.pagination.total ?? 0
 
   const stats = useMemo(() => {
     return {
@@ -221,13 +208,10 @@ export default function AdminNotificationsPage() {
               <Input
                 placeholder="Search by title, message, or user"
                 value={searchQuery}
-                onChange={(event) => {
-                  setSearchQuery(event.target.value)
-                  setCurrentPage(1)
-                }}
+                onChange={(event) => setSearchQuery(event.target.value)}
               />
             </div>
-            <Select value={typeFilter} onValueChange={(value) => { setTypeFilter(value); setCurrentPage(1) }}>
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
@@ -240,7 +224,7 @@ export default function AdminNotificationsPage() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={unreadOnly} onValueChange={(value) => { setUnreadOnly(value); setCurrentPage(1) }}>
+            <Select value={unreadOnly} onValueChange={setUnreadOnly}>
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Read Status" />
               </SelectTrigger>
@@ -284,15 +268,18 @@ export default function AdminNotificationsPage() {
                       </PhantomLoader>
                     </TableCell>
                   </TableRow>
-                ) : error ? (
+                ) : isError ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-8 text-destructive">
-                      {error}
+                      Failed to load notifications
                     </TableCell>
                   </TableRow>
                 ) : notifications.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    <TableCell
+                      colSpan={5}
+                      className="text-center py-8 text-muted-foreground"
+                    >
                       No notifications found
                     </TableCell>
                   </TableRow>
@@ -310,8 +297,12 @@ export default function AdminNotificationsPage() {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="text-sm font-medium">{notification.user.name || 'Unknown'}</p>
-                            <p className="text-xs text-muted-foreground">{notification.user.email || '—'}</p>
+                            <p className="text-sm font-medium">
+                              {notification.user.name || 'Unknown'}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {notification.user.email || '—'}
+                            </p>
                           </div>
                         </div>
                       </TableCell>
@@ -325,12 +316,19 @@ export default function AdminNotificationsPage() {
                       </TableCell>
                       <TableCell>
                         {(() => {
-                          const meta = TYPE_ICON[notification.type] ?? { icon: Bell, color: 'text-muted-foreground' }
+                          const meta = TYPE_ICON[notification.type] ?? {
+                            icon: Bell,
+                            color: 'text-muted-foreground',
+                          }
                           const TypeIcon = meta.icon
                           return (
                             <span className="flex items-center gap-1.5">
-                              <TypeIcon className={`w-3.5 h-3.5 shrink-0 ${meta.color}`} />
-                              <Badge variant="outline" className="text-[10px]">{notification.type.replace(/_/g, ' ')}</Badge>
+                              <TypeIcon
+                                className={`w-3.5 h-3.5 shrink-0 ${meta.color}`}
+                              />
+                              <Badge variant="outline" className="text-[10px]">
+                                {notification.type.replace(/_/g, ' ')}
+                              </Badge>
                             </span>
                           )
                         })()}

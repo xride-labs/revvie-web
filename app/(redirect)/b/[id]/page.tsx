@@ -1,44 +1,18 @@
-/* eslint-disable @next/next/no-img-element */
-'use client'
-
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
-import { businessApi, type BusinessProfile } from '@/lib/services'
+import { getBusiness } from '@/features/business/server'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Globe, Mail, MapPin, Phone, Store } from 'lucide-react'
 import Link from 'next/link'
 
-export default function PublicBusinessPage() {
-  const params = useParams()
-  const businessId = params?.id as string
-  const [business, setBusiness] = useState<BusinessProfile | null>(null)
-  const [loading, setLoading] = useState(true)
+interface PageProps {
+  params: Promise<{ id: string }>
+}
 
-  useEffect(() => {
-    if (!businessId) return
-    let active = true
-    businessApi
-      .getBusiness(businessId)
-      .then((data) => {
-        if (active) setBusiness(data)
-      })
-      .catch(() => {
-        if (active) setBusiness(null)
-      })
-      .finally(() => {
-        if (active) setLoading(false)
-      })
-
-    return () => {
-      active = false
-    }
-  }, [businessId])
-
-  if (loading) {
-    return <div className="flex justify-center py-20">Loading…</div>
-  }
+/** Server Component: fetched before any HTML ships, no client-side loading flash. */
+export default async function PublicBusinessPage({ params }: PageProps) {
+  const { id: businessId } = await params
+  const business = await getBusiness(businessId).catch(() => null)
 
   if (!business) {
     return (
@@ -55,7 +29,11 @@ export default function PublicBusinessPage() {
           <div className="flex items-start gap-4">
             <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center overflow-hidden">
               {business.logoUrl ? (
-                <img src={business.logoUrl} alt={business.displayName} className="w-full h-full object-cover" />
+                <img
+                  src={business.logoUrl}
+                  alt={business.displayName}
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <Store className="w-8 h-8 text-muted-foreground" />
               )}
@@ -77,7 +55,11 @@ export default function PublicBusinessPage() {
 
         {business.bannerUrl ? (
           <div className="mt-6 overflow-hidden rounded-2xl border">
-            <img src={business.bannerUrl} alt={`${business.displayName} banner`} className="w-full h-64 object-cover" />
+            <img
+              src={business.bannerUrl}
+              alt={`${business.displayName} banner`}
+              className="w-full h-64 object-cover"
+            />
           </div>
         ) : null}
 
@@ -91,19 +73,33 @@ export default function PublicBusinessPage() {
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           {business.phone ? (
-            <ContactRow icon={<Phone className="w-4 h-4" />} label="Phone" value={business.phone} />
+            <ContactRow
+              icon={<Phone className="w-4 h-4" />}
+              label="Phone"
+              value={business.phone}
+            />
           ) : null}
           {business.email ? (
-            <ContactRow icon={<Mail className="w-4 h-4" />} label="Email" value={business.email} />
+            <ContactRow
+              icon={<Mail className="w-4 h-4" />}
+              label="Email"
+              value={business.email}
+            />
           ) : null}
           {business.websiteUrl ? (
-            <ContactRow icon={<Globe className="w-4 h-4" />} label="Website" value={business.websiteUrl} />
+            <ContactRow
+              icon={<Globe className="w-4 h-4" />}
+              label="Website"
+              value={business.websiteUrl}
+            />
           ) : null}
-          {(business.city || business.region || business.country) ? (
+          {business.city || business.region || business.country ? (
             <ContactRow
               icon={<MapPin className="w-4 h-4" />}
               label="Location"
-              value={[business.city, business.region, business.country].filter(Boolean).join(', ')}
+              value={[business.city, business.region, business.country]
+                .filter(Boolean)
+                .join(', ')}
             />
           ) : null}
         </div>
@@ -126,7 +122,9 @@ function ContactRow({
       <CardContent className="p-4 flex items-center gap-3 text-sm text-muted-foreground">
         <div className="text-muted-foreground">{icon}</div>
         <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">
+            {label}
+          </p>
           <p className="text-foreground mt-1">{value}</p>
         </div>
       </CardContent>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import {
   Card,
   CardContent,
@@ -38,55 +38,73 @@ import {
   UserPlus,
   Trash2,
 } from 'lucide-react'
-import { adminApi, type AdminUserRecord } from '@/lib/server/admin'
+import {
+  useGetUsersQuery,
+  useLazyGetUsersQuery,
+  useUpdateUserRoleMutation,
+} from '@/features/admin/api'
+import type { AdminUserRecord } from '@/entities/admin/model'
 import { toast } from 'sonner'
 
 const TEAM_ROLES = ['ADMIN', 'CO_ADMIN', 'MODERATOR'] as const
-type TeamRole = typeof TEAM_ROLES[number]
+type TeamRole = (typeof TEAM_ROLES)[number]
 
-const ROLE_META: Record<TeamRole, { label: string; description: string; color: string; icon: React.ElementType }> = {
-  ADMIN:     { label: 'Admin',         description: 'Full platform access including settings and destructive actions', color: 'bg-red-100 text-red-700', icon: Shield },
-  CO_ADMIN:  { label: 'Co-Admin',      description: 'Full access except settings and monitoring', color: 'bg-orange-100 text-orange-700', icon: UserCog },
-  MODERATOR: { label: 'Moderator',     description: 'Can manage approvals, reports and user flags', color: 'bg-blue-100 text-blue-700', icon: Eye },
+const ROLE_META: Record<
+  TeamRole,
+  { label: string; description: string; color: string; icon: React.ElementType }
+> = {
+  ADMIN: {
+    label: 'Admin',
+    description: 'Full platform access including settings and destructive actions',
+    color: 'bg-red-100 text-red-700',
+    icon: Shield,
+  },
+  CO_ADMIN: {
+    label: 'Co-Admin',
+    description: 'Full access except settings and monitoring',
+    color: 'bg-orange-100 text-orange-700',
+    icon: UserCog,
+  },
+  MODERATOR: {
+    label: 'Moderator',
+    description: 'Can manage approvals, reports and user flags',
+    color: 'bg-blue-100 text-blue-700',
+    icon: Eye,
+  },
 }
 
 export default function AdminTeamPage() {
-  const [members, setMembers]     = useState<AdminUserRecord[]>([])
-  const [loading, setLoading]     = useState(true)
-  const [actionId, setActionId]   = useState<string | null>(null)
-  const [addOpen, setAddOpen]     = useState(false)
-  const [search, setSearch]       = useState('')
-  const [addEmail, setAddEmail]   = useState('')
-  const [addRole, setAddRole]     = useState<TeamRole>('CO_ADMIN')
-  const [addName, setAddName]     = useState('')
+  const { data, isLoading: loading, isFetching, refetch } = useGetUsersQuery({ limit: 200 })
+  const [triggerFindByEmail] = useLazyGetUsersQuery()
+  const [updateUserRole] = useUpdateUserRoleMutation()
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    try {
-      const res = await adminApi.getUsers({ limit: 200 })
-      setMembers(res.items.filter((u) =>
-        u.roles?.some((r) => TEAM_ROLES.includes(r as TeamRole))
-      ))
-    } catch {
-      toast.error('Failed to load team members')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  const [actionId, setActionId] = useState<string | null>(null)
+  const [addOpen, setAddOpen] = useState(false)
+  const [search, setSearch] = useState('')
+  const [addEmail, setAddEmail] = useState('')
+  const [addRole, setAddRole] = useState<TeamRole>('CO_ADMIN')
 
-  useEffect(() => { load() }, [load])
+  const members = useMemo(
+    () =>
+      (data?.items ?? []).filter((u: AdminUserRecord) =>
+        u.roles?.some((r) => TEAM_ROLES.includes(r as TeamRole)),
+      ),
+    [data],
+  )
 
-  const filtered = members.filter((m) =>
-    !search || m.name?.toLowerCase().includes(search.toLowerCase()) || m.email?.toLowerCase().includes(search.toLowerCase())
+  const filtered = members.filter(
+    (m) =>
+      !search ||
+      m.name?.toLowerCase().includes(search.toLowerCase()) ||
+      m.email?.toLowerCase().includes(search.toLowerCase()),
   )
 
   const removeRole = async (userId: string, role: string) => {
     if (!confirm(`Remove ${role} role from this user?`)) return
     setActionId(userId)
     try {
-      await adminApi.updateUserRole(userId, 'RIDER')
+      await updateUserRole({ userId, role: 'RIDER' }).unwrap()
       toast.success('Role removed — user downgraded to Rider')
-      await load()
     } catch {
       toast.error('Failed to remove role')
     } finally {
@@ -99,18 +117,20 @@ export default function AdminTeamPage() {
     setActionId('add')
     try {
       // Find existing user by email via getUsers, then update role
-      const res = await adminApi.getUsers({ search: addEmail.trim(), limit: 5 })
-      const existing = res.items.find((u: AdminUserRecord) => u.email?.toLowerCase() === addEmail.trim().toLowerCase())
+      const res = await triggerFindByEmail({ search: addEmail.trim(), limit: 5 }).unwrap()
+      const existing = res.items.find(
+        (u: AdminUserRecord) => u.email?.toLowerCase() === addEmail.trim().toLowerCase(),
+      )
       if (!existing) {
         toast.error('No user found with that email address')
         return
       }
-      await adminApi.updateUserRole(existing.id, addRole)
-      toast.success(`${existing.name ?? existing.email} granted ${ROLE_META[addRole].label} access`)
+      await updateUserRole({ userId: existing.id, role: addRole }).unwrap()
+      toast.success(
+        `${existing.name ?? existing.email} granted ${ROLE_META[addRole].label} access`,
+      )
       setAddOpen(false)
       setAddEmail('')
-      setAddName('')
-      await load()
     } catch {
       toast.error('Failed to add team member')
     } finally {
@@ -118,7 +138,8 @@ export default function AdminTeamPage() {
     }
   }
 
-  const totalByRole = (role: TeamRole) => members.filter((m) => m.roles?.includes(role)).length
+  const totalByRole = (role: TeamRole) =>
+    members.filter((m) => m.roles?.includes(role)).length
 
   return (
     <div className="space-y-6">
@@ -131,7 +152,9 @@ export default function AdminTeamPage() {
             <Card key={role}>
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${meta.color.replace('text-', 'bg-').replace('-700', '-100').replace('-800', '-100')}`}>
+                  <div
+                    className={`p-2 rounded-lg ${meta.color.replace('text-', 'bg-').replace('-700', '-100').replace('-800', '-100')}`}
+                  >
                     <Icon className={`w-5 h-5 ${meta.color.split(' ')[1]}`} />
                   </div>
                   <div>
@@ -150,11 +173,13 @@ export default function AdminTeamPage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Admin Team</CardTitle>
-              <CardDescription>Manage who can access the admin panel and their permission level</CardDescription>
+              <CardDescription>
+                Manage who can access the admin panel and their permission level
+              </CardDescription>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
+                <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
                 Refresh
               </Button>
               <Button size="sm" onClick={() => setAddOpen(true)} className="gap-1.5">
@@ -180,16 +205,26 @@ export default function AdminTeamPage() {
           ) : filtered.length === 0 ? (
             <div className="text-center py-10 text-muted-foreground">
               <Users className="w-10 h-10 mx-auto mb-2 opacity-30" />
-              <p className="text-sm">{search ? 'No members match your search' : 'No admin team members yet'}</p>
+              <p className="text-sm">
+                {search ? 'No members match your search' : 'No admin team members yet'}
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
               {filtered.map((member) => {
-                const teamRoles = (member.roles ?? []).filter((r): r is TeamRole => TEAM_ROLES.includes(r as TeamRole))
-                const highestRole = teamRoles.find((r) => r === 'ADMIN') ?? teamRoles.find((r) => r === 'CO_ADMIN') ?? teamRoles[0]
+                const teamRoles = (member.roles ?? []).filter((r): r is TeamRole =>
+                  TEAM_ROLES.includes(r as TeamRole),
+                )
+                const highestRole =
+                  teamRoles.find((r) => r === 'ADMIN') ??
+                  teamRoles.find((r) => r === 'CO_ADMIN') ??
+                  teamRoles[0]
                 const meta = highestRole ? ROLE_META[highestRole] : null
                 return (
-                  <div key={member.id} className="flex items-center gap-4 p-3 rounded-xl border bg-card hover:bg-muted/30 transition-colors">
+                  <div
+                    key={member.id}
+                    className="flex items-center gap-4 p-3 rounded-xl border bg-card hover:bg-muted/30 transition-colors"
+                  >
                     <Avatar className="h-10 w-10">
                       <AvatarFallback className="bg-red-600 text-white text-sm">
                         {(member.name ?? member.email ?? 'U')[0].toUpperCase()}
@@ -197,11 +232,15 @@ export default function AdminTeamPage() {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm">{member.name ?? 'Unknown'}</p>
-                      <p className="text-xs text-muted-foreground truncate">{member.email ?? '—'}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {member.email ?? '—'}
+                      </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       {teamRoles.map((role) => (
-                        <Badge key={role} className={ROLE_META[role].color}>{ROLE_META[role].label}</Badge>
+                        <Badge key={role} className={ROLE_META[role].color}>
+                          {ROLE_META[role].label}
+                        </Badge>
                       ))}
                     </div>
                     {highestRole && highestRole !== 'ADMIN' && (
@@ -254,7 +293,9 @@ export default function AdminTeamPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Add Team Member</DialogTitle>
-            <DialogDescription>Grant admin portal access to an existing user by their email address.</DialogDescription>
+            <DialogDescription>
+              Grant admin portal access to an existing user by their email address.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-1.5">
@@ -265,7 +306,9 @@ export default function AdminTeamPage() {
                 value={addEmail}
                 onChange={(e) => setAddEmail(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">Must already have an account on Revvie</p>
+              <p className="text-xs text-muted-foreground">
+                Must already have an account on Revvie
+              </p>
             </div>
             <div className="space-y-1.5">
               <Label>Permission Level</Label>
@@ -278,7 +321,9 @@ export default function AdminTeamPage() {
                     <SelectItem key={role} value={role}>
                       <div>
                         <p className="font-medium">{ROLE_META[role].label}</p>
-                        <p className="text-xs text-muted-foreground">{ROLE_META[role].description}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {ROLE_META[role].description}
+                        </p>
                       </div>
                     </SelectItem>
                   ))}
@@ -287,9 +332,19 @@ export default function AdminTeamPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
-            <Button onClick={handleAdd} disabled={!addEmail.trim() || actionId === 'add'} className="gap-1.5">
-              {actionId === 'add' ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
+            <Button variant="outline" onClick={() => setAddOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAdd}
+              disabled={!addEmail.trim() || actionId === 'add'}
+              className="gap-1.5"
+            >
+              {actionId === 'add' ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <UserPlus className="w-4 h-4" />
+              )}
               Add Member
             </Button>
           </DialogFooter>

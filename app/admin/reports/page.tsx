@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, type ReactNode } from 'react'
+import { useState, useMemo, type ReactNode } from 'react'
 import {
   Card,
   CardContent,
@@ -39,9 +39,9 @@ import {
   Clock,
   type LucideIcon,
 } from 'lucide-react'
-import { useAdminReports } from '@/store/features/admin'
+import { useGetReportsQuery, useUpdateReportMutation } from '@/features/admin/api'
 import { AdminCRUDPopover, CRUDActionBuilders } from '@/components/admin/crud-popover'
-import type { AdminReportRecord } from '@/lib/server/admin'
+import type { AdminReportRecord } from '@/entities/admin/model'
 
 const typeIcons: Record<string, LucideIcon> = {
   user: User,
@@ -64,23 +64,20 @@ const priorityColors: Record<string, string> = {
 }
 
 export default function AdminReportsPage() {
-  const {
-    reports,
-    fetchReports,
-    updateReport: dispatchUpdateReport,
-  } = useAdminReports()
-
   const [activeTab, setActiveTab] = useState('all')
   const [viewReport, setViewReport] = useState<AdminReportRecord | null>(null)
 
-  useEffect(() => {
-    const params: Record<string, string> = {}
-    if (activeTab !== 'all') params.status = activeTab
-    fetchReports(params)
-  }, [activeTab, fetchReports])
+  const queryParams = useMemo(
+    () => (activeTab === 'all' ? undefined : { status: activeTab }),
+    [activeTab],
+  )
+  const { data } = useGetReportsQuery(queryParams)
+  const [updateReport] = useUpdateReportMutation()
+
+  const reports = data?.items ?? []
 
   const handleUpdateReport = async (reportId: string, status: string) => {
-    await dispatchUpdateReport(reportId, { status })
+    await updateReport({ reportId, data: { status } }).unwrap()
   }
 
   const stats = {
@@ -261,34 +258,31 @@ export default function AdminReportsPage() {
                             CRUDActionBuilders.view(() => setViewReport(report)),
                             ...(report.status === 'pending'
                               ? [
-                                CRUDActionBuilders.custom(
-                                  'investigate',
-                                  'Start Investigation',
-                                  () =>
-                                    handleUpdateReport(report.id, 'investigating'),
-                                  {
-                                    icon: <AlertTriangle className="h-4 w-4" />,
-                                  }
-                                ),
-                              ]
+                                  CRUDActionBuilders.custom(
+                                    'investigate',
+                                    'Start Investigation',
+                                    () => handleUpdateReport(report.id, 'investigating'),
+                                    {
+                                      icon: <AlertTriangle className="h-4 w-4" />,
+                                    },
+                                  ),
+                                ]
                               : []),
                             CRUDActionBuilders.custom(
                               'resolve',
                               'Mark Resolved',
-                              () =>
-                                handleUpdateReport(report.id, 'resolved'),
+                              () => handleUpdateReport(report.id, 'resolved'),
                               {
                                 icon: <CheckCircle className="h-4 w-4" />,
-                              }
+                              },
                             ),
                             CRUDActionBuilders.custom(
                               'dismiss',
                               'Dismiss',
-                              () =>
-                                handleUpdateReport(report.id, 'dismissed'),
+                              () => handleUpdateReport(report.id, 'dismissed'),
                               {
                                 icon: <XCircle className="h-4 w-4" />,
-                              }
+                              },
                             ),
                           ]}
                         />
@@ -302,7 +296,12 @@ export default function AdminReportsPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={!!viewReport} onOpenChange={(open) => { if (!open) setViewReport(null) }}>
+      <Dialog
+        open={!!viewReport}
+        onOpenChange={(open) => {
+          if (!open) setViewReport(null)
+        }}
+      >
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Report Details</DialogTitle>
@@ -313,7 +312,9 @@ export default function AdminReportsPage() {
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-muted rounded-lg shrink-0">
                   {(() => {
-                    const TypeIcon = typeIcons[viewReport.type as keyof typeof typeIcons] || AlertTriangle
+                    const TypeIcon =
+                      typeIcons[viewReport.type as keyof typeof typeIcons] ||
+                      AlertTriangle
                     return <TypeIcon className="w-4 h-4 text-muted-foreground" />
                   })()}
                 </div>
@@ -327,12 +328,20 @@ export default function AdminReportsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <ReportField label="Status">
-                  <Badge className={statusColors[viewReport.status as keyof typeof statusColors]}>
+                  <Badge
+                    className={
+                      statusColors[viewReport.status as keyof typeof statusColors]
+                    }
+                  >
                     {viewReport.status}
                   </Badge>
                 </ReportField>
                 <ReportField label="Priority">
-                  <Badge className={priorityColors[viewReport.priority as keyof typeof priorityColors]}>
+                  <Badge
+                    className={
+                      priorityColors[viewReport.priority as keyof typeof priorityColors]
+                    }
+                  >
                     {viewReport.priority}
                   </Badge>
                 </ReportField>
@@ -345,7 +354,9 @@ export default function AdminReportsPage() {
               </div>
 
               <div className="rounded-md border p-3 space-y-1">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Reported Item</p>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Reported Item
+                </p>
                 <p className="font-medium">{viewReport.reportedItem.name}</p>
                 <p className="text-xs text-muted-foreground">
                   ID: {viewReport.reportedItem.id} · Type: {viewReport.reportedItem.type}
@@ -353,16 +364,23 @@ export default function AdminReportsPage() {
               </div>
 
               <div className="rounded-md border p-3 space-y-1">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Reported By</p>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Reported By
+                </p>
                 <div className="flex items-center gap-2 mt-1">
                   <Avatar className="h-6 w-6">
                     <AvatarFallback className="text-[10px]">
-                      {viewReport.reporter.name.split(' ').map((n) => n[0]).join('')}
+                      {viewReport.reporter.name
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium">{viewReport.reporter.name}</p>
-                    <p className="text-xs text-muted-foreground">ID: {viewReport.reporter.id}</p>
+                    <p className="text-xs text-muted-foreground">
+                      ID: {viewReport.reporter.id}
+                    </p>
                   </div>
                 </div>
               </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { ArrowDownToLine, Smartphone, Loader2 } from 'lucide-react'
 
 export type ShareKind = 'ride' | 'listing' | 'club' | 'invite' | 'profile'
@@ -16,16 +16,22 @@ interface ShareRedirectProps {
   meta?: Array<{ label: string; value: string }>
 }
 
-const SEGMENT: Record<ShareKind, string> = { ride: 'r', listing: 'm', club: 'c', invite: 'i', profile: 'u' }
+const SEGMENT: Record<ShareKind, string> = {
+  ride: 'r',
+  listing: 'm',
+  club: 'c',
+  invite: 'i',
+  profile: 'u',
+}
 const COPY: Record<ShareKind, { emoji: string; noun: string }> = {
-  ride:    { emoji: '🏍️', noun: 'ride' },
+  ride: { emoji: '🏍️', noun: 'ride' },
   listing: { emoji: '🛒', noun: 'listing' },
-  club:    { emoji: '👥', noun: 'club' },
-  invite:  { emoji: '⚡', noun: 'invite' },
+  club: { emoji: '👥', noun: 'club' },
+  invite: { emoji: '⚡', noun: 'invite' },
   profile: { emoji: '🏍️', noun: 'profile' },
 }
 
-const APP_SCHEME  = 'revvie'
+const APP_SCHEME = 'revvie'
 const APP_PACKAGE = 'com.revvie.app'
 const DOWNLOAD_URL = 'https://revvie.xride-labs.in/download'
 
@@ -41,7 +47,14 @@ function isAndroid() {
 
 type Phase = 'redirecting' | 'fallback' | 'non-android'
 
-export function ShareRedirect({ kind, id, title, description, imageUrl, meta }: ShareRedirectProps) {
+export function ShareRedirect({
+  kind,
+  id,
+  title,
+  description,
+  imageUrl,
+  meta,
+}: ShareRedirectProps) {
   const [phase, setPhase] = useState<Phase>('redirecting')
   const deepPath = `${SEGMENT[kind]}/${id}`
   const copy = COPY[kind]
@@ -90,7 +103,9 @@ export function ShareRedirect({ kind, id, title, description, imageUrl, meta }: 
             />
           ) : (
             <div className="h-32 w-full bg-linear-to-br from-brand-red-light to-brand-red flex items-center justify-center">
-              <span className="text-5xl" aria-hidden>{copy.emoji}</span>
+              <span className="text-5xl" aria-hidden>
+                {copy.emoji}
+              </span>
             </div>
           )}
 
@@ -140,7 +155,7 @@ export function ShareRedirect({ kind, id, title, description, imageUrl, meta }: 
                     Download Revvie
                   </Link>
                   <p className="mt-1 text-center text-xs text-white/40">
-                    Don't have the app yet? Download it to view this {copy.noun}.
+                    Don&apos;t have the app yet? Download it to view this {copy.noun}.
                   </p>
                 </div>
               )}
@@ -148,7 +163,8 @@ export function ShareRedirect({ kind, id, title, description, imageUrl, meta }: 
               {phase === 'non-android' && (
                 <div className="flex flex-col gap-3">
                   <p className="text-sm text-white/60 text-center leading-relaxed">
-                    Revvie is available on Android. Open this link on your Android phone to join.
+                    Revvie is available on Android. Open this link on your Android phone
+                    to join.
                   </p>
                   <Link
                     href="/download"

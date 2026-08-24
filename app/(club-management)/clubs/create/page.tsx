@@ -2,10 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Card,
-  CardContent,
-} from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -19,7 +16,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ChevronLeft, ImagePlus } from 'lucide-react'
-import { clubsApi, mediaApi } from '@/lib/services'
+import { useCreateClubMutation, useUpdateClubMutation } from '@/features/clubs/api'
+import { useUploadClubImageMutation } from '@/features/media/api'
 import { fileToDataUrl } from '@/lib/media-utils'
 import { useToast } from '@/hooks/use-toast'
 import { ImageUrlInput } from '@/components/ui/image-url-input'
@@ -48,7 +46,9 @@ export default function CreateClubPage() {
     dismiss: dismissToast,
   } = useToast()
   const [step, setStep] = useState(1)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [createClub, { isLoading: isSubmitting }] = useCreateClubMutation()
+  const [updateClub] = useUpdateClubMutation()
+  const [uploadClubImage] = useUploadClubImageMutation()
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [coverFile, setCoverFile] = useState<File | null>(null)
@@ -87,13 +87,12 @@ export default function CreateClubPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
     const loadingToastId = loadingToast('Creating club...', {
       description: 'Saving details and uploading media assets.',
     })
 
     try {
-      const { club } = await clubsApi.createClub({
+      const { club } = await createClub({
         name: clubData.name,
         description: clubData.description,
         location: homeBase?.name ?? '',
@@ -101,30 +100,41 @@ export default function CreateClubPage() {
         longitude: homeBase?.lng,
         clubType: clubData.clubType || undefined,
         isPublic: clubData.isPublic,
-      })
+        requiresLicense: false,
+      }).unwrap()
 
       if (logoUrl) {
-        await clubsApi.updateClub(club.id, { image: logoUrl })
+        await updateClub({ clubId: club.id, data: { image: logoUrl } }).unwrap()
       } else if (logoFile) {
         const logoDataUrl = await fileToDataUrl(logoFile)
-        await mediaApi.uploadClubImage(club.id, logoDataUrl, 'logo')
+        await uploadClubImage({ clubId: club.id, file: logoDataUrl, type: 'logo' }).unwrap()
       }
 
       if (coverUrl) {
-        await clubsApi.updateClub(club.id, { coverImage: coverUrl })
+        await updateClub({ clubId: club.id, data: { coverImage: coverUrl } }).unwrap()
       } else if (coverFile) {
         const coverDataUrl = await fileToDataUrl(coverFile)
-        await mediaApi.uploadClubImage(club.id, coverDataUrl, 'cover')
+        await uploadClubImage({
+          clubId: club.id,
+          file: coverDataUrl,
+          type: 'cover',
+        }).unwrap()
       }
 
-      successToast('Club created! 🎉', { description: `${clubData.name} is live! Rally your crew.` })
+      successToast('Club created! 🎉', {
+        description: `${clubData.name} is live! Rally your crew.`,
+      })
       router.push(`/clubs/${club.id}`)
     } catch (error) {
       console.error('Failed to create club:', error)
-      errorToast('Failed to create club', { description: error instanceof Error ? error.message : 'Something went wrong. Please try again.' })
+      errorToast('Failed to create club', {
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong. Please try again.',
+      })
     } finally {
       dismissToast(loadingToastId)
-      setIsSubmitting(false)
     }
   }
 
@@ -133,17 +143,25 @@ export default function CreateClubPage() {
       {/* Progress bar */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => step > 1 ? setStep(step - 1) : router.back()}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => (step > 1 ? setStep(step - 1) : router.back())}
+          >
             <ChevronLeft className="w-5 h-5" />
           </Button>
           <div className="flex-1">
             <div className="flex gap-2">
               {[1, 2, 3].map((s) => (
-                <div key={s} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${s <= step ? 'bg-primary' : 'bg-muted'}`} />
+                <div
+                  key={s}
+                  className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${s <= step ? 'bg-primary' : 'bg-muted'}`}
+                />
               ))}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Step {step} of 3 — {step === 1 ? 'Identity' : step === 2 ? 'Details' : 'Launch'}
+              Step {step} of 3 —{' '}
+              {step === 1 ? 'Identity' : step === 2 ? 'Details' : 'Launch'}
             </p>
           </div>
         </div>
@@ -158,9 +176,12 @@ export default function CreateClubPage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-4">
                   <ImagePlus className="w-8 h-8 text-primary" />
                 </div>
-                <h1 className="text-3xl font-bold tracking-tight">Give your club an identity</h1>
+                <h1 className="text-3xl font-bold tracking-tight">
+                  Give your club an identity
+                </h1>
                 <p className="text-muted-foreground max-w-md mx-auto">
-                  A great logo and name makes your crew instantly recognizable on the road.
+                  A great logo and name makes your crew instantly recognizable on the
+                  road.
                 </p>
               </div>
 
@@ -169,9 +190,16 @@ export default function CreateClubPage() {
                   label="Club Logo"
                   hint="Square, at least 256×256px"
                   value={logoUrl}
-                  onChange={(url) => { setLogoUrl(url); if (url) setLogoFile(null); }}
+                  onChange={(url) => {
+                    setLogoUrl(url)
+                    if (url) setLogoFile(null)
+                  }}
                   filePreview={logoPreview}
-                  onFileChange={async (f) => { setLogoFile(f); setLogoUrl(null); setLogoPreview(await fileToDataUrl(f)); }}
+                  onFileChange={async (f) => {
+                    setLogoFile(f)
+                    setLogoUrl(null)
+                    setLogoPreview(await fileToDataUrl(f))
+                  }}
                   searchQuery="motorcycle club logo"
                   aspectClass="aspect-square"
                 />
@@ -179,9 +207,16 @@ export default function CreateClubPage() {
                   label="Cover Banner"
                   hint="Wide, at least 1200×400px"
                   value={coverUrl}
-                  onChange={(url) => { setCoverUrl(url); if (url) setCoverFile(null); }}
+                  onChange={(url) => {
+                    setCoverUrl(url)
+                    if (url) setCoverFile(null)
+                  }}
                   filePreview={coverPreview}
-                  onFileChange={async (f) => { setCoverFile(f); setCoverUrl(null); setCoverPreview(await fileToDataUrl(f)); }}
+                  onFileChange={async (f) => {
+                    setCoverFile(f)
+                    setCoverUrl(null)
+                    setCoverPreview(await fileToDataUrl(f))
+                  }}
                   searchQuery="motorcycle club cover banner"
                   aspectClass="aspect-[3/1]"
                 />
@@ -189,7 +224,9 @@ export default function CreateClubPage() {
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-base font-semibold">What&apos;s your crew called?</Label>
+                  <Label htmlFor="name" className="text-base font-semibold">
+                    What&apos;s your crew called?
+                  </Label>
                   <Input
                     id="name"
                     placeholder="e.g., Desert Eagles MC"
@@ -200,19 +237,35 @@ export default function CreateClubPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="clubType" className="text-base font-semibold">What kind of crew?</Label>
-                  <Select value={clubData.clubType} onValueChange={(value) => setClubData({ ...clubData, clubType: value })}>
-                    <SelectTrigger className="h-12"><SelectValue placeholder="Pick your riding style" /></SelectTrigger>
+                  <Label htmlFor="clubType" className="text-base font-semibold">
+                    What kind of crew?
+                  </Label>
+                  <Select
+                    value={clubData.clubType}
+                    onValueChange={(value) =>
+                      setClubData({ ...clubData, clubType: value })
+                    }
+                  >
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder="Pick your riding style" />
+                    </SelectTrigger>
                     <SelectContent>
                       {clubTypes.map((type) => (
-                        <SelectItem key={type} value={type}>{type}</SelectItem>
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <Button type="button" className="w-full h-12 text-base" disabled={!clubData.name} onClick={() => setStep(2)}>
+              <Button
+                type="button"
+                className="w-full h-12 text-base"
+                disabled={!clubData.name}
+                onClick={() => setStep(2)}
+              >
                 Continue
               </Button>
             </div>
@@ -233,12 +286,16 @@ export default function CreateClubPage() {
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="description" className="text-base font-semibold">Your club&apos;s story</Label>
+                  <Label htmlFor="description" className="text-base font-semibold">
+                    Your club&apos;s story
+                  </Label>
                   <Textarea
                     id="description"
                     placeholder="What drives your crew? What kind of riders fit in? Paint the picture..."
                     value={clubData.description}
-                    onChange={(e) => setClubData({ ...clubData, description: e.target.value })}
+                    onChange={(e) =>
+                      setClubData({ ...clubData, description: e.target.value })
+                    }
                     rows={5}
                     className="text-base"
                     required
@@ -254,7 +311,12 @@ export default function CreateClubPage() {
                 />
               </div>
 
-              <Button type="button" className="w-full h-12 text-base" disabled={!clubData.description || !homeBase} onClick={() => setStep(3)}>
+              <Button
+                type="button"
+                className="w-full h-12 text-base"
+                disabled={!clubData.description || !homeBase}
+                onClick={() => setStep(3)}
+              >
                 Almost there...
               </Button>
             </div>
@@ -276,24 +338,43 @@ export default function CreateClubPage() {
               {/* Preview Card */}
               <Card className="overflow-hidden border-2">
                 <div className="h-24 bg-linear-to-br from-primary/20 to-primary/5 relative">
-                  {coverPreview && <img src={coverPreview} alt="" className="h-full w-full object-cover" />}
+                  {coverPreview && (
+                    <img
+                      src={coverPreview}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  )}
                 </div>
                 <CardContent className="p-4 -mt-8 relative">
                   <div className="flex items-end gap-3">
                     <div className="w-16 h-16 rounded-xl bg-primary/10 border-4 border-background overflow-hidden flex items-center justify-center">
                       {logoPreview ? (
-                        <img src={logoPreview} alt="" className="h-full w-full object-cover" />
+                        <img
+                          src={logoPreview}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
                       ) : (
-                        <span className="text-xl font-bold text-primary">{clubData.name?.[0]?.toUpperCase() || '?'}</span>
+                        <span className="text-xl font-bold text-primary">
+                          {clubData.name?.[0]?.toUpperCase() || '?'}
+                        </span>
                       )}
                     </div>
                     <div className="pb-1">
-                      <p className="font-bold text-lg leading-tight">{clubData.name || 'Your Club'}</p>
-                      <p className="text-xs text-muted-foreground">{homeBase?.name || 'Everywhere'} · {clubData.clubType || 'Riding Club'}</p>
+                      <p className="font-bold text-lg leading-tight">
+                        {clubData.name || 'Your Club'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {homeBase?.name || 'Everywhere'} ·{' '}
+                        {clubData.clubType || 'Riding Club'}
+                      </p>
                     </div>
                   </div>
                   {clubData.description && (
-                    <p className="text-sm text-muted-foreground mt-3 line-clamp-2">{clubData.description}</p>
+                    <p className="text-sm text-muted-foreground mt-3 line-clamp-2">
+                      {clubData.description}
+                    </p>
                   )}
                 </CardContent>
               </Card>
@@ -302,20 +383,40 @@ export default function CreateClubPage() {
                 <div className="flex items-center justify-between p-4 rounded-xl border bg-muted/20">
                   <div>
                     <p className="font-semibold">Public Club</p>
-                    <p className="text-sm text-muted-foreground">Anyone can find your club</p>
+                    <p className="text-sm text-muted-foreground">
+                      Anyone can find your club
+                    </p>
                   </div>
-                  <Switch checked={clubData.isPublic} onCheckedChange={(checked) => setClubData({ ...clubData, isPublic: checked })} />
+                  <Switch
+                    checked={clubData.isPublic}
+                    onCheckedChange={(checked) =>
+                      setClubData({ ...clubData, isPublic: checked })
+                    }
+                  />
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-xl border bg-muted/20">
                   <div>
                     <p className="font-semibold">Require Approval</p>
-                    <p className="text-sm text-muted-foreground">Review join requests first</p>
+                    <p className="text-sm text-muted-foreground">
+                      Review join requests first
+                    </p>
                   </div>
-                  <Switch checked={clubData.requireApproval} onCheckedChange={(checked) => setClubData({ ...clubData, requireApproval: checked })} />
+                  <Switch
+                    checked={clubData.requireApproval}
+                    onCheckedChange={(checked) =>
+                      setClubData({ ...clubData, requireApproval: checked })
+                    }
+                  />
                 </div>
               </div>
 
-              <Button type="submit" className="w-full h-14 text-lg font-bold" disabled={isSubmitting || !clubData.name || !clubData.description || !homeBase}>
+              <Button
+                type="submit"
+                className="w-full h-14 text-lg font-bold"
+                disabled={
+                  isSubmitting || !clubData.name || !clubData.description || !homeBase
+                }
+              >
                 {isSubmitting ? 'Launching...' : '🔥 Launch Your Club'}
               </Button>
             </div>

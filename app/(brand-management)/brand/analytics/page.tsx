@@ -1,30 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { BarChart3, Eye, MousePointer, Package, Tag, Loader2 } from 'lucide-react'
-import { businessApi, type BusinessAnalytics } from '@/lib/server/business'
+import { useGetBusinessAnalyticsQuery } from '@/features/business/api'
+import { useBusinessContext } from '@/contexts/business-context'
 
 export default function BrandAnalyticsPage() {
-  const [analytics, setAnalytics] = useState<BusinessAnalytics | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const businesses = await businessApi.getMyBusinesses()
-        if (businesses.length > 0) {
-          const a = await businessApi.getBusinessAnalytics(businesses[0].id)
-          setAnalytics(a)
-        }
-      } catch {
-        // no-op
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
-  }, [])
+  const { business } = useBusinessContext()
+  const { data: analytics, isLoading: loading } = useGetBusinessAnalyticsQuery(
+    business?.id ?? '',
+    { skip: !business?.id },
+  )
 
   const stats = analytics
     ? [
@@ -55,7 +41,9 @@ export default function BrandAnalyticsPage() {
               <Card key={s.label}>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{s.label}</p>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                      {s.label}
+                    </p>
                     <s.icon className="w-4 h-4 text-amber-500" />
                   </div>
                   <p className="text-3xl font-bold">{s.value.toLocaleString()}</p>
@@ -71,12 +59,16 @@ export default function BrandAnalyticsPage() {
             <CardContent>
               <div className="flex items-end gap-2">
                 <span className="text-5xl font-bold">{ctr}%</span>
-                <span className="text-muted-foreground text-sm mb-1.5">across all campaigns</span>
+                <span className="text-muted-foreground text-sm mb-1.5">
+                  across all campaigns
+                </span>
               </div>
               {analytics?.campaigns === 0 && (
                 <div className="mt-6 text-center py-8 text-muted-foreground">
                   <BarChart3 className="w-10 h-10 mx-auto mb-3 text-muted-foreground/30" />
-                  <p className="text-sm">Create campaigns to start seeing performance data here.</p>
+                  <p className="text-sm">
+                    Create campaigns to start seeing performance data here.
+                  </p>
                 </div>
               )}
             </CardContent>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import type { AdminSettings } from '@/entities/admin/model'
 import currencyCodes from 'currency-codes'
 import {
   Card,
@@ -22,13 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Bell,
-  Globe,
-  Save,
-  RotateCcw,
-} from 'lucide-react'
-import { adminApi, type AdminSettings } from '@/lib/server/admin'
+import { Bell, Globe, Save, RotateCcw } from 'lucide-react'
+import { useGetSettingsQuery, useUpdateSettingsMutation } from '@/features/admin/api'
 import { toast } from 'sonner'
 
 const CURRENCY_LIST = currencyCodes.data
@@ -42,52 +38,34 @@ const CURRENCY_LIST = currencyCodes.data
   })
 
 const TIMEZONES = [
-  { value: 'Asia/Kolkata',       label: 'Asia/Kolkata (IST, UTC+5:30)' },
-  { value: 'Asia/Dubai',         label: 'Asia/Dubai (GST, UTC+4)' },
-  { value: 'Asia/Singapore',     label: 'Asia/Singapore (SGT, UTC+8)' },
-  { value: 'Asia/Tokyo',         label: 'Asia/Tokyo (JST, UTC+9)' },
-  { value: 'Europe/London',      label: 'Europe/London (GMT/BST)' },
-  { value: 'Europe/Paris',       label: 'Europe/Paris (CET, UTC+1)' },
-  { value: 'America/New_York',   label: 'America/New York (EST, UTC-5)' },
-  { value: 'America/Chicago',    label: 'America/Chicago (CST, UTC-6)' },
-  { value: 'America/Denver',     label: 'America/Denver (MST, UTC-7)' },
-  { value: 'America/Los_Angeles','label': 'America/Los Angeles (PST, UTC-8)' },
-  { value: 'Australia/Sydney',   label: 'Australia/Sydney (AEST, UTC+10)' },
-  { value: 'Pacific/Auckland',   label: 'Pacific/Auckland (NZST, UTC+12)' },
-  { value: 'UTC',                label: 'UTC' },
+  { value: 'Asia/Kolkata', label: 'Asia/Kolkata (IST, UTC+5:30)' },
+  { value: 'Asia/Dubai', label: 'Asia/Dubai (GST, UTC+4)' },
+  { value: 'Asia/Singapore', label: 'Asia/Singapore (SGT, UTC+8)' },
+  { value: 'Asia/Tokyo', label: 'Asia/Tokyo (JST, UTC+9)' },
+  { value: 'Europe/London', label: 'Europe/London (GMT/BST)' },
+  { value: 'Europe/Paris', label: 'Europe/Paris (CET, UTC+1)' },
+  { value: 'America/New_York', label: 'America/New York (EST, UTC-5)' },
+  { value: 'America/Chicago', label: 'America/Chicago (CST, UTC-6)' },
+  { value: 'America/Denver', label: 'America/Denver (MST, UTC-7)' },
+  { value: 'America/Los_Angeles', label: 'America/Los Angeles (PST, UTC-8)' },
+  { value: 'Australia/Sydney', label: 'Australia/Sydney (AEST, UTC+10)' },
+  { value: 'Pacific/Auckland', label: 'Pacific/Auckland (NZST, UTC+12)' },
+  { value: 'UTC', label: 'UTC' },
 ]
 
 export default function AdminSettingsPage() {
+  const { data: fetchedSettings, isLoading } = useGetSettingsQuery()
+  const [updateSettings, { isLoading: isSaving }] = useUpdateSettingsMutation()
+
   const [settings, setSettings] = useState<AdminSettings | null>(null)
   const [initialSettings, setInitialSettings] = useState<AdminSettings | null>(null)
-  const [isSaving, setIsSaving] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    let isMounted = true
-    setIsLoading(true)
-    adminApi
-      .getSettings()
-      .then((data) => {
-        if (!isMounted) return
-        setSettings(data)
-        setInitialSettings(data)
-        setError(null)
-      })
-      .catch((err) => {
-        if (!isMounted) return
-        setError(err instanceof Error ? err.message : 'Failed to load settings')
-      })
-      .finally(() => {
-        if (!isMounted) return
-        setIsLoading(false)
-      })
-
-    return () => {
-      isMounted = false
+    if (fetchedSettings) {
+      setSettings(fetchedSettings)
+      setInitialSettings(fetchedSettings)
     }
-  }, [])
+  }, [fetchedSettings])
 
   const isDirty = useMemo(() => {
     if (!settings || !initialSettings) return false
@@ -103,16 +81,13 @@ export default function AdminSettingsPage() {
 
   const handleSave = async () => {
     if (!settings) return
-    setIsSaving(true)
     try {
-      const updated = await adminApi.updateSettings(settings)
+      const updated = await updateSettings(settings).unwrap()
       setSettings(updated)
       setInitialSettings(updated)
       toast.success('Settings saved')
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to save settings')
-    } finally {
-      setIsSaving(false)
     }
   }
 
@@ -126,11 +101,7 @@ export default function AdminSettingsPage() {
   }
 
   if (!settings) {
-    return (
-      <div className="text-sm text-destructive">
-        {error ?? 'Failed to load settings'}
-      </div>
-    )
+    return <div className="text-sm text-destructive">Failed to load settings</div>
   }
 
   return (
@@ -174,7 +145,9 @@ export default function AdminSettingsPage() {
                   <Input
                     id="supportEmail"
                     value={settings.supportEmail}
-                    onChange={(event) => updateSetting('supportEmail', event.target.value)}
+                    onChange={(event) =>
+                      updateSetting('supportEmail', event.target.value)
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -188,7 +161,9 @@ export default function AdminSettingsPage() {
                     </SelectTrigger>
                     <SelectContent>
                       {TIMEZONES.map((tz) => (
-                        <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
+                        <SelectItem key={tz.value} value={tz.value}>
+                          {tz.label}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -227,7 +202,9 @@ export default function AdminSettingsPage() {
                     </div>
                     <Switch
                       checked={settings.maintenanceMode}
-                      onCheckedChange={(checked) => updateSetting('maintenanceMode', checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting('maintenanceMode', checked)
+                      }
                     />
                   </div>
                   <div className="flex items-center justify-between">
@@ -239,7 +216,9 @@ export default function AdminSettingsPage() {
                     </div>
                     <Switch
                       checked={settings.allowRegistration}
-                      onCheckedChange={(checked) => updateSetting('allowRegistration', checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting('allowRegistration', checked)
+                      }
                     />
                   </div>
                   <div className="flex items-center justify-between">
@@ -251,7 +230,9 @@ export default function AdminSettingsPage() {
                     </div>
                     <Switch
                       checked={settings.marketplaceEnabled}
-                      onCheckedChange={(checked) => updateSetting('marketplaceEnabled', checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting('marketplaceEnabled', checked)
+                      }
                     />
                   </div>
                   <div className="flex items-center justify-between">
@@ -263,7 +244,9 @@ export default function AdminSettingsPage() {
                     </div>
                     <Switch
                       checked={settings.clubCreationEnabled}
-                      onCheckedChange={(checked) => updateSetting('clubCreationEnabled', checked)}
+                      onCheckedChange={(checked) =>
+                        updateSetting('clubCreationEnabled', checked)
+                      }
                     />
                   </div>
                 </div>
@@ -305,7 +288,9 @@ export default function AdminSettingsPage() {
                   </div>
                   <Switch
                     checked={settings.notifyNewReports}
-                    onCheckedChange={(checked) => updateSetting('notifyNewReports', checked)}
+                    onCheckedChange={(checked) =>
+                      updateSetting('notifyNewReports', checked)
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
@@ -345,14 +330,15 @@ export default function AdminSettingsPage() {
                   </div>
                   <Switch
                     checked={settings.notifyDailySummary}
-                    onCheckedChange={(checked) => updateSetting('notifyDailySummary', checked)}
+                    onCheckedChange={(checked) =>
+                      updateSetting('notifyDailySummary', checked)
+                    }
                   />
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-
       </Tabs>
 
       {/* Save Actions */}

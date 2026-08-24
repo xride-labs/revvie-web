@@ -1,15 +1,12 @@
-'use client'
-
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { businessApi, type BusinessProfile } from '@/lib/services'
+import { getMyBusinesses } from '@/features/business/server'
+import type { BusinessProfile } from '@/entities/business/model'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Plus, Store, ExternalLink } from 'lucide-react'
-import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 const CATEGORY_LABELS: Record<string, string> = {
   BRAND: 'Motorcycle Brand',
@@ -36,55 +33,14 @@ function statusBadge(status: BusinessProfile['verification']) {
   }
 }
 
-export default function BusinessPortalPage() {
-  const [businesses, setBusinesses] = useState<BusinessProfile[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    let active = true
-    businessApi
-      .getMyBusinesses()
-      .then((items) => {
-        if (active) setBusinesses(items)
-      })
-      .catch(() => {
-        if (active) setBusinesses([])
-      })
-      .finally(() => {
-        if (active) setLoading(false)
-      })
-
-    return () => {
-      active = false
-    }
-  }, [])
-
-  if (loading) {
-    return (
-      <PhantomLoader loading>
-        <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
-          <div className="flex items-center justify-between mb-6">
-            <div className="space-y-2">
-              <div className="h-7 w-48 bg-muted rounded" />
-              <div className="h-4 w-72 bg-muted rounded" />
-            </div>
-            <div className="h-9 w-36 bg-muted rounded-lg" />
-          </div>
-          {[...Array(2)].map((_, i) => (
-            <div key={i} className="rounded-xl border bg-card p-5">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-muted rounded-xl" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-5 w-40 bg-muted rounded" />
-                  <div className="h-4 w-28 bg-muted rounded" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </PhantomLoader>
-    )
-  }
+/**
+ * Server Component: the business list is fetched here, once, before any HTML ships —
+ * no client-side loading skeleton for the initial paint. This page has zero
+ * interactivity of its own (just links), so unlike the clubs/rides/marketplace list
+ * pages it needs no client leaf at all.
+ */
+export default async function BusinessPortalPage() {
+  const businesses = await getMyBusinesses()
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
@@ -109,8 +65,8 @@ export default function BusinessPortalPage() {
             <CardTitle>No businesses yet</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Start onboarding to create a public brand page and get discovered in
-            nearby results.
+            Start onboarding to create a public brand page and get discovered in nearby
+            results.
           </CardContent>
         </Card>
       ) : (
@@ -128,13 +84,13 @@ export default function BusinessPortalPage() {
                     </Avatar>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-lg">
-                          {business.displayName}
-                        </h3>
+                        <h3 className="font-semibold text-lg">{business.displayName}</h3>
                         {statusBadge(business.verification)}
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {business.categories.map((c) => CATEGORY_LABELS[c] ?? c).join(', ')}
+                        {business.categories
+                          .map((c) => CATEGORY_LABELS[c] ?? c)
+                          .join(', ')}
                       </p>
                     </div>
                   </div>
@@ -150,9 +106,7 @@ export default function BusinessPortalPage() {
                   </div>
                 </div>
                 {business.tagline ? (
-                  <p className="text-sm text-muted-foreground mt-3">
-                    {business.tagline}
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-3">{business.tagline}</p>
                 ) : null}
                 <Separator className="my-4" />
                 <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">

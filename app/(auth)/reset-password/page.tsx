@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, ArrowLeft, Eye, EyeOff, Check, AlertCircle } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { authClient } from '@/lib/auth-client'
 
 function ResetPasswordInner() {
@@ -34,8 +34,14 @@ function ResetPasswordInner() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!token) return
-    if (!isValid) { setError('Password does not meet the requirements.'); return }
-    if (!matches) { setError('Passwords do not match.'); return }
+    if (!isValid) {
+      setError('Password does not meet the requirements.')
+      return
+    }
+    if (!matches) {
+      setError('Passwords do not match.')
+      return
+    }
 
     setIsLoading(true)
     setError('')
@@ -45,7 +51,9 @@ function ResetPasswordInner() {
         token,
       })
       if (resetError) {
-        setError(resetError.message || 'Could not reset password. The link may have expired.')
+        setError(
+          resetError.message || 'Could not reset password. The link may have expired.',
+        )
         return
       }
       setDone(true)
@@ -85,8 +93,12 @@ function ResetPasswordInner() {
           <div className="p-8">
             <div className="text-center mb-8">
               <div className="w-11 h-11 rounded-xl overflow-hidden border border-border shadow-[0_0_18px_rgba(229,0,0,0.2)] mx-auto mb-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/revvie-logo.png" alt="Revvie" className="w-full h-full object-cover" />
+                {}
+                <img
+                  src="/revvie-logo.png"
+                  alt="Revvie"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <h1 className="text-xl font-bold text-white uppercase tracking-widest">
                 {done ? 'Password reset' : 'Set a new password'}
@@ -112,7 +124,10 @@ function ResetPasswordInner() {
                   </Button>
                 </Link>
                 <Link href="/login">
-                  <Button variant="ghost" className="w-full h-11 rounded-xl text-text-secondary/50 hover:text-white hover:bg-[#111] transition-colors">
+                  <Button
+                    variant="ghost"
+                    className="w-full h-11 rounded-xl text-text-secondary/50 hover:text-white hover:bg-[#111] transition-colors"
+                  >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to login
                   </Button>
@@ -131,7 +146,10 @@ function ResetPasswordInner() {
                 )}
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="password" className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase">
+                  <Label
+                    htmlFor="password"
+                    className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase"
+                  >
                     New password
                   </Label>
                   <div className="relative">
@@ -150,23 +168,36 @@ function ResetPasswordInner() {
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary/40 hover:text-text-secondary transition-colors"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                   <div className="space-y-1 pt-1">
                     {requirements.map((req) => (
                       <div key={req.label} className="flex items-center gap-2">
-                        <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${req.met ? 'bg-neon-green' : 'bg-[#222]'}`}>
+                        <div
+                          className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${req.met ? 'bg-neon-green' : 'bg-[#222]'}`}
+                        >
                           {req.met && <Check className="w-2.5 h-2.5 text-black" />}
                         </div>
-                        <span className={`text-xs ${req.met ? 'text-neon-green' : 'text-text-secondary/40'}`}>{req.label}</span>
+                        <span
+                          className={`text-xs ${req.met ? 'text-neon-green' : 'text-text-secondary/40'}`}
+                        >
+                          {req.label}
+                        </span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="confirm" className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase">
+                  <Label
+                    htmlFor="confirm"
+                    className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase"
+                  >
                     Confirm password
                   </Label>
                   <Input
@@ -178,7 +209,9 @@ function ResetPasswordInner() {
                     required
                     disabled={isLoading}
                     className={`h-11 rounded-xl bg-[#0d0d0d] border text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors ${
-                      matches ? 'border-neon-green/30' : 'border-white/10 focus:border-white/20'
+                      matches
+                        ? 'border-neon-green/30'
+                        : 'border-white/10 focus:border-white/20'
                     }`}
                   />
                 </div>
@@ -189,14 +222,20 @@ function ResetPasswordInner() {
                   disabled={isLoading || !isValid || !matches}
                 >
                   {isLoading ? (
-                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Resetting…</>
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Resetting…
+                    </>
                   ) : (
                     'Reset password'
                   )}
                 </Button>
 
                 <Link href="/login">
-                  <Button variant="ghost" className="w-full h-11 rounded-xl text-text-secondary/50 hover:text-white hover:bg-[#111] transition-colors">
+                  <Button
+                    variant="ghost"
+                    className="w-full h-11 rounded-xl text-text-secondary/50 hover:text-white hover:bg-[#111] transition-colors"
+                  >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to login
                   </Button>

@@ -52,7 +52,8 @@ export function useBulkSelection() {
   )
 
   const someSelected = useCallback(
-    (ids: string[]) => ids.some((id) => selected.has(id)) && !ids.every((id) => selected.has(id)),
+    (ids: string[]) =>
+      ids.some((id) => selected.has(id)) && !ids.every((id) => selected.has(id)),
     [selected],
   )
 

@@ -45,7 +45,7 @@
   --radius-4xl: 32px;
   /* Brutalist OLED Brand Tokens */
   --color-canvas: #000000;
-  --color-surface: #0A0A0A;
+  --color-surface: #0a0a0a;
   --color-neon-green: #7dff00;
   --color-electric-blue: #8b5cf6; /* now electric violet (name kept for back-compat) */
   --color-teal: #8b5cf6; /* now electric violet (name kept for back-compat) */
@@ -54,12 +54,16 @@
   --color-text-primary: #ffffff;
   --color-text-secondary: #aaaaaa;
   /* Gradients defined as CSS vars */
-  --gradient-primary: linear-gradient(45deg, var(--color-brand-red-light) 50%, #FFD600 50%);
+  --gradient-primary: linear-gradient(
+    45deg,
+    var(--color-brand-red-light) 50%,
+    #ffd600 50%
+  );
   /* Custom brand colors */
   --color-brand-red: #a80000;
   --color-brand-red-light: #e50000;
   --color-brand-red-bright: #ff4040;
-  --color-brand-yellow: #FFD600;
+  --color-brand-yellow: #ffd600;
   --color-brand-green: #7dff00;
   --color-brand-grey: #222222;
   --color-brand-teal: #8b5cf6; /* now electric violet (name kept for back-compat) */
@@ -80,9 +84,9 @@
   --background: #000000;
   --foreground: #ffffff;
   /* Surface - Elevated Panels */
-  --card: #0A0A0A;
+  --card: #0a0a0a;
   --card-foreground: #ffffff;
-  --popover: #0A0A0A;
+  --popover: #0a0a0a;
   --popover-foreground: #ffffff;
   /* Primary Action - Adrenaline Red */
   --primary: #e50000;
@@ -93,14 +97,14 @@
   --muted: #111111;
   --muted-foreground: #888888;
   /* High-Vis Yellow - Interactive/Hover accent */
-  --accent: #FFD600;
+  --accent: #ffd600;
   --accent-foreground: #000000;
   --destructive: #a80000;
   --border: #222222;
   --input: #121212;
   --ring: #e50000;
   --chart-1: #e50000;
-  --chart-2: #FFD600;
+  --chart-2: #ffd600;
   --chart-3: #7dff00;
   --chart-4: #a80000;
   --chart-5: #f5f5f5;
@@ -108,7 +112,7 @@
   --sidebar-foreground: #ffffff;
   --sidebar-primary: #e50000;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #FFD600;
+  --sidebar-accent: #ffd600;
   --sidebar-accent-foreground: #000000;
   --sidebar-border: #222222;
   --sidebar-ring: #e50000;
@@ -233,7 +237,7 @@ section[id] {
 
 .landing-surface {
   border: 1px solid rgba(34, 34, 34, 0.8);
-  background: color-mix(in oklab, #0A0A0A 90%, transparent);
+  background: color-mix(in oklab, #0a0a0a 90%, transparent);
   backdrop-filter: blur(12px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
 }

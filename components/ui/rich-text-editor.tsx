@@ -17,6 +17,32 @@ interface RichTextEditorProps {
   minHeight?: string
 }
 
+/**
+ * Module scope, not inside RichTextEditor: a component declared during render gets a new
+ * identity every pass, so React unmounts and remounts the whole toolbar on each keystroke.
+ */
+function ToolbarButton({
+  active,
+  onClick,
+  children,
+}: {
+  active?: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      className={cn('h-7 w-7', active && 'bg-muted text-foreground')}
+      onClick={onClick}
+    >
+      {children}
+    </Button>
+  )
+}
+
 export function RichTextEditor({
   value,
   onChange,
@@ -52,28 +78,13 @@ export function RichTextEditor({
 
   if (!editor) return null
 
-  const ToolbarButton = ({
-    active,
-    onClick,
-    children,
-  }: {
-    active?: boolean
-    onClick: () => void
-    children: React.ReactNode
-  }) => (
-    <Button
-      type="button"
-      variant="ghost"
-      size="icon"
-      className={cn('h-7 w-7', active && 'bg-muted text-foreground')}
-      onClick={onClick}
-    >
-      {children}
-    </Button>
-  )
-
   return (
-    <div className={cn('rounded-lg border border-input bg-background overflow-hidden', className)}>
+    <div
+      className={cn(
+        'rounded-lg border border-input bg-background overflow-hidden',
+        className,
+      )}
+    >
       {/* Toolbar */}
       <div className="flex items-center gap-0.5 px-2 py-1 border-b border-border bg-muted/30">
         <ToolbarButton

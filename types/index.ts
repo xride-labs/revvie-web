@@ -31,11 +31,7 @@ export type ClubMemberRole = 'MEMBER' | 'OFFICER' | 'ADMIN' | 'FOUNDER'
 export type RideStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
 
 export type RideParticipantStatus =
-  | 'REQUESTED'
-  | 'ACCEPTED'
-  | 'DECLINED'
-  | 'COMPLETED'
-  | 'CANCELLED'
+  'REQUESTED' | 'ACCEPTED' | 'DECLINED' | 'COMPLETED' | 'CANCELLED'
 
 export type ListingStatus = 'ACTIVE' | 'SOLD' | 'INACTIVE'
 
@@ -336,13 +332,7 @@ export interface Notification {
   id: string
   userId: string
   type:
-    | 'ride_invite'
-    | 'club_request'
-    | 'follow'
-    | 'like'
-    | 'comment'
-    | 'message'
-    | 'system'
+    'ride_invite' | 'club_request' | 'follow' | 'like' | 'comment' | 'message' | 'system'
   title: string
   message: string
   read: boolean

@@ -42,9 +42,7 @@ export function BulkActionBar({
       )}
     >
       <div className="flex items-center gap-3 rounded-2xl border bg-background/95 px-4 py-2.5 shadow-lg backdrop-blur">
-        <span className="whitespace-nowrap text-sm font-medium">
-          {count} selected
-        </span>
+        <span className="whitespace-nowrap text-sm font-medium">{count} selected</span>
         <div className="h-5 w-px bg-border" />
         <div className="flex items-center gap-2">
           {actions.map((a) => (
@@ -55,11 +53,7 @@ export function BulkActionBar({
               disabled={busy}
               onClick={a.onClick}
             >
-              {busyKey === a.key ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                a.icon
-              )}
+              {busyKey === a.key ? <Loader2 className="h-4 w-4 animate-spin" /> : a.icon}
               <span className={a.icon || busyKey === a.key ? 'ml-1.5' : undefined}>
                 {a.label}
               </span>

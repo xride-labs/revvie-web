@@ -4,12 +4,13 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  businessApi,
-  type BusinessCategory,
-  type BusinessProfile,
-  type UpdateBusinessInput,
-} from '@/lib/services'
-import { mediaApi } from '@/lib/server/media'
+  useGetBusinessQuery,
+  useUpdateBusinessMutation,
+  useSubmitBusinessMutation,
+} from '@/features/business/api'
+import { useUploadBusinessImageMutation } from '@/features/media/api'
+import type { BusinessCategory, BusinessProfile } from '@/entities/business/model'
+import type { UpdateBusinessInput } from '@/features/business/schemas'
 import { useToast } from '@/hooks/use-toast'
 import {
   Card,
@@ -30,7 +31,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, ChevronLeft, ExternalLink, Upload, X, Image as ImageIcon } from 'lucide-react'
+import { Loader2, ChevronLeft, ExternalLink, Upload, X } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 
 const CATEGORIES: Array<{ label: string; value: BusinessCategory }> = [
@@ -71,9 +72,12 @@ export default function BusinessDetailPage() {
   const router = useRouter()
   const businessId = params?.id as string
   const { error: errorToast, loading: loadingToast, dismiss: dismissToast } = useToast()
-  const [business, setBusiness] = useState<BusinessProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
+  const { data: business, isLoading: loading } = useGetBusinessQuery(businessId, {
+    skip: !businessId,
+  })
+  const [updateBusiness, { isLoading: isSaving }] = useUpdateBusinessMutation()
+  const [submitBusiness] = useSubmitBusinessMutation()
+  const [uploadBusinessImage] = useUploadBusinessImageMutation()
   const [uploadingLogo, setUploadingLogo] = useState(false)
   const [uploadingBanner, setUploadingBanner] = useState(false)
   const logoInputRef = useRef<HTMLInputElement>(null)
@@ -98,43 +102,26 @@ export default function BusinessDetailPage() {
   })
 
   useEffect(() => {
-    if (!businessId) return
-    let active = true
-    businessApi
-      .getBusiness(businessId)
-      .then((data) => {
-        if (!active) return
-        setBusiness(data)
-        setForm({
-          category: data.categories[0] ?? '',
-          displayName: data.displayName,
-          tagline: data.tagline ?? '',
-          description: data.description ?? '',
-          logoUrl: data.logoUrl ?? '',
-          bannerUrl: data.bannerUrl ?? '',
-          phone: data.phone ?? '',
-          email: data.email ?? '',
-          websiteUrl: data.websiteUrl ?? '',
-          addressLine1: data.addressLine1 ?? '',
-          addressLine2: data.addressLine2 ?? '',
-          city: data.city ?? '',
-          region: data.region ?? '',
-          country: data.country ?? '',
-          latitude: data.latitude?.toString() ?? '',
-          longitude: data.longitude?.toString() ?? '',
-        })
-      })
-      .catch(() => {
-        if (active) setBusiness(null)
-      })
-      .finally(() => {
-        if (active) setLoading(false)
-      })
-
-    return () => {
-      active = false
-    }
-  }, [businessId])
+    if (!business) return
+    setForm({
+      category: business.categories[0] ?? '',
+      displayName: business.displayName,
+      tagline: business.tagline ?? '',
+      description: business.description ?? '',
+      logoUrl: business.logoUrl ?? '',
+      bannerUrl: business.bannerUrl ?? '',
+      phone: business.phone ?? '',
+      email: business.email ?? '',
+      websiteUrl: business.websiteUrl ?? '',
+      addressLine1: business.addressLine1 ?? '',
+      addressLine2: business.addressLine2 ?? '',
+      city: business.city ?? '',
+      region: business.region ?? '',
+      country: business.country ?? '',
+      latitude: business.latitude?.toString() ?? '',
+      longitude: business.longitude?.toString() ?? '',
+    })
+  }, [business])
 
   const canSubmit = useMemo(() => {
     return Boolean(form.displayName.trim() && form.category)
@@ -148,16 +135,17 @@ export default function BusinessDetailPage() {
       reader.readAsDataURL(file)
     })
 
-  const handleImageUpload = async (
-    file: File,
-    type: 'logo' | 'banner',
-  ) => {
+  const handleImageUpload = async (file: File, type: 'logo' | 'banner') => {
     if (!businessId) return
     const setter = type === 'logo' ? setUploadingLogo : setUploadingBanner
     setter(true)
     try {
       const base64 = await fileToBase64(file)
-      const result = await mediaApi.uploadBusinessImage(businessId, base64, type)
+      const result = await uploadBusinessImage({
+        businessId,
+        file: base64,
+        type,
+      }).unwrap()
       const url = result.media?.secureUrl ?? result.media?.url ?? result.imageUrl
       if (url) {
         setForm((prev) => ({
@@ -178,7 +166,6 @@ export default function BusinessDetailPage() {
     event.preventDefault()
     if (!businessId || !canSubmit) return
 
-    setIsSaving(true)
     const toastId = loadingToast('Saving business...', {
       description: 'Updating your brand profile.',
     })
@@ -203,15 +190,13 @@ export default function BusinessDetailPage() {
     }
 
     try {
-      const updated = await businessApi.updateBusiness(businessId, payload)
-      setBusiness(updated)
+      await updateBusiness({ id: businessId, data: payload }).unwrap()
     } catch (err) {
       errorToast('Could not save business', {
         description: err instanceof Error ? err.message : 'Please try again.',
       })
     } finally {
       dismissToast(toastId)
-      setIsSaving(false)
     }
   }
 
@@ -221,8 +206,7 @@ export default function BusinessDetailPage() {
       description: 'Our team will take a look shortly.',
     })
     try {
-      const updated = await businessApi.submitBusiness(businessId)
-      setBusiness(updated)
+      await submitBusiness(businessId).unwrap()
     } catch (err) {
       errorToast('Could not submit', {
         description: err instanceof Error ? err.message : 'Please try again.',
@@ -248,7 +232,10 @@ export default function BusinessDetailPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
-      <Link href="/business" className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-4">
+      <Link
+        href="/business"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-4"
+      >
         <ChevronLeft className="w-4 h-4" />
         Back to portal
       </Link>
@@ -271,7 +258,9 @@ export default function BusinessDetailPage() {
           </div>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground">
-          {business.verificationNotes ? business.verificationNotes : 'Review updates typically take 1-2 business days.'}
+          {business.verificationNotes
+            ? business.verificationNotes
+            : 'Review updates typically take 1-2 business days.'}
         </CardContent>
       </Card>
 
@@ -285,7 +274,9 @@ export default function BusinessDetailPage() {
               <Label>Category</Label>
               <Select
                 value={form.category}
-                onValueChange={(value) => setForm((prev) => ({ ...prev, category: value as BusinessCategory }))}
+                onValueChange={(value) =>
+                  setForm((prev) => ({ ...prev, category: value as BusinessCategory }))
+                }
                 disabled={isApproved}
               >
                 <SelectTrigger>
@@ -311,14 +302,18 @@ export default function BusinessDetailPage() {
                 <Label>Business name</Label>
                 <Input
                   value={form.displayName}
-                  onChange={(event) => setForm((prev) => ({ ...prev, displayName: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, displayName: event.target.value }))
+                  }
                 />
               </div>
               <div className="space-y-2">
                 <Label>Tagline</Label>
                 <Input
                   value={form.tagline}
-                  onChange={(event) => setForm((prev) => ({ ...prev, tagline: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, tagline: event.target.value }))
+                  }
                 />
               </div>
             </div>
@@ -327,7 +322,9 @@ export default function BusinessDetailPage() {
               <Label>Description</Label>
               <Textarea
                 value={form.description}
-                onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, description: event.target.value }))
+                }
                 rows={4}
               />
             </div>
@@ -345,7 +342,11 @@ export default function BusinessDetailPage() {
               <Label>Logo</Label>
               {form.logoUrl && (
                 <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-border">
-                  <img src={form.logoUrl} alt="Logo preview" className="w-full h-full object-cover" />
+                  <img
+                    src={form.logoUrl}
+                    alt="Logo preview"
+                    className="w-full h-full object-cover"
+                  />
                   <button
                     type="button"
                     onClick={() => setForm((prev) => ({ ...prev, logoUrl: '' }))}
@@ -359,7 +360,9 @@ export default function BusinessDetailPage() {
                 <Input
                   placeholder="Paste logo URL…"
                   value={form.logoUrl}
-                  onChange={(e) => setForm((prev) => ({ ...prev, logoUrl: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, logoUrl: e.target.value }))
+                  }
                   className="flex-1"
                 />
                 <Button
@@ -369,7 +372,11 @@ export default function BusinessDetailPage() {
                   disabled={uploadingLogo}
                   onClick={() => logoInputRef.current?.click()}
                 >
-                  {uploadingLogo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  {uploadingLogo ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
               <input
@@ -390,7 +397,11 @@ export default function BusinessDetailPage() {
               <Label>Banner</Label>
               {form.bannerUrl && (
                 <div className="relative w-full h-20 rounded-xl overflow-hidden border border-border">
-                  <img src={form.bannerUrl} alt="Banner preview" className="w-full h-full object-cover" />
+                  <img
+                    src={form.bannerUrl}
+                    alt="Banner preview"
+                    className="w-full h-full object-cover"
+                  />
                   <button
                     type="button"
                     onClick={() => setForm((prev) => ({ ...prev, bannerUrl: '' }))}
@@ -404,7 +415,9 @@ export default function BusinessDetailPage() {
                 <Input
                   placeholder="Paste banner URL…"
                   value={form.bannerUrl}
-                  onChange={(e) => setForm((prev) => ({ ...prev, bannerUrl: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, bannerUrl: e.target.value }))
+                  }
                   className="flex-1"
                 />
                 <Button
@@ -414,7 +427,11 @@ export default function BusinessDetailPage() {
                   disabled={uploadingBanner}
                   onClick={() => bannerInputRef.current?.click()}
                 >
-                  {uploadingBanner ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  {uploadingBanner ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
               <input
@@ -441,21 +458,27 @@ export default function BusinessDetailPage() {
               <Label>Phone</Label>
               <Input
                 value={form.phone}
-                onChange={(event) => setForm((prev) => ({ ...prev, phone: event.target.value }))}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, phone: event.target.value }))
+                }
               />
             </div>
             <div className="space-y-2">
               <Label>Email</Label>
               <Input
                 value={form.email}
-                onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, email: event.target.value }))
+                }
               />
             </div>
             <div className="space-y-2 md:col-span-2">
               <Label>Website</Label>
               <Input
                 value={form.websiteUrl}
-                onChange={(event) => setForm((prev) => ({ ...prev, websiteUrl: event.target.value }))}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, websiteUrl: event.target.value }))
+                }
               />
             </div>
           </CardContent>
@@ -471,14 +494,18 @@ export default function BusinessDetailPage() {
                 <Label>Address line 1</Label>
                 <Input
                   value={form.addressLine1}
-                  onChange={(event) => setForm((prev) => ({ ...prev, addressLine1: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, addressLine1: event.target.value }))
+                  }
                 />
               </div>
               <div className="space-y-2">
                 <Label>Address line 2</Label>
                 <Input
                   value={form.addressLine2}
-                  onChange={(event) => setForm((prev) => ({ ...prev, addressLine2: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, addressLine2: event.target.value }))
+                  }
                 />
               </div>
             </div>
@@ -487,21 +514,27 @@ export default function BusinessDetailPage() {
                 <Label>City</Label>
                 <Input
                   value={form.city}
-                  onChange={(event) => setForm((prev) => ({ ...prev, city: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, city: event.target.value }))
+                  }
                 />
               </div>
               <div className="space-y-2">
                 <Label>Region</Label>
                 <Input
                   value={form.region}
-                  onChange={(event) => setForm((prev) => ({ ...prev, region: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, region: event.target.value }))
+                  }
                 />
               </div>
               <div className="space-y-2">
                 <Label>Country</Label>
                 <Input
                   value={form.country}
-                  onChange={(event) => setForm((prev) => ({ ...prev, country: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, country: event.target.value }))
+                  }
                 />
               </div>
             </div>
@@ -511,14 +544,18 @@ export default function BusinessDetailPage() {
                 <Label>Latitude</Label>
                 <Input
                   value={form.latitude}
-                  onChange={(event) => setForm((prev) => ({ ...prev, latitude: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, latitude: event.target.value }))
+                  }
                 />
               </div>
               <div className="space-y-2">
                 <Label>Longitude</Label>
                 <Input
                   value={form.longitude}
-                  onChange={(event) => setForm((prev) => ({ ...prev, longitude: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, longitude: event.target.value }))
+                  }
                 />
               </div>
             </div>
@@ -534,7 +571,11 @@ export default function BusinessDetailPage() {
               Submit for review
             </Button>
           )}
-          <Button type="button" variant="ghost" onClick={() => router.push('/marketplace/create')}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => router.push('/marketplace/create')}
+          >
             Create listing
           </Button>
         </div>

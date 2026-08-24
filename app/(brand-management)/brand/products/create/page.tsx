@@ -2,7 +2,13 @@
 
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -10,33 +16,44 @@ import { Textarea } from '@/components/ui/textarea'
 import { Loader2, ArrowLeft, Plus, X } from 'lucide-react'
 import Link from 'next/link'
 import { useToast } from '@/hooks/use-toast'
-import { marketplaceApi, mediaApi } from '@/lib/services'
+import { useCreateListingMutation } from '@/features/marketplace/api'
+import { useUploadListingImageMutation } from '@/features/media/api'
 import { fileToDataUrl } from '@/lib/media-utils'
-import type { ListingCategory, ListingCondition } from '@/store/slices/marketplaceSlice'
+import type { ListingCategory, ListingCondition } from '@/features/marketplace/schemas'
 
+// `category`/`condition` are a strict enum on the backend's create validator
+// (`createListingSchema` in `src/validators/schemas.ts`) even though the persisted/
+// response field is a free string (Prisma `String?`) — see entities/listing/model.ts.
+// The values here used to be 'Bikes'/'Apparel'/'Tools'/'Excellent'/'For Parts' (and a
+// lowercase 'new' default), none of which the backend accepts — every listing created
+// through this form 400'd. Fixed to the real enum.
 const CATEGORIES: Array<{ label: string; value: ListingCategory }> = [
-  { label: 'Bikes', value: 'bikes' },
-  { label: 'Parts', value: 'parts' },
-  { label: 'Accessories', value: 'accessories' },
-  { label: 'Gear', value: 'gear' },
-  { label: 'Apparel', value: 'apparel' },
-  { label: 'Tools', value: 'tools' },
+  { label: 'Motorcycle', value: 'Motorcycle' },
+  { label: 'Parts', value: 'Parts' },
+  { label: 'Accessories', value: 'Accessories' },
+  { label: 'Gear', value: 'Gear' },
+  { label: 'Other', value: 'Other' },
 ]
 
 const CONDITIONS: Array<{ label: string; value: ListingCondition }> = [
-  { label: 'New', value: 'new' },
-  { label: 'Like New', value: 'like-new' },
-  { label: 'Excellent', value: 'excellent' },
-  { label: 'Good', value: 'good' },
-  { label: 'Fair', value: 'fair' },
-  { label: 'For Parts', value: 'parts-only' },
+  { label: 'New', value: 'New' },
+  { label: 'Like New', value: 'Like New' },
+  { label: 'Good', value: 'Good' },
+  { label: 'Fair', value: 'Fair' },
+  { label: 'Poor', value: 'Poor' },
 ]
 
 export default function CreateProductPage() {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const { success: successToast, error: errorToast, loading: loadingToast, dismiss: dismissToast } = useToast()
-  const [loading, setLoading] = useState(false)
+  const {
+    success: successToast,
+    error: errorToast,
+    loading: loadingToast,
+    dismiss: dismissToast,
+  } = useToast()
+  const [createListing, { isLoading: loading }] = useCreateListingMutation()
+  const [uploadListingImage] = useUploadListingImageMutation()
   const [imageFiles, setImageFiles] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [form, setForm] = useState({
@@ -44,7 +61,7 @@ export default function CreateProductPage() {
     description: '',
     price: '',
     category: '' as ListingCategory | '',
-    condition: 'new' as ListingCondition,
+    condition: 'New' as ListingCondition,
     location: '',
   })
 
@@ -76,34 +93,36 @@ export default function CreateProductPage() {
       return
     }
 
-    setLoading(true)
-    const toastId = loadingToast('Publishing product...', { description: 'Creating listing and uploading images.' })
+    const toastId = loadingToast('Publishing product...', {
+      description: 'Creating listing and uploading images.',
+    })
 
     try {
-      const { listing } = await marketplaceApi.createListing({
+      const { listing } = await createListing({
         title: form.title.trim(),
         description: form.description.trim() || ' ',
         price,
         category: form.category as ListingCategory,
         condition: form.condition,
-        location: form.location.trim() || 'India',
+        locationLabel: form.location.trim() || 'India',
         currency: 'INR',
-        images: [],
-      })
+        visibility: 'PUBLIC',
+      }).unwrap()
 
       for (const file of imageFiles) {
         const dataUrl = await fileToDataUrl(file)
-        await mediaApi.uploadListingImage(listing.id, dataUrl)
+        await uploadListingImage({ listingId: listing.id, file: dataUrl }).unwrap()
       }
 
       imagePreviews.forEach((p) => URL.revokeObjectURL(p))
-      successToast('Product listed!', { description: 'Your product is now live on the marketplace.' })
+      successToast('Product listed!', {
+        description: 'Your product is now live on the marketplace.',
+      })
       router.push('/brand/products')
     } catch (err) {
       errorToast(err instanceof Error ? err.message : 'Failed to create listing')
     } finally {
       dismissToast(toastId)
-      setLoading(false)
     }
   }
 
@@ -111,11 +130,15 @@ export default function CreateProductPage() {
     <div className="max-w-2xl mx-auto px-4 py-6">
       <div className="flex items-center gap-3 mb-6">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/brand/products"><ArrowLeft className="w-4 h-4" /></Link>
+          <Link href="/brand/products">
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
         </Button>
         <div>
           <h2 className="text-2xl font-bold">Add Product</h2>
-          <p className="text-sm text-muted-foreground">List a product on the Revvie marketplace</p>
+          <p className="text-sm text-muted-foreground">
+            List a product on the Revvie marketplace
+          </p>
         </div>
       </div>
 
@@ -124,7 +147,9 @@ export default function CreateProductPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Photos</CardTitle>
-            <CardDescription>Add up to 10 photos. First photo will be the cover.</CardDescription>
+            <CardDescription>
+              Add up to 10 photos. First photo will be the cover.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <input
@@ -137,8 +162,15 @@ export default function CreateProductPage() {
             />
             <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
               {imagePreviews.map((preview, i) => (
-                <div key={i} className="relative aspect-square bg-muted rounded-lg overflow-hidden">
-                  <img src={preview} alt={`Product image ${i + 1}`} className="h-full w-full object-cover" />
+                <div
+                  key={i}
+                  className="relative aspect-square bg-muted rounded-lg overflow-hidden"
+                >
+                  <img
+                    src={preview}
+                    alt={`Product image ${i + 1}`}
+                    className="h-full w-full object-cover"
+                  />
                   <button
                     type="button"
                     className="absolute -top-2 -right-2 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"
@@ -147,7 +179,9 @@ export default function CreateProductPage() {
                     <X className="w-3 h-3" />
                   </button>
                   {i === 0 && (
-                    <span className="absolute bottom-1 left-1 text-[10px] bg-amber-500 text-white px-1 rounded">Cover</span>
+                    <span className="absolute bottom-1 left-1 text-[10px] bg-amber-500 text-white px-1 rounded">
+                      Cover
+                    </span>
                   )}
                 </div>
               ))}
@@ -163,17 +197,23 @@ export default function CreateProductPage() {
               )}
             </div>
             {imagePreviews.length > 0 && (
-              <p className="text-xs text-muted-foreground mt-3">{imagePreviews.length} / 10 image(s) selected</p>
+              <p className="text-xs text-muted-foreground mt-3">
+                {imagePreviews.length} / 10 image(s) selected
+              </p>
             )}
           </CardContent>
         </Card>
 
         {/* Product Details */}
         <Card>
-          <CardHeader><CardTitle className="text-base">Product Details</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base">Product Details</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Title <span className="text-destructive">*</span></Label>
+              <Label>
+                Title <span className="text-destructive">*</span>
+              </Label>
               <Input
                 placeholder="e.g. AGV K6 Helmet — Size M"
                 value={form.title}
@@ -192,7 +232,9 @@ export default function CreateProductPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>Price (₹) <span className="text-destructive">*</span></Label>
+                <Label>
+                  Price (₹) <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   type="number"
                   placeholder="e.g. 4999"
@@ -211,7 +253,9 @@ export default function CreateProductPage() {
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label>Category <span className="text-destructive">*</span></Label>
+              <Label>
+                Category <span className="text-destructive">*</span>
+              </Label>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map((cat) => (
                   <button
@@ -256,7 +300,14 @@ export default function CreateProductPage() {
           className="w-full bg-amber-500 hover:bg-amber-600 text-white h-12"
           disabled={loading || !form.title || !form.price || !form.category}
         >
-          {loading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Publishing...</> : 'List Product'}
+          {loading ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              Publishing...
+            </>
+          ) : (
+            'List Product'
+          )}
         </Button>
       </form>
     </div>

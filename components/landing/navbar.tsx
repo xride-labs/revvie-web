@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from 'motion/react'
 
 const sectionLinks = [
   { label: 'Ecosystem', href: '#ecosystem' },
@@ -82,10 +82,11 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 aria-current={activeSection === link.href ? 'true' : 'false'}
-                className={`rounded-full px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] transition-all duration-300 ${activeSection === link.href
+                className={`rounded-full px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] transition-all duration-300 ${
+                  activeSection === link.href
                     ? 'bg-white/12 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.14)]'
                     : 'text-text-secondary hover:bg-white/8 hover:text-white'
-                  }`}
+                }`}
               >
                 {link.label}
               </a>

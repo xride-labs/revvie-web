@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, type Variants } from 'motion/react'
 import { ShoppingBag, Star, BadgeCheck } from 'lucide-react'
 import Image from 'next/image'
 
@@ -40,7 +40,7 @@ const listings = [
 ]
 
 export function MarketplaceSection() {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -51,7 +51,7 @@ export function MarketplaceSection() {
     },
   }
 
-  const cardVariants = {
+  const cardVariants: Variants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
       opacity: 1,

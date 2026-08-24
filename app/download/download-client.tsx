@@ -30,7 +30,8 @@ export function DownloadClient({ apkHref }: DownloadClientProps) {
         <div className="flex items-start gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 max-w-sm">
           <Smartphone size={16} className="text-amber-400 mt-0.5 shrink-0" />
           <p className="text-sm text-amber-300/80 leading-relaxed">
-            Looks like you&apos;re not on Android. Open this page on your Android phone to install.
+            Looks like you&apos;re not on Android. Open this page on your Android phone to
+            install.
           </p>
         </div>
       )}

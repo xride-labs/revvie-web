@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { useState } from 'react'
 import Link from 'next/link'
 import {
@@ -100,9 +100,7 @@ export function EcosystemSection() {
                 opacity: hovered === 'partner' ? 0.45 : 1,
                 scale: hovered === 'rider' ? 1.01 : 1,
                 borderColor:
-                  hovered === 'rider'
-                    ? 'rgba(119, 255, 0, 0.6)'
-                    : 'rgba(34, 34, 34, 1)',
+                  hovered === 'rider' ? 'rgba(119, 255, 0, 0.6)' : 'rgba(34, 34, 34, 1)',
               }}
               transition={{ duration: 0.3 }}
               whileHover={{
@@ -130,14 +128,16 @@ export function EcosystemSection() {
               </p>
 
               <div className="relative mb-4 sm:mb-5 flex flex-wrap gap-2">
-                {['Live rider map', 'Auto ride chat', 'Club discover feed'].map((item) => (
-                  <span
-                    key={item}
-                    className="rounded-full border border-neon-green/30 bg-neon-green/10 px-3 py-1.5 text-[11px] font-semibold text-neon-green"
-                  >
-                    {item}
-                  </span>
-                ))}
+                {['Live rider map', 'Auto ride chat', 'Club discover feed'].map(
+                  (item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-neon-green/30 bg-neon-green/10 px-3 py-1.5 text-[11px] font-semibold text-neon-green"
+                    >
+                      {item}
+                    </span>
+                  ),
+                )}
               </div>
 
               {/* Phone Mockup */}
@@ -357,14 +357,16 @@ export function EcosystemSection() {
               </p>
 
               <div className="relative mb-4 sm:mb-5 flex flex-wrap gap-2">
-                {['Member analytics', 'Ride scheduling', 'Marketplace tools'].map((item) => (
-                  <span
-                    key={item}
-                    className="rounded-full border border-teal/30 bg-teal/10 px-3 py-1.5 text-[11px] font-semibold text-teal"
-                  >
-                    {item}
-                  </span>
-                ))}
+                {['Member analytics', 'Ride scheduling', 'Marketplace tools'].map(
+                  (item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-teal/30 bg-teal/10 px-3 py-1.5 text-[11px] font-semibold text-teal"
+                    >
+                      {item}
+                    </span>
+                  ),
+                )}
               </div>
 
               {/* Laptop Mockup */}

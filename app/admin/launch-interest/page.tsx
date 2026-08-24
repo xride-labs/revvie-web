@@ -10,11 +10,7 @@ import {
 } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  ExternalLink,
-  FileSpreadsheet,
-  RefreshCw,
-} from 'lucide-react'
+import { ExternalLink, FileSpreadsheet, RefreshCw } from 'lucide-react'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 interface LaunchInterestResponse {
@@ -28,7 +24,10 @@ function toEmbeddableResponsesUrl(url: string): string {
     const parsed = new URL(url)
 
     // Convert Google Sheets edit URLs into preview URLs that are iframe-friendly.
-    if (parsed.hostname === 'docs.google.com' && parsed.pathname.startsWith('/spreadsheets/d/')) {
+    if (
+      parsed.hostname === 'docs.google.com' &&
+      parsed.pathname.startsWith('/spreadsheets/d/')
+    ) {
       parsed.pathname = parsed.pathname.replace(/\/edit(?:\/.*)?$/, '/preview')
       return parsed.toString()
     }
@@ -117,14 +116,11 @@ export default function AdminLaunchInterestPage() {
         <div>
           <h2 className="text-2xl font-semibold">Launch Interest</h2>
           <p className="text-sm text-muted-foreground">
-            Public interest intake is Google Form only. Admin view embeds the responses URL.
+            Public interest intake is Google Form only. Admin view embeds the responses
+            URL.
           </p>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => loadData(true)}
-          disabled={isRefreshing}
-        >
+        <Button variant="outline" onClick={() => loadData(true)} disabled={isRefreshing}>
           <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
           Refresh
         </Button>
@@ -175,7 +171,9 @@ export default function AdminLaunchInterestPage() {
               </p>
             </>
           ) : (
-            <Badge variant="secondary">Set GOOGLE_FORM_RESPONSES_URL to enable embedded admin responses</Badge>
+            <Badge variant="secondary">
+              Set GOOGLE_FORM_RESPONSES_URL to enable embedded admin responses
+            </Badge>
           )}
         </CardContent>
       </Card>

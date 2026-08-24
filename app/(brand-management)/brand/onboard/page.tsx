@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -24,7 +24,11 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
-import { businessApi, type BusinessCategory } from '@/lib/server/business'
+import {
+  useCreateBusinessMutation,
+  useUpdateBusinessMutation,
+} from '@/features/business/api'
+import type { BusinessCategory } from '@/entities/business/model'
 import { useBusinessContext } from '@/contexts/business-context'
 
 const BRAND_TYPES: {
@@ -109,13 +113,38 @@ const STEP_LABELS = ['Business Type', 'Brand Info', 'Contact', 'Complete']
 // What each business type unlocks — shown in the done screen
 const TYPE_HIGHLIGHTS: Partial<Record<BusinessCategory, string[]>> = {
   BRAND: ['Product catalogue', 'Ad campaigns', 'Analytics dashboard', 'Verified badge'],
-  GEAR_SELLER: ['Gear catalogue', 'Discount codes', 'Marketplace listings', 'Bulk inventory'],
-  HELMET_SELLER: ['Helmet catalogue', 'Safety ratings', 'Marketplace listings', 'Campaigns'],
+  GEAR_SELLER: [
+    'Gear catalogue',
+    'Discount codes',
+    'Marketplace listings',
+    'Bulk inventory',
+  ],
+  HELMET_SELLER: [
+    'Helmet catalogue',
+    'Safety ratings',
+    'Marketplace listings',
+    'Campaigns',
+  ],
   PARTS_SELLER: ['Parts catalogue', 'SKU management', 'Marketplace', 'Discounts'],
-  SERVICE_STORE: ['Service listings', 'Booking enquiries', 'Team management', 'Analytics'],
+  SERVICE_STORE: [
+    'Service listings',
+    'Booking enquiries',
+    'Team management',
+    'Analytics',
+  ],
   MECHANIC: ['Service menu', 'Enquiry inbox', 'Location on map', 'Rider reviews'],
-  MARKETPLACE_SELLER: ['Multi-category listings', 'Discount engine', 'Campaigns', 'Analytics'],
-  CONSULTATION: ['Service packages', 'Enquiry management', 'Profile discovery', 'Analytics'],
+  MARKETPLACE_SELLER: [
+    'Multi-category listings',
+    'Discount engine',
+    'Campaigns',
+    'Analytics',
+  ],
+  CONSULTATION: [
+    'Service packages',
+    'Enquiry management',
+    'Profile discovery',
+    'Analytics',
+  ],
 }
 
 function launchConfetti() {
@@ -126,9 +155,18 @@ function launchConfetti() {
     function fire(particleRatio: number, opts: Parameters<typeof confetti>[0]) {
       confetti({ ...defaults, ...opts, particleCount: Math.floor(count * particleRatio) })
     }
-    fire(0.25, { spread: 26, startVelocity: 55, colors: ['#F59E0B', '#EF4444', '#10B981'] })
+    fire(0.25, {
+      spread: 26,
+      startVelocity: 55,
+      colors: ['#F59E0B', '#EF4444', '#10B981'],
+    })
     fire(0.2, { spread: 60, colors: ['#F59E0B', '#F97316'] })
-    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, colors: ['#fff', '#F59E0B', '#c83737'] })
+    fire(0.35, {
+      spread: 100,
+      decay: 0.91,
+      scalar: 0.8,
+      colors: ['#fff', '#F59E0B', '#c83737'],
+    })
     fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 })
     fire(0.1, { spread: 120, startVelocity: 45, colors: ['#F59E0B', '#EF4444'] })
   })
@@ -138,9 +176,10 @@ export default function BrandOnboardPage() {
   const router = useRouter()
   const { success: successToast, error: errorToast } = useToast()
   const { reload } = useBusinessContext()
+  const [createBusiness, { isLoading: creating }] = useCreateBusinessMutation()
+  const [updateBusiness] = useUpdateBusinessMutation()
 
   const [step, setStep] = useState<Step>('type')
-  const [creating, setCreating] = useState(false)
 
   const [form, setForm] = useState({
     categories: [] as BusinessCategory[],
@@ -169,28 +208,28 @@ export default function BrandOnboardPage() {
   const goBack = () => setStep(STEPS[stepIndex - 1])
 
   const handleCreate = async () => {
-    setCreating(true)
     try {
-      const business = await businessApi.createBusiness({
+      const business = await createBusiness({
         categories: form.categories,
         displayName: form.displayName,
         tagline: form.tagline || undefined,
-      })
-      await businessApi.updateBusiness(business.id, {
-        description: form.description || null,
-        email: form.email || null,
-        phone: form.phone || null,
-        websiteUrl: form.websiteUrl || null,
-        city: form.city || null,
-        country: form.country || null,
-        onboardingCompleted: true,
-      } as any)
+      }).unwrap()
+      await updateBusiness({
+        id: business.id,
+        data: {
+          description: form.description || null,
+          email: form.email || null,
+          phone: form.phone || null,
+          websiteUrl: form.websiteUrl || null,
+          city: form.city || null,
+          country: form.country || null,
+          onboardingCompleted: true,
+        },
+      }).unwrap()
       await reload()
       goNext()
     } catch (err) {
       errorToast(err instanceof Error ? err.message : 'Failed to create brand')
-    } finally {
-      setCreating(false)
     }
   }
 
@@ -233,17 +272,21 @@ export default function BrandOnboardPage() {
                         i < stepIndex
                           ? 'bg-amber-500 text-white shadow-[0_0_10px_rgba(245,158,11,0.4)]'
                           : i === stepIndex
-                          ? 'bg-amber-500 text-white ring-4 ring-amber-500/20'
-                          : 'bg-muted text-muted-foreground'
+                            ? 'bg-amber-500 text-white ring-4 ring-amber-500/20'
+                            : 'bg-muted text-muted-foreground'
                       }`}
                     >
                       {i < stepIndex ? <Check className="w-3.5 h-3.5" /> : i + 1}
                     </div>
-                    <span className={`text-xs font-medium hidden sm:block ${i <= stepIndex ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    <span
+                      className={`text-xs font-medium hidden sm:block ${i <= stepIndex ? 'text-foreground' : 'text-muted-foreground'}`}
+                    >
                       {STEP_LABELS[i]}
                     </span>
                     {i < STEPS.length - 2 && (
-                      <div className={`flex-1 h-0.5 rounded-full transition-colors duration-500 ${i < stepIndex ? 'bg-amber-500' : 'bg-muted'}`} />
+                      <div
+                        className={`flex-1 h-0.5 rounded-full transition-colors duration-500 ${i < stepIndex ? 'bg-amber-500' : 'bg-muted'}`}
+                      />
                     )}
                   </div>
                 ))}
@@ -264,10 +307,18 @@ export default function BrandOnboardPage() {
           <AnimatePresence mode="wait">
             {/* ─── STEP 1: Type Selection ─────────────────────── */}
             {step === 'type' && (
-              <motion.div key="type" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.25 }}>
+              <motion.div
+                key="type"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.25 }}
+              >
                 <div className="mb-6">
                   <h1 className="text-2xl font-bold">What type of business are you?</h1>
-                  <p className="text-muted-foreground text-sm mt-1">Select all that apply — you can always update later.</p>
+                  <p className="text-muted-foreground text-sm mt-1">
+                    Select all that apply — you can always update later.
+                  </p>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-3">
                   {BRAND_TYPES.map((type) => {
@@ -284,12 +335,16 @@ export default function BrandOnboardPage() {
                         }`}
                       >
                         <div className="flex items-start gap-3">
-                          <div className={`w-9 h-9 rounded-xl bg-linear-to-br ${type.gradient} flex items-center justify-center shrink-0`}>
+                          <div
+                            className={`w-9 h-9 rounded-xl bg-linear-to-br ${type.gradient} flex items-center justify-center shrink-0`}
+                          >
                             <type.icon className="w-4 h-4 text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-semibold text-sm">{type.label}</p>
-                            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{type.description}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                              {type.description}
+                            </p>
                           </div>
                           <motion.div
                             initial={{ scale: 0 }}
@@ -310,7 +365,8 @@ export default function BrandOnboardPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="mt-3 text-xs text-amber-500 font-medium"
                   >
-                    {form.categories.length} type{form.categories.length !== 1 ? 's' : ''} selected
+                    {form.categories.length} type{form.categories.length !== 1 ? 's' : ''}{' '}
+                    selected
                   </motion.p>
                 )}
                 <div className="mt-6 flex justify-end">
@@ -327,59 +383,87 @@ export default function BrandOnboardPage() {
 
             {/* ─── STEP 2: Brand Info ─────────────────────────── */}
             {step === 'info' && (
-              <motion.div key="info" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.25 }}>
+              <motion.div
+                key="info"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.25 }}
+              >
                 <div className="mb-6">
                   <h1 className="text-2xl font-bold">Tell us about your brand</h1>
-                  <p className="text-muted-foreground text-sm mt-1">This is how riders will discover and recognise you on Revvie.</p>
+                  <p className="text-muted-foreground text-sm mt-1">
+                    This is how riders will discover and recognise you on Revvie.
+                  </p>
                 </div>
                 <Card>
                   <CardContent className="p-6 space-y-4">
                     <div className="space-y-1.5">
                       <Label>
-                        {form.categories.includes('MECHANIC') ? 'Mechanic / Shop Name' :
-                         form.categories.includes('SERVICE_STORE') ? 'Workshop / Service Centre Name' :
-                         'Brand / Business Name'}{' '}
+                        {form.categories.includes('MECHANIC')
+                          ? 'Mechanic / Shop Name'
+                          : form.categories.includes('SERVICE_STORE')
+                            ? 'Workshop / Service Centre Name'
+                            : 'Brand / Business Name'}{' '}
                         <span className="text-destructive">*</span>
                       </Label>
                       <Input
                         autoFocus
                         placeholder={
-                          form.categories.includes('MECHANIC') ? 'e.g. Ramesh Two-Wheeler Works' :
-                          form.categories.includes('SERVICE_STORE') ? 'e.g. Moto Care Service Centre' :
-                          'e.g. Thunder Gear Co., Royal Enfield'
+                          form.categories.includes('MECHANIC')
+                            ? 'e.g. Ramesh Two-Wheeler Works'
+                            : form.categories.includes('SERVICE_STORE')
+                              ? 'e.g. Moto Care Service Centre'
+                              : 'e.g. Thunder Gear Co., Royal Enfield'
                         }
                         value={form.displayName}
-                        onChange={(e) => setForm((f) => ({ ...f, displayName: e.target.value }))}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, displayName: e.target.value }))
+                        }
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label>Tagline <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                      <Label>
+                        Tagline{' '}
+                        <span className="text-muted-foreground text-xs">(optional)</span>
+                      </Label>
                       <Input
                         placeholder={
-                          form.categories.includes('SERVICE_STORE') || form.categories.includes('MECHANIC')
+                          form.categories.includes('SERVICE_STORE') ||
+                          form.categories.includes('MECHANIC')
                             ? 'e.g. Your bike, our passion'
                             : 'e.g. Gear built for the road'
                         }
                         value={form.tagline}
-                        onChange={(e) => setForm((f) => ({ ...f, tagline: e.target.value }))}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, tagline: e.target.value }))
+                        }
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label>Description <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                      <Label>
+                        Description{' '}
+                        <span className="text-muted-foreground text-xs">(optional)</span>
+                      </Label>
                       <Textarea
                         rows={4}
                         placeholder={
-                          form.categories.includes('MECHANIC') || form.categories.includes('SERVICE_STORE')
+                          form.categories.includes('MECHANIC') ||
+                          form.categories.includes('SERVICE_STORE')
                             ? 'List your specialties, bikes you work on, years of experience...'
                             : 'Tell riders what makes your brand unique — your story, range of products...'
                         }
                         value={form.description}
-                        onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, description: e.target.value }))
+                        }
                       />
                     </div>
                     {/* Character count hint */}
                     {form.description.length > 0 && (
-                      <p className="text-xs text-muted-foreground text-right">{form.description.length} chars</p>
+                      <p className="text-xs text-muted-foreground text-right">
+                        {form.description.length} chars
+                      </p>
                     )}
                   </CardContent>
                 </Card>
@@ -400,11 +484,18 @@ export default function BrandOnboardPage() {
 
             {/* ─── STEP 3: Contact ────────────────────────────── */}
             {step === 'contact' && (
-              <motion.div key="contact" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.25 }}>
+              <motion.div
+                key="contact"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.25 }}
+              >
                 <div className="mb-6">
                   <h1 className="text-2xl font-bold">Contact & Location</h1>
                   <p className="text-muted-foreground text-sm mt-1">
-                    {form.categories.includes('MECHANIC') || form.categories.includes('SERVICE_STORE')
+                    {form.categories.includes('MECHANIC') ||
+                    form.categories.includes('SERVICE_STORE')
                       ? 'Help riders find your workshop and book appointments.'
                       : 'Help riders get in touch with you. All fields are optional.'}
                   </p>
@@ -418,20 +509,27 @@ export default function BrandOnboardPage() {
                           type="email"
                           placeholder="contact@yourbrand.com"
                           value={form.email}
-                          onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, email: e.target.value }))
+                          }
                         />
                       </div>
                       <div className="space-y-1.5">
                         <Label>
                           Phone
-                          {(form.categories.includes('MECHANIC') || form.categories.includes('SERVICE_STORE')) && (
-                            <span className="ml-1 text-[10px] text-amber-500 font-medium">Recommended</span>
+                          {(form.categories.includes('MECHANIC') ||
+                            form.categories.includes('SERVICE_STORE')) && (
+                            <span className="ml-1 text-[10px] text-amber-500 font-medium">
+                              Recommended
+                            </span>
                           )}
                         </Label>
                         <Input
                           placeholder="+91 98765 43210"
                           value={form.phone}
-                          onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, phone: e.target.value }))
+                          }
                         />
                       </div>
                     </div>
@@ -440,21 +538,28 @@ export default function BrandOnboardPage() {
                       <Input
                         placeholder="https://yourbrand.com"
                         value={form.websiteUrl}
-                        onChange={(e) => setForm((f) => ({ ...f, websiteUrl: e.target.value }))}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, websiteUrl: e.target.value }))
+                        }
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                         <Label>
                           City
-                          {(form.categories.includes('MECHANIC') || form.categories.includes('SERVICE_STORE')) && (
-                            <span className="ml-1 text-[10px] text-amber-500 font-medium">Required</span>
+                          {(form.categories.includes('MECHANIC') ||
+                            form.categories.includes('SERVICE_STORE')) && (
+                            <span className="ml-1 text-[10px] text-amber-500 font-medium">
+                              Required
+                            </span>
                           )}
                         </Label>
                         <Input
                           placeholder="Mumbai"
                           value={form.city}
-                          onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, city: e.target.value }))
+                          }
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -462,14 +567,21 @@ export default function BrandOnboardPage() {
                         <Input
                           placeholder="India"
                           value={form.country}
-                          onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, country: e.target.value }))
+                          }
                         />
                       </div>
                     </div>
                   </CardContent>
                 </Card>
                 <div className="mt-6 flex justify-between">
-                  <Button variant="outline" onClick={goBack} disabled={creating} className="gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={goBack}
+                    disabled={creating}
+                    className="gap-2"
+                  >
                     <ChevronLeft className="w-4 h-4" /> Back
                   </Button>
                   <Button
@@ -478,9 +590,13 @@ export default function BrandOnboardPage() {
                     disabled={creating}
                   >
                     {creating ? (
-                      <><Loader2 className="w-4 h-4 animate-spin" /> Setting up portal…</>
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" /> Setting up portal…
+                      </>
                     ) : (
-                      <>Launch Brand Portal <Sparkles className="w-4 h-4" /></>
+                      <>
+                        Launch Brand Portal <Sparkles className="w-4 h-4" />
+                      </>
                     )}
                   </Button>
                 </div>
@@ -505,12 +621,17 @@ export default function BrandOnboardPage() {
                   <Check className="w-12 h-12 text-white" />
                 </motion.div>
 
-                <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
                   <h1 className="text-3xl font-bold mb-2">
                     {form.displayName ? `${form.displayName} is live!` : "You're live!"}
                   </h1>
                   <p className="text-muted-foreground max-w-md mx-auto text-sm">
-                    Your brand portal is ready. Get verified to appear in discovery and start reaching thousands of riders.
+                    Your brand portal is ready. Get verified to appear in discovery and
+                    start reaching thousands of riders.
                   </p>
                 </motion.div>
 
@@ -551,7 +672,11 @@ export default function BrandOnboardPage() {
                   >
                     <Store className="w-4 h-4" /> Go to Dashboard
                   </Button>
-                  <Button variant="outline" onClick={() => router.push('/brand/settings#verification')} className="gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push('/brand/settings#verification')}
+                    className="gap-2"
+                  >
                     <ExternalLink className="w-4 h-4" /> Get Verified
                   </Button>
                 </motion.div>
@@ -562,7 +687,8 @@ export default function BrandOnboardPage() {
                   transition={{ delay: 0.7 }}
                   className="text-xs text-muted-foreground mt-6"
                 >
-                  Get verified to appear in public discovery and unlock marketplace access.
+                  Get verified to appear in public discovery and unlock marketplace
+                  access.
                 </motion.p>
               </motion.div>
             )}

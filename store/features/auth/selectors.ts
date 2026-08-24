@@ -1,4 +1,4 @@
-import type { RootState } from '../../index'
+import type { RootState } from '@/core/store/make-store'
 
 export const selectUser = (state: RootState) => state.user
 export const selectUserProfile = (state: RootState) => state.user.profile

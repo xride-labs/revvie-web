@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { businessApi, type BusinessCategory } from '@/lib/services'
+import { useCreateBusinessMutation } from '@/features/business/api'
+import type { BusinessCategory } from '@/entities/business/model'
 import { useToast } from '@/hooks/use-toast'
 import {
   Card,
@@ -39,26 +40,25 @@ const CATEGORIES: Array<{ label: string; value: BusinessCategory }> = [
 export default function CreateBusinessPage() {
   const router = useRouter()
   const { error: errorToast, loading: loadingToast, dismiss: dismissToast } = useToast()
+  const [createBusiness, { isLoading: isSubmitting }] = useCreateBusinessMutation()
   const [category, setCategory] = useState<BusinessCategory | ''>('')
   const [displayName, setDisplayName] = useState('')
   const [tagline, setTagline] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!category || !displayName.trim()) return
 
-    setIsSubmitting(true)
     const toastId = loadingToast('Creating business...', {
       description: 'Saving your brand profile.',
     })
 
     try {
-      const business = await businessApi.createBusiness({
+      const business = await createBusiness({
         categories: [category as BusinessCategory],
         displayName: displayName.trim(),
         tagline: tagline.trim() || undefined,
-      })
+      }).unwrap()
       router.push(`/business/${business.id}`)
     } catch (err) {
       errorToast('Could not create business', {
@@ -66,13 +66,15 @@ export default function CreateBusinessPage() {
       })
     } finally {
       dismissToast(toastId)
-      setIsSubmitting(false)
     }
   }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
-      <Link href="/business" className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-4">
+      <Link
+        href="/business"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-4"
+      >
         <ChevronLeft className="w-4 h-4" />
         Back to portal
       </Link>
@@ -88,7 +90,10 @@ export default function CreateBusinessPage() {
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label>Business category</Label>
-              <Select value={category} onValueChange={(value) => setCategory(value as BusinessCategory)}>
+              <Select
+                value={category}
+                onValueChange={(value) => setCategory(value as BusinessCategory)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
@@ -121,8 +126,15 @@ export default function CreateBusinessPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Button type="submit" disabled={isSubmitting || !category || !displayName.trim()}>
-                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create business'}
+              <Button
+                type="submit"
+                disabled={isSubmitting || !category || !displayName.trim()}
+              >
+                {isSubmitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  'Create business'
+                )}
               </Button>
               <Button asChild variant="outline">
                 <Link href="/business">Cancel</Link>

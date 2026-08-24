@@ -20,7 +20,9 @@ async function fetchListingPreview(id: string): Promise<ListingPreview | null> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL
   if (!apiUrl) return null
   try {
-    const res = await fetch(`${apiUrl}/public/marketplace/${id}`, { next: { revalidate: 60 } })
+    const res = await fetch(`${apiUrl}/public/marketplace/${id}`, {
+      next: { revalidate: 60 },
+    })
     if (!res.ok) return null
     const json = await res.json()
     return json.data ?? null
@@ -30,7 +32,11 @@ async function fetchListingPreview(id: string): Promise<ListingPreview | null> {
 }
 
 function formatPrice(price: number, currency: string) {
-  return new Intl.NumberFormat('en-IN', { style: 'currency', currency, maximumFractionDigits: 0 }).format(price)
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+  }).format(price)
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -72,8 +78,12 @@ export default async function ListingSharePage({ params }: PageProps) {
         listing
           ? [
               { label: 'Price', value: formatPrice(listing.price, listing.currency) },
-              ...(listing.condition ? [{ label: 'Condition', value: listing.condition }] : []),
-              ...(listing.category ? [{ label: 'Category', value: listing.category }] : []),
+              ...(listing.condition
+                ? [{ label: 'Condition', value: listing.condition }]
+                : []),
+              ...(listing.category
+                ? [{ label: 'Category', value: listing.category }]
+                : []),
             ]
           : undefined
       }

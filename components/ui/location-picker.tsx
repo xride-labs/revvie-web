@@ -177,7 +177,9 @@ export function LocationPicker({
                     <MapPin className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">{primary}</p>
-                      <p className="text-xs text-muted-foreground truncate">{secondary}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {secondary}
+                      </p>
                     </div>
                   </button>
                 )
@@ -187,7 +189,9 @@ export function LocationPicker({
 
           {showResults && results.length === 0 && !isSearching && query.length >= 3 && (
             <div className="absolute z-50 w-full mt-1 bg-background border rounded-xl shadow-lg px-3 py-3">
-              <p className="text-sm text-muted-foreground text-center">No places found for &quot;{query}&quot;</p>
+              <p className="text-sm text-muted-foreground text-center">
+                No places found for &quot;{query}&quot;
+              </p>
             </div>
           )}
         </div>

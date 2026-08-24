@@ -1,7 +1,8 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
-import { businessApi, type BusinessProfile } from '@/lib/server/business'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { useGetMyBusinessesQuery } from '@/features/business/api'
+import type { BusinessProfile } from '@/entities/business/model'
 
 interface BusinessContextValue {
   business: BusinessProfile | null
@@ -14,44 +15,37 @@ interface BusinessContextValue {
 const BusinessContext = createContext<BusinessContextValue | null>(null)
 
 export function BusinessProvider({ children }: { children: ReactNode }) {
-  const [businesses, setBusinesses] = useState<BusinessProfile[]>([])
-  const [activeBusiness, setActiveBusiness] = useState<BusinessProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  const load = useCallback(async () => {
-    try {
-      const items = await businessApi.getMyBusinesses()
-      setBusinesses(items)
-      if (items.length > 0) {
-        setActiveBusiness((prev) => {
-          if (prev) {
-            const refreshed = items.find((b) => b.id === prev.id)
-            return refreshed ?? items[0]
-          }
-          return items[0]
-        })
-      } else {
-        setActiveBusiness(null)
-      }
-    } catch {
-      // not authenticated yet — caller handles redirect
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  const { data, isLoading: loading, refetch } = useGetMyBusinessesQuery()
+  const businesses = data ?? []
+  const [activeBusinessId, setActiveBusinessId] = useState<string | null>(null)
 
   useEffect(() => {
-    load()
-  }, [load])
+    if (businesses.length === 0) {
+      setActiveBusinessId(null)
+      return
+    }
+    setActiveBusinessId((prev) =>
+      prev && businesses.some((b) => b.id === prev) ? prev : businesses[0].id,
+    )
+  }, [businesses])
+
+  const activeBusiness = businesses.find((b) => b.id === activeBusinessId) ?? null
 
   const selectBusiness = (id: string) => {
-    const found = businesses.find((b) => b.id === id)
-    if (found) setActiveBusiness(found)
+    if (businesses.some((b) => b.id === id)) setActiveBusinessId(id)
   }
 
   return (
     <BusinessContext.Provider
-      value={{ business: activeBusiness, businesses, loading, reload: load, selectBusiness }}
+      value={{
+        business: activeBusiness,
+        businesses,
+        loading,
+        reload: async () => {
+          await refetch()
+        },
+        selectBusiness,
+      }}
     >
       {children}
     </BusinessContext.Provider>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   Card,
   CardContent,
@@ -46,7 +46,11 @@ import {
   PlayCircle,
   type LucideIcon,
 } from 'lucide-react'
-import { useAdminRides } from '@/store/features/admin'
+import {
+  useGetRidesQuery,
+  useUpdateRideStatusMutation,
+  useDeleteRideMutation,
+} from '@/features/admin/api'
 import { AdminCRUDPopover, CRUDActionBuilders } from '@/components/admin/crud-popover'
 
 interface AdminRide {
@@ -80,73 +84,69 @@ const statusIcons: Record<string, LucideIcon> = {
 }
 
 export default function AdminRidesPage() {
-  const {
-    rides: rawRides,
-    pagination,
-    fetchRides,
-    updateRideStatus: dispatchUpdateRideStatus,
-    deleteRide: dispatchDeleteRide,
-  } = useAdminRides()
-
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [selectedRide, setSelectedRide] = useState<AdminRide | null>(null)
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
-
-  const rides: AdminRide[] = rawRides.map((ride) => ({
-    id: ride.id,
-    title: ride.title,
-    description: ride.description,
-    startLocation: ride.startLocation,
-    endLocation: ride.endLocation,
-    distance: ride.distance,
-    duration: ride.duration,
-    scheduledAt: ride.scheduledAt,
-    status: ride.status,
-    experienceLevel: ride.experienceLevel,
-    pace: ride.pace,
-    participantCount: ride._count?.participants ?? 0,
-    creator: {
-      id: ride.creator?.id ?? '',
-      name: ride.creator?.name ?? 'Unknown',
-      image: ride.creator?.image ?? null,
-    },
-  }))
+  const [debouncedSearch, setDebouncedSearch] = useState('')
 
   useEffect(() => {
-    const params: Record<string, string> = {
-      page: String(currentPage),
-      limit: '20',
-    }
-    if (statusFilter !== 'all') params.status = statusFilter
-    if (searchQuery) params.search = searchQuery
-    fetchRides(params)
-  }, [statusFilter, currentPage, searchQuery, fetchRides])
-
-  // Debounced server-side search
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (currentPage === 1) {
-        const params: Record<string, string> = { page: '1', limit: '20' }
-        if (statusFilter !== 'all') params.status = statusFilter
-        if (searchQuery) params.search = searchQuery
-        fetchRides(params)
-      } else {
-        setCurrentPage(1)
-      }
-    }, 400)
+    const timeout = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 400)
     return () => clearTimeout(timeout)
-  }, [searchQuery, currentPage, statusFilter, fetchRides])
+  }, [searchQuery])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [debouncedSearch, statusFilter])
+
+  const queryParams = useMemo(
+    () => ({
+      page: currentPage,
+      limit: 20,
+      ...(statusFilter !== 'all' ? { status: statusFilter } : {}),
+      ...(debouncedSearch ? { search: debouncedSearch } : {}),
+    }),
+    [currentPage, statusFilter, debouncedSearch],
+  )
+
+  const { data } = useGetRidesQuery(queryParams)
+  const [updateRideStatusMutation] = useUpdateRideStatusMutation()
+  const [deleteRideMutation] = useDeleteRideMutation()
+
+  const rides: AdminRide[] = useMemo(
+    () =>
+      (data?.items ?? []).map((ride) => ({
+        id: ride.id,
+        title: ride.title,
+        description: ride.description,
+        startLocation: ride.startLocation,
+        endLocation: ride.endLocation,
+        distance: ride.distance,
+        duration: ride.duration,
+        scheduledAt: ride.scheduledAt,
+        status: ride.status,
+        experienceLevel: ride.experienceLevel,
+        pace: ride.pace,
+        participantCount: ride._count?.participants ?? 0,
+        creator: {
+          id: ride.creator?.id ?? '',
+          name: ride.creator?.name ?? 'Unknown',
+          image: ride.creator?.image ?? null,
+        },
+      })),
+    [data],
+  )
+  const pagination = data?.pagination ?? { page: 1, limit: 20, total: 0, totalPages: 1 }
 
   const handleCancelRide = async (ride: AdminRide) => {
     if (!confirm(`Cancel ride "${ride.title}"?`)) return
-    await dispatchUpdateRideStatus(ride.id, 'CANCELLED')
+    await updateRideStatusMutation({ rideId: ride.id, status: 'CANCELLED' })
   }
 
   const handleDeleteRide = async (ride: AdminRide) => {
     if (!confirm(`Delete ride "${ride.title}"? This cannot be undone.`)) return
-    await dispatchDeleteRide(ride.id)
+    await deleteRideMutation(ride.id)
   }
 
   const stats = {
@@ -268,7 +268,10 @@ export default function AdminRidesPage() {
                           <p className="font-medium truncate">{ride.title}</p>
                           <p className="text-xs text-muted-foreground flex items-center gap-1 truncate">
                             <MapPin className="w-3 h-3 shrink-0" />
-                            <span className="truncate">{ride.startLocation}{ride.endLocation ? ` → ${ride.endLocation}` : ''}</span>
+                            <span className="truncate">
+                              {ride.startLocation}
+                              {ride.endLocation ? ` → ${ride.endLocation}` : ''}
+                            </span>
                           </p>
                         </div>
                       </TableCell>
@@ -325,21 +328,21 @@ export default function AdminRidesPage() {
                             }),
                             ...(ride.status !== 'CANCELLED' && ride.status !== 'COMPLETED'
                               ? [
-                                CRUDActionBuilders.custom(
-                                  'cancel',
-                                  'Cancel Ride',
-                                  () => handleCancelRide(ride),
-                                  {
-                                    icon: <XCircle className="h-4 w-4" />,
-                                    variant: 'destructive',
-                                  }
-                                ),
-                              ]
+                                  CRUDActionBuilders.custom(
+                                    'cancel',
+                                    'Cancel Ride',
+                                    () => handleCancelRide(ride),
+                                    {
+                                      icon: <XCircle className="h-4 w-4" />,
+                                      variant: 'destructive',
+                                    },
+                                  ),
+                                ]
                               : []),
                             CRUDActionBuilders.delete(
                               () => handleDeleteRide(ride),
                               false,
-                              false
+                              false,
                             ),
                           ]}
                         />

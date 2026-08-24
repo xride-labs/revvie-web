@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { userApi } from '@/lib/services'
+import { useGetMyProfileQuery, useUpdateProfileMutation } from '@/features/user/api'
 import {
   Card,
   CardContent,
@@ -15,8 +15,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { ChevronLeft, Camera, Loader2 } from 'lucide-react'
-import { mediaApi } from '@/lib/services'
+import { ChevronLeft, Camera } from 'lucide-react'
+import { useUploadProfileImageMutation, useUploadProfileCoverMutation } from '@/features/media/api'
 import { fileToDataUrl } from '@/lib/media-utils'
 import { useToast } from '@/hooks/use-toast'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
@@ -38,13 +38,14 @@ export default function EditProfilePage() {
     loading: loadingToast,
     dismiss: dismissToast,
   } = useToast()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { data: meData, isLoading: loading, isError: error } = useGetMyProfileQuery()
+  const [updateProfile, { isLoading: isSubmitting }] = useUpdateProfileMutation()
+  const [uploadProfileImage, { isLoading: isUploadingAvatar }] =
+    useUploadProfileImageMutation()
+  const [uploadProfileCover, { isLoading: isUploadingCover }] =
+    useUploadProfileCoverMutation()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [coverUrl, setCoverUrl] = useState<string | null>(null)
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
-  const [isUploadingCover, setIsUploadingCover] = useState(false)
   const [profileData, setProfileData] = useState<ProfileData>({
     name: '',
     username: '',
@@ -55,53 +56,35 @@ export default function EditProfilePage() {
   })
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      const loadingToastId = loadingToast('Loading profile...', {
-        description: 'Fetching your profile settings.',
-      })
-      try {
-        setLoading(true)
-        const response = await userApi.getProfile()
-        const userData = response.user
-        setProfileData({
-          name: userData.name || '',
-          username: userData.username || '',
-          bio: userData.bio || '',
-          location: userData.location || '',
-          email: userData.email || '',
-          phone: (userData as { phone?: string }).phone || '',
-        })
-        setAvatarUrl(userData.avatar || null)
-        setCoverUrl(userData.coverImage || null)
-      } catch (err) {
-        setError('Failed to load profile')
-        console.error(err)
-        errorToast('Failed to load profile', {
-          description: err instanceof Error ? err.message : 'Please refresh and try again.',
-        })
-      } finally {
-        dismissToast(loadingToastId)
-        setLoading(false)
-      }
-    }
-
-    fetchProfile()
-  }, [dismissToast, errorToast, loadingToast])
+    if (!meData) return
+    const userData = meData.user
+    setProfileData({
+      name: userData.name || '',
+      username: userData.username || '',
+      bio: userData.bio || '',
+      location: userData.location || '',
+      email: userData.email || '',
+      // The profile response has no `phone` field — this input has never had a real
+      // value to load (the old code's `(userData as {phone?:string})` cast masked it).
+      phone: '',
+    })
+    setAvatarUrl(userData.avatar || null)
+    setCoverUrl(userData.coverImage || null)
+  }, [meData])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
     const loadingToastId = loadingToast('Saving profile...', {
       description: 'Updating your account details.',
     })
 
     try {
-      await userApi.updateProfile({
+      await updateProfile({
         name: profileData.name,
         username: profileData.username,
         bio: profileData.bio,
         location: profileData.location,
-      })
+      }).unwrap()
       successToast('Profile updated', {
         description: 'Your profile changes have been saved.',
       })
@@ -113,7 +96,6 @@ export default function EditProfilePage() {
       })
     } finally {
       dismissToast(loadingToastId)
-      setIsSubmitting(false)
     }
   }
 
@@ -123,9 +105,8 @@ export default function EditProfilePage() {
       description: 'Processing and saving your profile image.',
     })
     try {
-      setIsUploadingAvatar(true)
       const dataUrl = await fileToDataUrl(file)
-      const response = await mediaApi.uploadProfileImage(dataUrl)
+      const response = await uploadProfileImage(dataUrl).unwrap()
       setAvatarUrl(response.imageUrl || response.media?.secureUrl || dataUrl)
       successToast('Avatar updated')
     } catch (err) {
@@ -135,7 +116,6 @@ export default function EditProfilePage() {
       })
     } finally {
       dismissToast(loadingToastId)
-      setIsUploadingAvatar(false)
     }
   }
 
@@ -145,9 +125,8 @@ export default function EditProfilePage() {
       description: 'Processing and saving your cover image.',
     })
     try {
-      setIsUploadingCover(true)
       const dataUrl = await fileToDataUrl(file)
-      const response = await mediaApi.uploadProfileCover(dataUrl)
+      const response = await uploadProfileCover(dataUrl).unwrap()
       setCoverUrl(response.imageUrl || response.media?.secureUrl || dataUrl)
       successToast('Cover image updated')
     } catch (err) {
@@ -157,7 +136,6 @@ export default function EditProfilePage() {
       })
     } finally {
       dismissToast(loadingToastId)
-      setIsUploadingCover(false)
     }
   }
 
@@ -187,7 +165,7 @@ export default function EditProfilePage() {
   if (error) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-muted-foreground">{error}</p>
+        <p className="text-muted-foreground">Failed to load profile</p>
         <Button onClick={() => router.back()}>Go Back</Button>
       </div>
     )

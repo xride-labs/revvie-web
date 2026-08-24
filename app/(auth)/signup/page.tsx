@@ -9,13 +9,10 @@ import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { PortalBackdropArt } from '@/components/auth/portal-backdrop-art'
 import { Eye, EyeOff, Loader2, Check, Shield } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { useAuth } from '@/store/features/auth'
 import { useToast } from '@/hooks/use-toast'
-import {
-  signIn as betterAuthSignIn,
-  resolveAuthCallbackURL,
-} from '@/lib/auth-client'
+import { signIn as betterAuthSignIn, resolveAuthCallbackURL } from '@/lib/auth-client'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -53,15 +50,21 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!isPasswordValid) {
-      errorToast('Please meet all password requirements', { description: 'Check the requirements list below.' })
+      errorToast('Please meet all password requirements', {
+        description: 'Check the requirements list below.',
+      })
       return
     }
     if (!doPasswordsMatch) {
-      errorToast("Passwords don't match", { description: 'Please make sure your passwords match.' })
+      errorToast("Passwords don't match", {
+        description: 'Please make sure your passwords match.',
+      })
       return
     }
     if (!agreedToTerms) {
-      errorToast('Please agree to the terms and conditions', { description: 'You must agree before continuing.' })
+      errorToast('Please agree to the terms and conditions', {
+        description: 'You must agree before continuing.',
+      })
       return
     }
 
@@ -75,7 +78,9 @@ export default function SignupPage() {
         password: formData.password,
         name: formData.name,
       })
-      successToast('Account created successfully!', { description: `Welcome ${formData.name}!` })
+      successToast('Account created successfully!', {
+        description: `Welcome ${formData.name}!`,
+      })
       router.push('/home')
     } catch (err) {
       errorToast(err instanceof Error ? err.message : 'Failed to create account', {
@@ -134,10 +139,17 @@ export default function SignupPage() {
           <div className="p-8">
             {/* Logo */}
             <div className="text-center mb-7">
-              <Link href="/" className="inline-flex items-center justify-center gap-2 mb-4">
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center gap-2 mb-4"
+              >
                 <div className="w-11 h-11 rounded-xl overflow-hidden border border-border">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/revvie-logo.png" alt="Revvie" className="w-full h-full object-cover" />
+                  {}
+                  <img
+                    src="/revvie-logo.png"
+                    alt="Revvie"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </Link>
               <h1 className="text-xl font-bold text-white uppercase tracking-widest">
@@ -154,7 +166,8 @@ export default function SignupPage() {
               <div>
                 <p className="text-sm font-medium text-white/80">Club Manager Account</p>
                 <p className="text-xs text-text-secondary/50 mt-0.5">
-                  Create & manage riding clubs. For marketplace access, use the Revvie mobile app.
+                  Create & manage riding clubs. For marketplace access, use the Revvie
+                  mobile app.
                 </p>
               </div>
             </div>
@@ -167,10 +180,22 @@ export default function SignupPage() {
               disabled={isLoading}
             >
               <svg className="w-4 h-4 mr-2.5 shrink-0" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
               </svg>
               Continue with Google
             </Button>
@@ -190,7 +215,10 @@ export default function SignupPage() {
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="name" className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase">
+                <Label
+                  htmlFor="name"
+                  className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase"
+                >
                   Full Name
                 </Label>
                 <Input
@@ -207,7 +235,10 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase">
+                <Label
+                  htmlFor="email"
+                  className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase"
+                >
                   Email
                 </Label>
                 <Input
@@ -224,7 +255,10 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase">
+                <Label
+                  htmlFor="password"
+                  className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase"
+                >
                   Password
                 </Label>
                 <div className="relative">
@@ -244,7 +278,11 @@ export default function SignupPage() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary/40 hover:text-text-secondary transition-colors"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
                 {formData.password.length > 0 && (
@@ -267,7 +305,10 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="confirmPassword" className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase">
+                <Label
+                  htmlFor="confirmPassword"
+                  className="text-text-secondary/80 text-xs font-medium tracking-wide uppercase"
+                >
                   Confirm Password
                 </Label>
                 <Input
@@ -280,11 +321,15 @@ export default function SignupPage() {
                   required
                   disabled={isLoading}
                   className={`h-11 rounded-xl bg-[#0d0d0d] border text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors ${
-                    doPasswordsMatch ? 'border-neon-green/30' : 'border-white/10 focus:border-white/20'
+                    doPasswordsMatch
+                      ? 'border-neon-green/30'
+                      : 'border-white/10 focus:border-white/20'
                   }`}
                 />
                 {formData.confirmPassword.length > 0 && (
-                  <p className={`text-xs ${doPasswordsMatch ? 'text-neon-green' : 'text-brand-red-light'}`}>
+                  <p
+                    className={`text-xs ${doPasswordsMatch ? 'text-neon-green' : 'text-brand-red-light'}`}
+                  >
                     {doPasswordsMatch ? 'Passwords match ✓' : "Passwords don't match"}
                   </p>
                 )}
@@ -298,13 +343,22 @@ export default function SignupPage() {
                   disabled={isLoading}
                   className="border-white/20 data-[state=checked]:bg-brand-red-light data-[state=checked]:border-brand-red-light mt-0.5"
                 />
-                <label htmlFor="terms" className="text-sm text-text-secondary/50 leading-tight cursor-pointer">
+                <label
+                  htmlFor="terms"
+                  className="text-sm text-text-secondary/50 leading-tight cursor-pointer"
+                >
                   I agree to the{' '}
-                  <Link href="/terms" className="text-white/60 hover:text-white transition-colors underline underline-offset-2">
+                  <Link
+                    href="/terms"
+                    className="text-white/60 hover:text-white transition-colors underline underline-offset-2"
+                  >
                     Terms of Service
                   </Link>{' '}
                   and{' '}
-                  <Link href="/privacy" className="text-white/60 hover:text-white transition-colors underline underline-offset-2">
+                  <Link
+                    href="/privacy"
+                    className="text-white/60 hover:text-white transition-colors underline underline-offset-2"
+                  >
                     Privacy Policy
                   </Link>
                 </label>
@@ -313,10 +367,15 @@ export default function SignupPage() {
               <Button
                 type="submit"
                 className="w-full h-11 rounded-xl bg-linear-to-r from-brand-red-light to-brand-red text-white font-bold uppercase tracking-widest text-xs hover:opacity-90 transition-all mt-1"
-                disabled={isLoading || !isPasswordValid || !doPasswordsMatch || !agreedToTerms}
+                disabled={
+                  isLoading || !isPasswordValid || !doPasswordsMatch || !agreedToTerms
+                }
               >
                 {isLoading ? (
-                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creating account…</>
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating account…
+                  </>
                 ) : (
                   'Create Club Manager Account'
                 )}
@@ -325,14 +384,18 @@ export default function SignupPage() {
 
             <p className="text-center text-xs text-text-secondary/40 mt-6">
               Already have an account?{' '}
-              <Link href="/login" className="text-white/60 hover:text-white transition-colors underline underline-offset-2">
+              <Link
+                href="/login"
+                className="text-white/60 hover:text-white transition-colors underline underline-offset-2"
+              >
                 Sign in
               </Link>
             </p>
 
             <p className="text-center text-xs text-text-secondary/30 mt-3">
               A rider? Download the{' '}
-              <span className="font-medium text-neon-green">Revvie mobile app</span> to start riding.
+              <span className="font-medium text-neon-green">Revvie mobile app</span> to
+              start riding.
             </p>
           </div>
         </div>
