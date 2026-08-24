@@ -3,7 +3,18 @@ import { withSentryConfig } from '@sentry/nextjs'
 
 const isProd = process.env.NODE_ENV === 'production'
 
+/**
+ * Standalone output is opt-in via BUILD_STANDALONE=1, which the Dockerfile sets.
+ *
+ * It cannot be left on unconditionally: Turbopack emits externals chunks whose filenames
+ * contain a colon (`[externals]_node:inspector_*.js`, pulled in by @sentry/node →
+ * @opentelemetry). Colons are illegal in Windows filenames, so the trace-copy step fails
+ * with EINVAL and takes the whole build down. Linux — and therefore the image — is fine.
+ */
+const standalone = process.env.BUILD_STANDALONE === '1'
+
 const nextConfig: NextConfig = {
+  ...(standalone ? { output: 'standalone' as const } : {}),
   images: {
     remotePatterns: [
       {

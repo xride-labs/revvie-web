@@ -46,3 +46,11 @@ next-env.d.ts
 
 # large binaries
 /public/downloads/*.apk
+
+# AI coding-agent scratch dirs (impeccable, cursor, codex …)
+.codex/
+.cursor/
+.agent/
+.agents/
+.gemini/
+.opencode/

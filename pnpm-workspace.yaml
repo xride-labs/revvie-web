@@ -1,0 +1,6 @@
+# pnpm 11 reads build-script approval from here, not from package.json's "pnpm" field.
+allowBuilds:
+  '@sentry/cli': true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true

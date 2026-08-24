@@ -1,0 +1,11 @@
+# Prettier writes LF. Without this, every checkout on Windows rewrites 120+ files to
+# CRLF and the next `prettier --check` fails for reasons unrelated to anyone's change.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.apk binary
+pnpm-lock.yaml -diff

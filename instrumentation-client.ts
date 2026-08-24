@@ -36,3 +36,9 @@ if (isProd && dsn) {
     debug: false,
   })
 }
+
+/**
+ * Required by @sentry/nextjs to instrument App Router navigations. Exporting it
+ * unconditionally is safe — it no-ops when Sentry.init() never ran.
+ */
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart

@@ -1,0 +1,22 @@
+node_modules
+.next
+.git
+.vscode
+dist
+out
+coverage
+
+# Never let secrets into the image layer.
+.env
+.env.*
+!.env.example
+
+bun.lock
+bun.lockb
+npm-debug.log*
+yarn-error.log*
+*.tsbuildinfo
+.DS_Store
+Dockerfile
+.dockerignore
+docker.compose.yml

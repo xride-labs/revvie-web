@@ -1,5 +1,14 @@
 node_modules
 .next
 dist
+build
+out
 coverage
 .env
+.env.*
+
+# Generated — reformatting these creates noise and breaks tooling that reads them.
+pnpm-lock.yaml
+next-env.d.ts
+*.tsbuildinfo
+public/
