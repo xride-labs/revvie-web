@@ -84,6 +84,13 @@ export const adminApi = createApi({
   endpoints: () => ({}),
 })
 
+export const eventsApi = createApi({
+  reducerPath: 'eventsApi',
+  baseQuery: axiosBaseQuery(),
+  tagTypes: ['Event', 'EventList', 'EventTicket', 'EventOrder', 'EventMetrics'],
+  endpoints: () => ({}),
+})
+
 export const ALL_APIS = [
   clubsApi,
   ridesApi,
@@ -93,4 +100,5 @@ export const ALL_APIS = [
   businessApi,
   mediaApi,
   adminApi,
+  eventsApi,
 ] as const

@@ -13,6 +13,7 @@ import {
   mediaApi,
   ridesApi,
   userApi,
+  eventsApi,
 } from './api/services'
 
 /**
@@ -38,6 +39,7 @@ const rootReducer = combineReducers({
   [businessApi.reducerPath]: businessApi.reducer,
   [mediaApi.reducerPath]: mediaApi.reducer,
   [adminApi.reducerPath]: adminApi.reducer,
+  [eventsApi.reducerPath]: eventsApi.reducer,
 
   user: userReducer,
 })
