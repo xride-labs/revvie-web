@@ -97,8 +97,9 @@ export async function getSession(): Promise<AuthSession | null> {
  * Request password reset email
  */
 export async function forgotPassword(email: string): Promise<{ message: string }> {
-  return apiAuthenticated.post<{ message: string }>('/auth/forgot-password', {
+  return apiAuthenticated.post<{ message: string }>('/auth/request-password-reset', {
     email,
+    redirectTo: resolveAuthCallbackURL('/reset-password'),
   })
 }
 

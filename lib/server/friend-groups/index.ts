@@ -32,13 +32,13 @@ export interface FriendGroupDetail extends FriendGroup {
 // ============ Friend Groups API ============
 
 export async function getFriendGroups(): Promise<{ groups: FriendGroup[] }> {
-  return apiAuthenticated.get<{ groups: FriendGroup[] }>('/friend-groups')
+  return apiAuthenticated.get<{ groups: FriendGroup[] }>('/friends/groups')
 }
 
 export async function getFriendGroup(
   groupId: string,
 ): Promise<{ group: FriendGroupDetail }> {
-  return apiAuthenticated.get<{ group: FriendGroupDetail }>(`/friend-groups/${groupId}`)
+  return apiAuthenticated.get<{ group: FriendGroupDetail }>(`/friends/groups/${groupId}`)
 }
 
 export async function createFriendGroup(data: {
@@ -47,25 +47,25 @@ export async function createFriendGroup(data: {
   image?: string
   memberIds?: string[]
 }): Promise<{ group: FriendGroup }> {
-  return apiAuthenticated.post<{ group: FriendGroup }>('/friend-groups', data)
+  return apiAuthenticated.post<{ group: FriendGroup }>('/friends/groups', data)
 }
 
 export async function updateFriendGroup(
   groupId: string,
   data: { name?: string; description?: string; image?: string },
 ): Promise<{ group: FriendGroup }> {
-  return apiAuthenticated.patch<{ group: FriendGroup }>(`/friend-groups/${groupId}`, data)
+  return apiAuthenticated.patch<{ group: FriendGroup }>(`/friends/groups/${groupId}`, data)
 }
 
 export async function deleteFriendGroup(groupId: string): Promise<void> {
-  return apiAuthenticated.delete(`/friend-groups/${groupId}`)
+  return apiAuthenticated.delete(`/friends/groups/${groupId}`)
 }
 
 export async function addFriendGroupMembers(
   groupId: string,
   userIds: string[],
 ): Promise<{ added: number }> {
-  return apiAuthenticated.post<{ added: number }>(`/friend-groups/${groupId}/members`, {
+  return apiAuthenticated.post<{ added: number }>(`/friends/groups/${groupId}/members`, {
     userIds,
   })
 }
@@ -74,14 +74,14 @@ export async function removeFriendGroupMember(
   groupId: string,
   userId: string,
 ): Promise<void> {
-  return apiAuthenticated.delete(`/friend-groups/${groupId}/members/${userId}`)
+  return apiAuthenticated.delete(`/friends/groups/${groupId}/members/${userId}`)
 }
 
 export async function createRideFromGroup(
   groupId: string,
   data: Record<string, unknown>,
 ): Promise<{ ride: unknown }> {
-  return apiAuthenticated.post<{ ride: unknown }>(`/friend-groups/${groupId}/rides`, data)
+  return apiAuthenticated.post<{ ride: unknown }>(`/friends/groups/${groupId}/rides`, data)
 }
 
 export const friendGroupsApi = {

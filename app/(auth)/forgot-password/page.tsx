@@ -29,8 +29,13 @@ export default function ForgotPasswordPage() {
         return
       }
       setIsSubmitted(true)
-    } catch {
-      setError('Something went wrong. Please try again.')
+    } catch (err: any) {
+      console.error('Forgot password submission error:', err)
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        'Something went wrong. Please try again.'
+      setError(message)
     } finally {
       setIsLoading(false)
     }
