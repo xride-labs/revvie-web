@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import {
   Calendar,
   MapPin,
@@ -11,19 +10,14 @@ import {
   Plus,
   Ticket,
   Shield,
-  Lock,
-  Globe,
-  Tag,
   Check,
   ChevronRight,
-  Sparkles,
 } from 'lucide-react'
 import {
   useGetEventsQuery,
   useAttendEventMutation,
   useLeaveEventMutation,
 } from '@/features/events/api'
-import type { EventItem } from '@/features/events/schemas'
 
 const CATEGORIES = [
   { key: 'ALL', label: 'All Categories' },

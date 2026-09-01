@@ -19,40 +19,35 @@ import {
 } from 'lucide-react'
 import { useState, useRef } from 'react'
 
-const investCards = [
-  {
-    icon: TrendingUp,
-    title: 'Early-Stage Opportunity',
-    description:
-      "Get in on the ground floor of India's first biker-centric social and marketplace platform. A growing rider community with massive potential.",
-    color: '#77ff00',
-    gradient: 'from-[#77ff00]/10 to-transparent',
-  },
+const investStats = [
   {
     icon: Globe,
-    title: 'Expanding Market',
-    description:
-      "India has 200M+ two-wheeler owners. We're building the platform that connects riders, clubs, and gear — all in one place.",
-    color: '#37c8c3',
-    gradient: 'from-[#37c8c3]/10 to-transparent',
+    value: '200M+',
+    label: 'Two-wheeler owners in India',
+    description: "India's two-wheeler market, and no platform built for it — until now.",
+  },
+  {
+    icon: TrendingUp,
+    value: 'Seed',
+    label: 'Round closed',
+    description: "Got us here. A growing rider community with a working product.",
   },
   {
     icon: Rocket,
-    title: 'Series A — Open Now',
-    description:
-      "Our seed round closed successfully. We're now raising Series A to scale operations, grow the marketplace, and expand to new regions.",
-    color: '#c83737',
-    gradient: 'from-[#c83737]/10 to-transparent',
+    value: 'Series A',
+    label: 'Open now',
+    description: 'Raising to scale operations, grow the marketplace, and expand regions.',
+    lead: true,
   },
 ]
 
 // Floating asset definitions for the dialog background
 const floatingAssets = [
-  { icon: Bike, x: '8%', y: '12%', size: 28, delay: 0, color: '#77ff00' },
-  { icon: HardHat, x: '85%', y: '8%', size: 24, delay: 0.3, color: '#37c8c3' },
-  { icon: MapPin, x: '90%', y: '75%', size: 22, delay: 0.6, color: '#c83737' },
-  { icon: Compass, x: '5%', y: '80%', size: 26, delay: 0.9, color: '#77ff00' },
-  { icon: IndianRupee, x: '75%', y: '45%', size: 20, delay: 1.2, color: '#37c8c3' },
+  { icon: Bike, x: '8%', y: '12%', size: 28, delay: 0, color: '#8e8e93' },
+  { icon: HardHat, x: '85%', y: '8%', size: 24, delay: 0.3, color: '#8e8e93' },
+  { icon: MapPin, x: '90%', y: '75%', size: 22, delay: 0.6, color: '#ff1d2d' },
+  { icon: Compass, x: '5%', y: '80%', size: 26, delay: 0.9, color: '#8e8e93' },
+  { icon: IndianRupee, x: '75%', y: '45%', size: 20, delay: 1.2, color: '#8e8e93' },
 ]
 
 function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -160,7 +155,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             </button>
 
             {/* Top gradient glow */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-brand-red-light via-neon-green to-teal" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-brand-red-light to-transparent" />
 
             <div className="p-8">
               {isSubmitted ? (
@@ -171,11 +166,11 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                   animate={{ opacity: 1, scale: 1 }}
                 >
                   <motion.div
-                    className="w-20 h-20 mx-auto mb-6 rounded-full bg-neon-green/15 flex items-center justify-center"
+                    className="w-20 h-20 mx-auto mb-6 rounded-full bg-brand-red-light/15 flex items-center justify-center"
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    <Rocket className="w-10 h-10 text-neon-green" />
+                    <Rocket className="w-10 h-10 text-brand-red-light" />
                   </motion.div>
                   <h3 className="text-2xl font-bold text-white mb-3 uppercase tracking-wide">
                     We&apos;ll Be in Touch
@@ -214,7 +209,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-canvas border-2 border-border text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-brand-teal focus:ring-1 focus:ring-brand-teal/30 transition-all text-sm"
+                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-canvas border-2 border-border text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-brand-red-light focus:ring-1 focus:ring-brand-red-light/30 transition-all text-sm"
                       />
                     </div>
 
@@ -228,7 +223,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#1a1a1a] border border-[#444444]/50 text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-teal/60 focus:ring-1 focus:ring-teal/30 transition-all text-sm"
+                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-canvas border-2 border-border text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-brand-red-light focus:ring-1 focus:ring-brand-red-light/30 transition-all text-sm"
                       />
                     </div>
 
@@ -241,7 +236,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                         placeholder="Phone Number"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#1a1a1a] border border-[#444444]/50 text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-teal/60 focus:ring-1 focus:ring-teal/30 transition-all text-sm"
+                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-canvas border-2 border-border text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-brand-red-light focus:ring-1 focus:ring-brand-red-light/30 transition-all text-sm"
                       />
                     </div>
 
@@ -254,7 +249,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                         placeholder="Investment Amount (₹)"
                         value={formData.amount}
                         onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#1a1a1a] border border-[#444444]/50 text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-teal/60 focus:ring-1 focus:ring-teal/30 transition-all text-sm"
+                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-canvas border-2 border-border text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-brand-red-light focus:ring-1 focus:ring-brand-red-light/30 transition-all text-sm"
                       />
                     </div>
 
@@ -267,7 +262,7 @@ function InvestDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                         value={formData.message}
                         onChange={handleChange}
                         rows={3}
-                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-canvas border-2 border-border text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-brand-teal focus:ring-1 focus:ring-brand-teal/30 transition-all text-sm resize-none"
+                        className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-canvas border-2 border-border text-white placeholder:text-text-secondary/40 focus:outline-none focus:border-brand-red-light focus:ring-1 focus:ring-brand-red-light/30 transition-all text-sm resize-none"
                       />
                     </div>
 
@@ -360,60 +355,39 @@ export function InvestSection() {
             </p>
           </motion.div>
 
-          {/* Cards Grid */}
+          {/* Stat strip */}
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className="grid grid-cols-1 divide-y divide-border border-y-2 border-border sm:grid-cols-3 sm:divide-x-2 sm:divide-y-0"
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
           >
-            {investCards.map((card, index) => {
-              const Icon = card.icon
+            {investStats.map((stat, index) => {
+              const Icon = stat.icon
               return (
-                <motion.div key={index} variants={itemVariants} className="group">
-                  <motion.div
-                    className="relative overflow-hidden rounded-3xl bg-surface border-2 border-border p-8 h-full"
-                    whileHover={{
-                      scale: 1.01,
-                      boxShadow: `6px 6px 0px ${card.color}`,
-                    }}
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  className={`px-2 py-8 sm:px-8 sm:py-10 ${stat.lead ? 'bg-brand-red-light/5' : ''}`}
+                >
+                  <Icon
+                    className={`h-5 w-5 ${stat.lead ? 'text-brand-red-light' : 'text-white/50'}`}
+                    strokeWidth={1.75}
+                  />
+                  <div
+                    className={`mt-4 text-3xl font-bold uppercase tracking-tight sm:text-4xl ${
+                      stat.lead ? 'text-brand-red-light' : 'text-white'
+                    }`}
                   >
-                    {/* Top gradient glow */}
-                    <div
-                      className={`absolute top-0 left-0 right-0 h-40 bg-linear-to-b ${card.gradient} pointer-events-none`}
-                    />
-
-                    {/* Icon */}
-                    <motion.div
-                      className="relative w-14 h-14 rounded-2xl flex items-center justify-center mb-6"
-                      style={{ backgroundColor: `${card.color}15` }}
-                      animate={{ y: [0, -5, 0] }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        delay: index * 0.2,
-                      }}
-                    >
-                      <Icon className="w-7 h-7" style={{ color: card.color }} />
-                    </motion.div>
-
-                    {/* Content */}
-                    <h3 className="relative text-xl font-bold text-white mb-3 uppercase tracking-wide">
-                      {card.title}
-                    </h3>
-                    <p className="relative text-text-secondary text-sm leading-relaxed">
-                      {card.description}
-                    </p>
-
-                    {/* Corner decoration */}
-                    <div
-                      className="absolute bottom-0 right-0 w-32 h-32 opacity-10 pointer-events-none"
-                      style={{
-                        background: `radial-gradient(circle at 100% 100%, ${card.color}, transparent 70%)`,
-                      }}
-                    />
-                  </motion.div>
+                    {stat.value}
+                  </div>
+                  <div className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-text-secondary/70">
+                    {stat.label}
+                  </div>
+                  <p className="mt-4 text-sm leading-relaxed text-text-secondary">
+                    {stat.description}
+                  </p>
                 </motion.div>
               )
             })}
@@ -429,7 +403,7 @@ export function InvestSection() {
           >
             <motion.button
               onClick={() => setDialogOpen(true)}
-              className="inline-flex items-center gap-3 px-12 py-5 rounded-full bg-brand-yellow border-2 border-brand-yellow text-canvas font-bold uppercase tracking-wide text-lg shadow-[6px_6px_0px_#D6A300] hover:translate-y-1 hover:translate-x-1 hover:shadow-none transition-all"
+              className="inline-flex items-center gap-3 px-12 py-5 rounded-full bg-primary border-2 border-primary text-white font-bold uppercase tracking-wide text-lg shadow-[6px_6px_0px_#850000] hover:translate-y-1 hover:translate-x-1 hover:shadow-none transition-all"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
             >

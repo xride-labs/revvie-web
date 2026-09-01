@@ -148,7 +148,7 @@ export function EcosystemSection() {
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   {/* Phone frame */}
-                  <div className="absolute inset-0 bg-surface rounded-[2.5rem] shadow-[8px_8px_0px_#4db300] border-2 border-border overflow-hidden">
+                  <div className="absolute inset-0 bg-surface rounded-[2.5rem] shadow-[8px_8px_0px_#3a3a3c] border-2 border-border overflow-hidden">
                     {/* Notch */}
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-surface rounded-b-2xl z-10" />
 
@@ -160,7 +160,7 @@ export function EcosystemSection() {
                           9:41
                         </span>
                         <div className="flex gap-1">
-                          <div className="w-3.5 h-2 rounded-sm bg-neon-green" />
+                          <div className="w-3.5 h-2 rounded-sm bg-white/60" />
                           <div className="w-3.5 h-2 rounded-sm bg-text-secondary/30" />
                         </div>
                       </div>
@@ -197,7 +197,7 @@ export function EcosystemSection() {
                           <motion.path
                             d="M 20 130 Q 60 80 100 100 T 180 50"
                             fill="none"
-                            stroke="#77ff00"
+                            stroke="#ff1d2d"
                             strokeWidth="3"
                             strokeLinecap="round"
                             initial={{ pathLength: 0 }}
@@ -208,9 +208,9 @@ export function EcosystemSection() {
                         </svg>
                         {/* Rider dots */}
                         {[
-                          { left: '15%', top: '75%', c: '#c83737' },
-                          { left: '45%', top: '55%', c: '#77ff00' },
-                          { left: '80%', top: '30%', c: '#37c8c3' },
+                          { left: '15%', top: '75%', c: '#ff1d2d' },
+                          { left: '45%', top: '55%', c: '#ffffff' },
+                          { left: '80%', top: '30%', c: '#8e8e93' },
                         ].map((dot, i) => (
                           <motion.div
                             key={i}
@@ -226,7 +226,7 @@ export function EcosystemSection() {
                         ))}
                         {/* Live badge */}
                         <div className="absolute bottom-2 left-2 flex items-center gap-1.5 bg-surface border-2 border-border px-2.5 py-1 rounded-full">
-                          <div className="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-brand-red-light animate-pulse" />
                           <span className="text-[9px] text-white font-semibold">
                             8 Riders Live
                           </span>
@@ -236,8 +236,8 @@ export function EcosystemSection() {
                       {/* Ride info cards */}
                       <div className="px-3 pt-3 space-y-2">
                         <div className="bg-canvas border-2 border-border rounded-xl p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3">
-                          <div className="w-8 h-8 rounded-full bg-neon-green/15 flex items-center justify-center">
-                            <MapPin className="w-4 h-4 text-neon-green" />
+                          <div className="w-8 h-8 rounded-full bg-brand-red-light/15 flex items-center justify-center">
+                            <MapPin className="w-4 h-4 text-brand-red-light" />
                           </div>
                           <div className="flex-1">
                             <div className="text-[10px] text-white font-semibold">
@@ -247,7 +247,7 @@ export function EcosystemSection() {
                               12 riders • 85 km
                             </div>
                           </div>
-                          <div className="text-[9px] text-neon-green font-bold">LIVE</div>
+                          <div className="text-[9px] text-brand-red-light font-bold">LIVE</div>
                         </div>
                         <div className="bg-canvas border-2 border-border rounded-xl p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3">
                           <div className="w-8 h-8 rounded-full bg-brand-red-light/15 flex items-center justify-center">
@@ -382,7 +382,7 @@ export function EcosystemSection() {
                   }}
                 >
                   {/* Laptop frame */}
-                  <div className="relative bg-surface rounded-2xl border-2 border-border shadow-[8px_8px_0px_#1a8a86] overflow-hidden">
+                  <div className="relative bg-surface rounded-2xl border-2 border-border shadow-[8px_8px_0px_#3a3a3c] overflow-hidden">
                     {/* Browser chrome */}
                     <div className="flex items-center gap-2 px-4 py-2.5 bg-canvas border-b-2 border-border">
                       <div className="flex gap-1.5">
@@ -453,14 +453,14 @@ export function EcosystemSection() {
                         >
                           <defs>
                             <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="0%" stopColor="#37c8c3" stopOpacity="0.3" />
-                              <stop offset="100%" stopColor="#37c8c3" stopOpacity="0" />
+                              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
+                              <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
                             </linearGradient>
                           </defs>
                           <motion.path
                             d="M 0 50 Q 25 45 50 35 T 100 25 T 150 15 T 200 5"
                             fill="none"
-                            stroke="#37c8c3"
+                            stroke="#ffffff"
                             strokeWidth="2"
                             strokeLinecap="round"
                             initial={{ pathLength: 0 }}
@@ -541,7 +541,7 @@ export function EcosystemSection() {
               {/* Web Portal CTA */}
               <Link
                 href="/login"
-                className="relative flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl border-2 border-brand-teal bg-canvas text-brand-teal font-bold uppercase tracking-wide text-xs sm:text-sm shadow-[4px_4px_0px_#1a8a86] hover:translate-y-1 hover:translate-x-1 hover:shadow-none transition-all duration-300"
+                className="relative flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl border-2 border-white/25 bg-canvas text-white font-bold uppercase tracking-wide text-xs sm:text-sm shadow-[4px_4px_0px_#3a3a3c] hover:translate-y-1 hover:translate-x-1 hover:shadow-none hover:border-white/50 transition-all duration-300"
               >
                 <Shield className="w-4 h-4" />
                 Access Web Portal

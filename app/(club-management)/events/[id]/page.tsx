@@ -4,19 +4,12 @@ import React, { use, useState } from 'react'
 import Link from 'next/link'
 import {
   Calendar,
-  Clock,
   MapPin,
-  Users,
-  Shield,
   Ticket,
   Check,
   CreditCard,
   Banknote,
   ArrowLeft,
-  Share2,
-  ExternalLink,
-  QrCode,
-  Sparkles,
 } from 'lucide-react'
 import {
   useGetEventQuery,

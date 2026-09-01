@@ -8,14 +8,14 @@ import type { MetadataRoute } from 'next'
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Revvie - Ride Together, Build Your Tribe',
+    name: 'Revvie — Ride. Track. Connect.',
     short_name: 'Revvie',
     description:
-      'A social platform for bikers where you discover clubs through people and participate in organized rides like clan wars.',
+      'The social platform built for motorcycle riders — clubs, organized rides, live GPS tracking, events, and a rider-only marketplace.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#000000',
-    theme_color: '#000000',
+    background_color: '#0d0d0f',
+    theme_color: '#0d0d0f',
     icons: [
       {
         src: '/favicon/android-chrome-192x192.png',

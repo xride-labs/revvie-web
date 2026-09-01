@@ -3,12 +3,8 @@
 import React, { use, useState } from 'react'
 import Link from 'next/link'
 import {
-  DollarSign,
-  Ticket,
-  Users,
   CheckCircle2,
   AlertTriangle,
-  QrCode,
   ScanLine,
   ArrowLeft,
   RefreshCw,

@@ -11,7 +11,7 @@ const sectionLinks = [
   { label: 'Features', href: '#features' },
   { label: 'Invest', href: '#invest' },
   { label: 'Marketplace', href: '#marketplace' },
-  { label: 'Download', href: '#download' },
+  { label: 'Launch', href: '#download' },
 ]
 
 export function Navbar() {
@@ -61,17 +61,18 @@ export function Navbar() {
       transition={{ duration: shouldReduceMotion ? 0.2 : 0.6, ease: 'easeOut' }}
     >
       <div className="landing-container">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16 sm:h-20 gap-2">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Image
-              src="/assets/revvie_logo_icon.png"
+              src="/logo-mark.png"
               alt="Revvie"
               width={44}
               height={44}
-              className="w-11 h-11"
+              priority
+              className="w-8 h-8 sm:w-11 sm:h-11 rounded-xl"
             />
-            <span className="text-2xl font-bold text-white tracking-wide uppercase">
+            <span className="text-lg sm:text-2xl font-bold text-white tracking-wide uppercase">
               Revvie
             </span>
           </Link>
@@ -93,12 +94,15 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Single CTA - Get the App */}
+          {/* Single CTA - Early access */}
           <Button
             asChild
-            className="rounded-full border-2 border-primary bg-primary px-8 py-6 text-base font-bold uppercase text-white shadow-[4px_4px_0px_#850000] transition-all duration-300 hover:translate-y-1 hover:translate-x-1 hover:shadow-none"
+            className="shrink-0 rounded-full border-2 border-primary bg-primary px-4 py-4 text-xs sm:px-8 sm:py-6 sm:text-base font-bold uppercase text-white shadow-[3px_3px_0px_#850000] sm:shadow-[4px_4px_0px_#850000] transition-all duration-300 hover:translate-y-1 hover:translate-x-1 hover:shadow-none"
           >
-            <Link href="/signup">Get the App</Link>
+            <a href="#download">
+              <span className="sm:hidden">Get Access</span>
+              <span className="hidden sm:inline">Get Early Access</span>
+            </a>
           </Button>
         </div>
       </div>

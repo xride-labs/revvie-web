@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios'
+import type { ApiErrorCode } from '@/types'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
@@ -10,7 +11,7 @@ export interface ApiResponse<T> {
   message: string
   data?: T
   error?: {
-    code: string
+    code: ApiErrorCode | string
     details?: unknown
   }
 }
@@ -30,11 +31,11 @@ export interface PaginatedResponse<T> {
  * API Error class with additional context
  */
 export class ApiError extends Error {
-  code: string
+  code: ApiErrorCode | string
   status: number
   details?: unknown
 
-  constructor(message: string, code: string, status: number, details?: unknown) {
+  constructor(message: string, code: ApiErrorCode | string, status: number, details?: unknown) {
     super(message)
     this.name = 'ApiError'
     this.code = code

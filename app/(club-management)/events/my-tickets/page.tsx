@@ -7,10 +7,7 @@ import {
   Calendar,
   MapPin,
   ArrowLeft,
-  QrCode,
-  Download,
   ExternalLink,
-  Shield,
 } from 'lucide-react'
 import { useGetMyTicketsQuery } from '@/features/events/api'
 
@@ -51,7 +48,7 @@ export default function MyTicketsPage() {
             <Ticket className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">No Active Passes</h3>
             <p className="text-zinc-400 text-sm mb-6">
-              You haven't booked any event tickets yet. Check out upcoming meetups, track days, and rallies!
+              You haven&apos;t booked any event tickets yet. Check out upcoming meetups, track days, and rallies!
             </p>
             <Link
               href="/events"

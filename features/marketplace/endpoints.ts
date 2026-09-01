@@ -14,4 +14,6 @@ export const MARKETPLACE_ENDPOINTS = {
   detail: (listingId: string) => `/marketplace/${listingId}`,
   interests: (listingId: string) => `/marketplace/${listingId}/interests`,
   offers: (listingId: string) => `/marketplace/${listingId}/offers`,
+  /** Unauthenticated — for the marketing site only, not the authenticated app. */
+  publicList: '/public/marketplace',
 } as const

@@ -4,17 +4,9 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  Calendar,
-  Clock,
-  MapPin,
-  Image as ImageIcon,
   Plus,
   Trash2,
-  Ticket,
-  Shield,
   ArrowLeft,
-  DollarSign,
-  Sparkles,
 } from 'lucide-react'
 import { useCreateEventMutation } from '@/features/events/api'
 import { useGetMyClubsQuery } from '@/features/clubs/api'

@@ -1,11 +1,12 @@
 import {
   Navbar,
   HeroSection,
+  CountdownSection,
   EcosystemSection,
   FeaturesSection,
   InvestSection,
   MarketplaceSection,
-  DownloadBanner,
+  ClosingSection,
   Footer,
 } from '@/components/landing'
 import { redirect } from 'next/navigation'
@@ -29,11 +30,12 @@ export default function Home() {
     <main className="landing-shell min-h-screen bg-canvas">
       <Navbar />
       <HeroSection />
+      <CountdownSection />
       <EcosystemSection />
       <FeaturesSection />
       <InvestSection />
       <MarketplaceSection />
-      <DownloadBanner />
+      <ClosingSection />
       <Footer />
     </main>
   )

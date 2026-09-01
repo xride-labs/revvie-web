@@ -103,22 +103,31 @@ export function HeroSection() {
             initial="hidden"
             animate="visible"
           >
+            <motion.div
+              variants={itemVariants}
+              className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand-red-light/40 bg-brand-red-light/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-brand-red-light"
+            >
+              Launching November 12
+            </motion.div>
+
             <motion.h1
               variants={itemVariants}
               className="landing-title text-5xl sm:text-6xl lg:text-7xl mb-8"
             >
-              Ride Together.{' '}
+              Ride.{' '}
               <span className="bg-linear-to-r from-brand-red-light to-brand-red bg-clip-text text-transparent">
-                Build Your Tribe.
-              </span>
+                Track.
+              </span>{' '}
+              Connect.
             </motion.h1>
 
             <motion.p
               variants={itemVariants}
               className="landing-copy mb-10 max-w-xl mx-auto lg:mx-0"
             >
-              The social platform where motorcycle riders discover clubs through people,
-              join organized rides like clan wars, and build their riding legacy.
+              The social platform built from the ground up for motorcycle riders — discover
+              clubs, run organized rides, track every kilometre live, split the trip&apos;s
+              costs, and keep your crew safe. One app instead of a patchwork of WhatsApp groups.
             </motion.p>
 
             <motion.div
@@ -133,13 +142,13 @@ export function HeroSection() {
               >
                 <a href="#download">
                   <Download className="w-5 h-5 mr-2" />
-                  Get the App
+                  Get Early Access
                 </a>
               </Button>
               {/* Secondary CTA — Partners */}
               <Button
                 size="lg"
-                className="w-full sm:w-auto text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 rounded-full bg-canvas border-2 border-brand-teal text-brand-teal shadow-[4px_4px_0px_#1a8a86] transition-all duration-300 hover:translate-y-1 hover:translate-x-1 hover:shadow-none font-bold uppercase tracking-wide"
+                className="w-full sm:w-auto text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 rounded-full bg-canvas border-2 border-white/25 text-white shadow-[4px_4px_0px_#3a3a3c] transition-all duration-300 hover:translate-y-1 hover:translate-x-1 hover:shadow-none hover:border-white/50 font-bold uppercase tracking-wide"
                 asChild
               >
                 <Link href="/login">
@@ -147,27 +156,6 @@ export function HeroSection() {
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
               </Button>
-            </motion.div>
-
-            {/* Stats row */}
-            <motion.div
-              variants={itemVariants}
-              className="mt-10 sm:mt-14 flex flex-wrap gap-6 sm:gap-10 justify-center lg:justify-start"
-            >
-              {[
-                { value: '10K+', label: 'Active Riders' },
-                { value: '500+', label: 'Clubs' },
-                { value: '2K+', label: 'Rides' },
-              ].map((stat, i) => (
-                <div key={i} className="text-center">
-                  <div className="text-3xl sm:text-4xl font-bold text-[#77ff00]">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-text-secondary uppercase tracking-wider mt-1">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
             </motion.div>
           </motion.div>
 
@@ -225,8 +213,8 @@ export function HeroSection() {
                             <div className="h-2 bg-text-secondary rounded w-20 mb-1" />
                             <div className="h-2 bg-text-muted rounded w-14" />
                           </div>
-                          <div className="w-6 h-6 rounded-full bg-[#77ff00]/20 flex items-center justify-center">
-                            <div className="w-2 h-2 rounded-full bg-[#77ff00]" />
+                          <div className="w-6 h-6 rounded-full bg-brand-red-light/20 flex items-center justify-center">
+                            <div className="w-2 h-2 rounded-full bg-brand-red-light" />
                           </div>
                         </div>
                       ))}
@@ -242,9 +230,9 @@ export function HeroSection() {
               animate={shouldReduceMotion ? { y: 0, rotate: 0 } : 'float3'}
               variants={shouldReduceMotion ? undefined : floatVariants}
             >
-              <div className="w-full h-full bg-surface rounded-full shadow-[4px_4px_0px_#1a8a86] flex items-center justify-center border-2 border-border">
+              <div className="w-full h-full bg-surface rounded-full shadow-[4px_4px_0px_#3a3a3c] flex items-center justify-center border-2 border-border">
                 <motion.div
-                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-[#37c8c3] flex items-center justify-center"
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white/40 flex items-center justify-center"
                   animate={shouldReduceMotion ? { rotate: 0 } : { rotate: 360 }}
                   transition={{
                     duration: 8,
@@ -252,7 +240,7 @@ export function HeroSection() {
                     ease: 'linear',
                   }}
                 >
-                  <div className="w-6 h-6 rounded-full bg-[#37c8c3]" />
+                  <div className="w-6 h-6 rounded-full bg-white/70" />
                 </motion.div>
               </div>
             </motion.div>
@@ -263,15 +251,15 @@ export function HeroSection() {
               animate={shouldReduceMotion ? { y: 0, rotate: 0 } : 'float4'}
               variants={shouldReduceMotion ? undefined : floatVariants}
             >
-              <div className="w-full h-full bg-surface rounded-3xl shadow-[4px_4px_0px_#4db300] flex items-center justify-center border-2 border-border p-4">
+              <div className="w-full h-full bg-surface rounded-3xl shadow-[4px_4px_0px_#3a3a3c] flex items-center justify-center border-2 border-border p-4">
                 <div className="relative w-full h-full">
-                  <Map className="w-10 h-10 text-[#77ff00] absolute top-0 left-0" />
+                  <Map className="w-10 h-10 text-white/70 absolute top-0 left-0" />
                   {/* Route line */}
                   <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 80">
                     <motion.path
                       d="M 10 60 Q 30 20 50 50 T 90 30"
                       fill="none"
-                      stroke="#77ff00"
+                      stroke="#ff1d2d"
                       strokeWidth="3"
                       strokeLinecap="round"
                       initial={{ pathLength: 0 }}
@@ -310,7 +298,7 @@ export function HeroSection() {
               animate={shouldReduceMotion ? { y: 0, rotate: 0 } : 'float5'}
               variants={shouldReduceMotion ? undefined : floatVariants}
             >
-              <div className="w-full h-full bg-surface rounded-3xl shadow-[4px_4px_0px_#1a8a86] flex items-center justify-center border-2 border-border group hover:border-brand-teal transition-colors">
+              <div className="w-full h-full bg-surface rounded-3xl shadow-[4px_4px_0px_#3a3a3c] flex items-center justify-center border-2 border-border group hover:border-brand-red-light transition-colors">
                 <motion.div
                   animate={shouldReduceMotion ? { rotate: 0 } : { rotate: [0, 360] }}
                   transition={{
@@ -319,7 +307,7 @@ export function HeroSection() {
                     ease: 'linear',
                   }}
                 >
-                  <Compass className="w-12 h-12 sm:w-14 sm:h-14 text-[#37c8c3]" />
+                  <Compass className="w-12 h-12 sm:w-14 sm:h-14 text-white/70" />
                 </motion.div>
               </div>
             </motion.div>

@@ -15,9 +15,9 @@ export const metadata: Metadata = {
   // Required for relative OG/icon URLs to resolve to an absolute address instead of
   // silently pointing at localhost in production.
   metadataBase: new URL(APP_URL),
-  title: 'Revvie - Ride Together, Build Your Tribe',
+  title: 'Revvie — Ride. Track. Connect.',
   description:
-    'A social platform for bikers where you discover clubs through people and participate in organized rides like clan wars.',
+    'The social platform built for motorcycle riders — clubs, organized rides, live GPS tracking, events, expense splitting, and a rider-only marketplace. Launching November 12.',
   keywords: [
     'motorcycle',
     'bikers',
@@ -26,6 +26,8 @@ export const metadata: Metadata = {
     'social',
     'community',
     'marketplace',
+    'events',
+    'expense splitting',
   ],
   authors: [{ name: 'Revvie Team' }],
   icons: {
@@ -35,15 +37,15 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.webmanifest',
   openGraph: {
-    title: 'Revvie - Ride Together, Build Your Tribe',
+    title: 'Revvie — Ride. Track. Connect.',
     description:
-      'A social platform for bikers where you discover clubs through people and participate in organized rides like clan wars.',
+      'The social platform built for motorcycle riders — clubs, organized rides, live GPS tracking, events, expense splitting, and a rider-only marketplace. Launching November 12.',
     type: 'website',
   },
 }
 
 export const viewport: Viewport = {
-  themeColor: '#000000',
+  themeColor: '#0d0d0f',
 }
 
 export default function RootLayout({

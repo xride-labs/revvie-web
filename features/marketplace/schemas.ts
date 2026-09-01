@@ -71,6 +71,43 @@ export const updateListingInputSchema = createListingInputSchema.partial().exten
   status: z.enum(['ACTIVE', 'SOLD', 'INACTIVE']).optional(),
 })
 
+/** `GET /public/marketplace` — unauthenticated, for the marketing site. A small,
+ *  distinct shape from `listingSchema`: no `description`/`specifications`/status
+ *  detail, but does carry `seller`/`club`/aggregated `rating` since the backend
+ *  handler builds those specifically for this route rather than reusing the
+ *  authenticated list's `include`. Verified against
+ *  `backend/src/routes/public/public.routes.ts`. */
+export const publicListingSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  price: z.number(),
+  currency: z.string(),
+  condition: z.string().nullable(),
+  image: z.string().nullable(),
+  category: z.string().nullable(),
+  featured: z.boolean(),
+  seller: z.object({
+    id: z.string(),
+    name: z.string(),
+    avatar: z.string().nullable(),
+  }),
+  club: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+    })
+    .nullable(),
+  rating: z.number().nullable(),
+  ratingCount: z.number(),
+})
+
+export const publicListingsResponseSchema = z.object({
+  listings: z.array(publicListingSchema),
+})
+
+export type PublicListing = z.infer<typeof publicListingSchema>
+export type PublicListingsResponse = z.infer<typeof publicListingsResponseSchema>
+
 export type ListingsResponse = z.infer<typeof listingsResponseSchema>
 export type ListingDetailResponse = z.infer<typeof listingDetailResponseSchema>
 export type MyListingsResponse = z.infer<typeof myListingsResponseSchema>

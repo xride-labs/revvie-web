@@ -18,8 +18,8 @@ export default function AboutPage() {
       <div className="space-y-10 text-text-secondary leading-relaxed">
         {/* Mission statement */}
         <div className="bg-surface border border-border/40 rounded-3xl p-8 text-center">
-          <p className="text-2xl md:text-3xl font-bold text-white leading-snug">
-            &ldquo;Ride Together. Build Your Tribe.&rdquo;
+          <p className="text-2xl md:text-3xl font-bold text-white leading-snug uppercase tracking-wide">
+            &ldquo;Ride. Track. Connect.&rdquo;
           </p>
           <p className="mt-4 text-text-secondary max-w-xl mx-auto">
             Revvie exists to turn every solo ride into a shared story, every road into a
@@ -98,6 +98,18 @@ export default function AboutPage() {
             <FeatureItem
               title="Marketplace"
               description="Buy and sell motorcycle gear, parts, and accessories within a community of verified riders — no more Facebook Marketplace chaos."
+            />
+            <FeatureItem
+              title="Events"
+              description="Host meetups, track days, and rallies with ticket tiers and QR gate check-in, or RSVP to rides other riders and clubs are running."
+            />
+            <FeatureItem
+              title="Expense Splitting"
+              description="Log fuel, food, and toll costs from a group ride and split them evenly across everyone who came along."
+            />
+            <FeatureItem
+              title="Garage & Squads"
+              description="Track every bike you own and its service history, and keep a private squad of your closest riding crew separate from public clubs."
             />
             <FeatureItem
               title="Safety Features"

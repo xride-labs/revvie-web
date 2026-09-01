@@ -62,7 +62,7 @@ export function Footer() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 mb-8">
             <Image
-              src="/assets/revvie_logo_icon.png"
+              src="/logo-mark.png"
               alt="Revvie"
               width={48}
               height={48}
@@ -74,9 +74,8 @@ export function Footer() {
           </Link>
 
           {/* Tagline */}
-          <p className="text-text-secondary/60 text-base max-w-md mb-10 font-medium">
-            The social platform for motorcycle riders. Discover clubs, join rides, build
-            your legacy.
+          <p className="text-text-secondary/60 text-base max-w-md mb-10 font-medium uppercase tracking-[0.15em]">
+            Ride. Track. Connect.
           </p>
 
           {/* Social Icons */}

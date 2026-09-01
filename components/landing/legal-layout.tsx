@@ -26,7 +26,7 @@ export function LegalLayout({
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <Image
-              src="/assets/revvie_logo_icon.png"
+              src="/logo-mark.png"
               alt="Revvie"
               width={32}
               height={32}

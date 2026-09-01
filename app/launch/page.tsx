@@ -1,64 +1,13 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { ArrowUpRight, Rocket, Sparkles } from 'lucide-react'
 import Link from 'next/link'
+import { getLaunchDate, useCountdown } from '@/hooks/use-countdown'
 
-type CountdownState = {
-  days: string
-  hours: string
-  minutes: string
-  seconds: string
-  completed: boolean
-}
-
-const FALLBACK_LAUNCH_DATE = '2026-08-31T18:30:00.000Z'
 const DEFAULT_GOOGLE_FORM_EMBED_URL =
   'https://docs.google.com/forms/d/e/1FAIpQLSfyvoEvxmRfF9_S6Yd-8CYgXPKlVlFxq4dptlXorZU-lhxIGg/viewform?embedded=true'
-
-function formatPart(value: number): string {
-  return String(Math.max(0, Math.floor(value))).padStart(2, '0')
-}
-
-function resolveLaunchDate(): Date {
-  const envValue = process.env.NEXT_PUBLIC_LAUNCH_DATE
-  const parsed = envValue ? Date.parse(envValue) : Number.NaN
-
-  if (!Number.isNaN(parsed)) {
-    return new Date(parsed)
-  }
-
-  return new Date(FALLBACK_LAUNCH_DATE)
-}
-
-function getCountdown(target: Date): CountdownState {
-  const diffMs = target.getTime() - Date.now()
-
-  if (diffMs <= 0) {
-    return {
-      days: '00',
-      hours: '00',
-      minutes: '00',
-      seconds: '00',
-      completed: true,
-    }
-  }
-
-  const totalSeconds = Math.floor(diffMs / 1000)
-  const days = Math.floor(totalSeconds / 86400)
-  const hours = Math.floor((totalSeconds % 86400) / 3600)
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-  const seconds = totalSeconds % 60
-
-  return {
-    days: formatPart(days),
-    hours: formatPart(hours),
-    minutes: formatPart(minutes),
-    seconds: formatPart(seconds),
-    completed: false,
-  }
-}
 
 export default function LaunchPage() {
   const shouldReduceMotion = useReducedMotion()
@@ -71,10 +20,8 @@ export default function LaunchPage() {
     return params.get('from')
   }, [])
 
-  const launchDate = useMemo(() => resolveLaunchDate(), [])
-  const [countdown, setCountdown] = useState<CountdownState>(() =>
-    getCountdown(launchDate),
-  )
+  const launchDate = useMemo(() => getLaunchDate(), [])
+  const countdown = useCountdown(launchDate)
 
   const googleFormEmbedUrl =
     process.env.NEXT_PUBLIC_GOOGLE_FORM_EMBED_URL || DEFAULT_GOOGLE_FORM_EMBED_URL
@@ -88,19 +35,11 @@ export default function LaunchPage() {
     googleFormOpenUrl = googleFormEmbedUrl
   }
 
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setCountdown(getCountdown(launchDate))
-    }, 1000)
-
-    return () => window.clearInterval(interval)
-  }, [launchDate])
-
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#090c11] text-white">
+    <main className="relative min-h-screen overflow-hidden bg-canvas text-white">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <motion.div
-          className="absolute -left-48 top-[-15%] h-[38rem] w-[38rem] rounded-full bg-[#c83737]/22 blur-3xl"
+          className="absolute -left-48 top-[-15%] h-[38rem] w-[38rem] rounded-full bg-brand-red-light/18 blur-3xl"
           animate={
             shouldReduceMotion
               ? { opacity: 0.55 }
@@ -114,7 +53,7 @@ export default function LaunchPage() {
         />
 
         <motion.div
-          className="absolute -right-52 bottom-[-24%] h-[42rem] w-[42rem] rounded-full bg-[#37c8c3]/18 blur-3xl"
+          className="absolute -right-52 bottom-[-24%] h-[42rem] w-[42rem] rounded-full bg-white/6 blur-3xl"
           animate={
             shouldReduceMotion
               ? { opacity: 0.5 }
@@ -137,12 +76,12 @@ export default function LaunchPage() {
         >
           <defs>
             <linearGradient id="track-red" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#f35f5f" stopOpacity="0.85" />
-              <stop offset="100%" stopColor="#851111" stopOpacity="0.25" />
+              <stop offset="0%" stopColor="#ff1d2d" stopOpacity="0.85" />
+              <stop offset="100%" stopColor="#b3151f" stopOpacity="0.25" />
             </linearGradient>
             <linearGradient id="track-teal" x1="0" y1="1" x2="1" y2="0">
-              <stop offset="0%" stopColor="#37c8c3" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#37c8c3" stopOpacity="0.8" />
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.12" />
+              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.5" />
             </linearGradient>
           </defs>
 
@@ -179,7 +118,7 @@ export default function LaunchPage() {
             cx="220"
             cy="188"
             r="7"
-            fill="#37c8c3"
+            fill="#ffffff"
             animate={
               shouldReduceMotion
                 ? { opacity: 0.8 }
@@ -196,7 +135,7 @@ export default function LaunchPage() {
             cx="955"
             cy="414"
             r="8"
-            fill="#f35f5f"
+            fill="#ff1d2d"
             animate={
               shouldReduceMotion
                 ? { opacity: 0.8 }
@@ -220,8 +159,8 @@ export default function LaunchPage() {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="space-y-8"
           >
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#d6edf4]">
-              <Sparkles className="h-3.5 w-3.5 text-[#37c8c3]" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-brand-red-light/30 bg-brand-red-light/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand-red-light">
+              <Sparkles className="h-3.5 w-3.5" />
               Xride Labs // Launch Sequence
             </div>
 
@@ -237,7 +176,7 @@ export default function LaunchPage() {
 
             {fromPath ? (
               <p className="inline-flex max-w-full items-center gap-2 rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-xs text-white/70 md:text-sm">
-                <Rocket className="h-4 w-4 shrink-0 text-[#77ff00]" />
+                <Rocket className="h-4 w-4 shrink-0 text-white/70" />
                 Requested route currently paused:{' '}
                 <span className="truncate text-white/92">{fromPath}</span>
               </p>
@@ -252,14 +191,14 @@ export default function LaunchPage() {
               ].map((unit) => (
                 <motion.div
                   key={unit.label}
-                  className="rounded-2xl border border-white/12 bg-black/35 p-4 backdrop-blur-md"
+                  className="rounded-2xl border-2 border-border bg-surface p-4"
                   animate={
                     shouldReduceMotion
                       ? { opacity: 1 }
                       : {
                           boxShadow: [
                             '0 0 0 rgba(0,0,0,0)',
-                            '0 0 28px rgba(55,200,195,0.18)',
+                            '0 0 28px rgba(255,29,45,0.18)',
                             '0 0 0 rgba(0,0,0,0)',
                           ],
                         }
@@ -270,7 +209,7 @@ export default function LaunchPage() {
                     ease: 'easeInOut',
                   }}
                 >
-                  <p className="text-3xl font-bold text-white md:text-4xl">
+                  <p className="text-3xl font-bold text-white md:text-4xl" suppressHydrationWarning>
                     {unit.value}
                   </p>
                   <p className="mt-1 text-xs uppercase tracking-[0.2em] text-white/60">
@@ -290,9 +229,9 @@ export default function LaunchPage() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.08 }}
-            className="rounded-3xl border border-white/12 bg-[#11161f]/85 p-6 shadow-[0_40px_90px_rgba(0,0,0,0.45)] backdrop-blur-xl md:p-8"
+            className="rounded-3xl border-2 border-border bg-surface p-6 shadow-[0_40px_90px_rgba(0,0,0,0.45)] md:p-8"
           >
-            <p className="mb-2 text-xs uppercase tracking-[0.2em] text-[#37c8c3]">
+            <p className="mb-2 text-xs uppercase tracking-[0.2em] text-brand-red-light">
               Early Interest
             </p>
             <h2 className="text-2xl font-semibold text-white md:text-3xl">
@@ -310,7 +249,7 @@ export default function LaunchPage() {
               </p>
               <Link
                 href="/launch/interest"
-                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#37c8c3] px-4 py-2 text-sm font-semibold text-[#071116] transition-colors hover:bg-[#2bb1ac]"
+                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-red-light px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-red"
               >
                 Open Interest Form
                 <ArrowUpRight className="h-4 w-4" />

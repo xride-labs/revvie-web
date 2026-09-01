@@ -7,6 +7,7 @@ import type {
   ListingsResponse,
   MarketplaceListParams,
   MyListingsResponse,
+  PublicListingsResponse,
   UpdateListingInput,
 } from './schemas'
 
@@ -18,6 +19,12 @@ export const marketplaceApiSlice = marketplaceApi.injectEndpoints({
         params: { page: 1, limit: 20, ...params },
       }),
       providesTags: [{ type: 'ListingList', id: 'ALL' }],
+    }),
+
+    /** Unauthenticated preview for the marketing site — see `endpoints.ts`. */
+    listPublicListings: build.query<PublicListingsResponse, void>({
+      query: () => ({ url: MARKETPLACE_ENDPOINTS.publicList }),
+      providesTags: [{ type: 'ListingList', id: 'PUBLIC' }],
     }),
 
     getMyListings: build.query<
@@ -83,6 +90,7 @@ export const marketplaceApiSlice = marketplaceApi.injectEndpoints({
 
 export const {
   useListListingsQuery,
+  useListPublicListingsQuery,
   useGetMyListingsQuery,
   useGetListingQuery,
   useCreateListingMutation,
