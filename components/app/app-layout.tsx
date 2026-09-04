@@ -17,6 +17,7 @@ import {
   Store,
   ExternalLink,
   Calendar,
+  Receipt,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -40,6 +41,7 @@ const navigation = [
   { name: 'Feed', href: '/home', icon: Home },
   { name: 'Clubs', href: '/clubs', icon: Users },
   { name: 'Events', href: '/events', icon: Calendar },
+  { name: 'Expenses', href: '/expenses', icon: Receipt },
   { name: 'Rides', href: '/rides', icon: MapPin },
   { name: 'Market', href: '/marketplace', icon: ShoppingBag },
   { name: 'Profile', href: '/profile', icon: User },

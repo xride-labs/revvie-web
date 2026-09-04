@@ -24,6 +24,7 @@ import { StatsRow } from './_components/stats-row'
 import { AboutTab } from './_components/about-tab'
 import { MembersTab } from './_components/members-tab'
 import { RidesTab } from './_components/rides-tab'
+import { EventsTab } from './_components/events-tab'
 import { GalleryTab } from './_components/gallery-tab'
 import { JoinDialog } from './_components/join-dialog'
 import { GalleryUploadDialog } from './_components/gallery-upload-dialog'
@@ -292,6 +293,7 @@ export default function ClubDetailPage() {
             <TabsTrigger value="about">About</TabsTrigger>
             <TabsTrigger value="members">Members</TabsTrigger>
             <TabsTrigger value="rides">Rides</TabsTrigger>
+            <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
           </TabsList>
 
@@ -310,6 +312,10 @@ export default function ClubDetailPage() {
 
           <TabsContent value="rides" className="mt-6">
             <RidesTab rides={rides} isMember={isMember} />
+          </TabsContent>
+
+          <TabsContent value="events" className="mt-6">
+            <EventsTab clubId={club.id} isOwner={isOwner} />
           </TabsContent>
 
           <TabsContent value="gallery" className="mt-6">
