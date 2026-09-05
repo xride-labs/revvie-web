@@ -10,6 +10,7 @@ import { useLazyGetMyProfileQuery } from '@/features/user/api'
 import { useToast } from '@/hooks/use-toast'
 import { signIn as betterAuthSignIn, resolveAuthCallbackURL } from '@/lib/auth-client'
 import { sendEmailOtp, signInWithEmailOtp } from '@/lib/server/auth'
+import { useAuthErrorToast } from '@/hooks/use-auth-error-toast'
 import { useCreateBusinessMutation } from '@/features/business/api'
 import { BrandPanel } from './_components/brand-panel'
 import { GoogleSignInButton } from './_components/google-signin-button'
@@ -37,6 +38,8 @@ export default function LoginPage() {
   const [authMode, setAuthMode] = useState<AuthMode>('password')
   const [otpStep, setOtpStep] = useState<OtpStep>('request')
   const [createBusiness] = useCreateBusinessMutation()
+
+  useAuthErrorToast()
 
   const tab = TAB_CONFIG[activeTab]
 
@@ -161,6 +164,7 @@ export default function LoginPage() {
       await betterAuthSignIn.social({
         provider: 'google',
         callbackURL: resolveAuthCallbackURL(tab.redirectTo),
+        errorCallbackURL: resolveAuthCallbackURL('/login'),
       })
     } catch {
       dismissToast(toastId)

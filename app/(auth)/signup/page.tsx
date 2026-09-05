@@ -13,6 +13,7 @@ import { motion } from 'motion/react'
 import { useAuth } from '@/store/features/auth'
 import { useToast } from '@/hooks/use-toast'
 import { signIn as betterAuthSignIn, resolveAuthCallbackURL } from '@/lib/auth-client'
+import { useAuthErrorToast } from '@/hooks/use-auth-error-toast'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -32,6 +33,8 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  useAuthErrorToast()
 
   const passwordRequirements = [
     { label: 'At least 8 characters', met: formData.password.length >= 8 },
@@ -101,6 +104,7 @@ export default function SignupPage() {
       await betterAuthSignIn.social({
         provider: 'google',
         callbackURL: resolveAuthCallbackURL('/home'),
+        errorCallbackURL: resolveAuthCallbackURL('/signup'),
       })
     } catch {
       dismissToast(loadingToastId)

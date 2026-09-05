@@ -12,6 +12,7 @@ import { motion } from 'motion/react'
 import { useAuth } from '@/store/features/auth'
 import { useToast } from '@/hooks/use-toast'
 import { signIn as betterAuthSignIn, resolveAuthCallbackURL } from '@/lib/auth-client'
+import { useAuthErrorToast } from '@/hooks/use-auth-error-toast'
 import { useCreateBusinessMutation } from '@/features/business/api'
 import type { BusinessCategory } from '@/entities/business/model'
 
@@ -73,6 +74,8 @@ export default function BrandRegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [createBusiness] = useCreateBusinessMutation()
+
+  useAuthErrorToast()
 
   const passwordRequirements = [
     { label: 'At least 8 characters', met: formData.password.length >= 8 },
@@ -176,6 +179,7 @@ export default function BrandRegisterPage() {
       await betterAuthSignIn.social({
         provider: 'google',
         callbackURL: resolveAuthCallbackURL('/brand/dashboard?onboarding=1'),
+        errorCallbackURL: resolveAuthCallbackURL('/brand-register'),
       })
     } catch {
       errorToast('Google sign-in failed')
