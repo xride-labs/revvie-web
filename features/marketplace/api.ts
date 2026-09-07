@@ -7,9 +7,19 @@ import type {
   ListingsResponse,
   MarketplaceListParams,
   MyListingsResponse,
+  PublicListingDetail,
+  PublicListingQueryParams,
   PublicListingsResponse,
   UpdateListingInput,
 } from './schemas'
+
+export interface ContactSellerInput {
+  listingId: string
+  name: string
+  email: string
+  phone?: string
+  message: string
+}
 
 export const marketplaceApiSlice = marketplaceApi.injectEndpoints({
   endpoints: (build) => ({
@@ -21,10 +31,32 @@ export const marketplaceApiSlice = marketplaceApi.injectEndpoints({
       providesTags: [{ type: 'ListingList', id: 'ALL' }],
     }),
 
-    /** Unauthenticated preview for the marketing site — see `endpoints.ts`. */
-    listPublicListings: build.query<PublicListingsResponse, void>({
-      query: () => ({ url: MARKETPLACE_ENDPOINTS.publicList }),
+    /**
+     * Unauthenticated — backs both the landing page teaser (called with
+     * `{ limit: 8 }`) and the public `/marketplace` browse page's live
+     * search/filter interactions. See `endpoints.ts`.
+     */
+    listPublicListings: build.query<
+      PublicListingsResponse,
+      Partial<PublicListingQueryParams> | void
+    >({
+      query: (params) => ({ url: MARKETPLACE_ENDPOINTS.publicList, params: params ?? {} }),
       providesTags: [{ type: 'ListingList', id: 'PUBLIC' }],
+    }),
+
+    /** Unauthenticated — the public `/marketplace/:id` page's primary data source. */
+    getPublicListing: build.query<PublicListingDetail, string>({
+      query: (listingId) => ({ url: MARKETPLACE_ENDPOINTS.publicDetail(listingId) }),
+      providesTags: (_result, _error, listingId) => [{ type: 'Listing', id: listingId }],
+    }),
+
+    /** Unauthenticated "contact seller" — emails the seller, no account needed. */
+    contactSeller: build.mutation<{ message: string }, ContactSellerInput>({
+      query: ({ listingId, ...body }) => ({
+        url: MARKETPLACE_ENDPOINTS.contact(listingId),
+        method: 'POST',
+        body,
+      }),
     }),
 
     getMyListings: build.query<
@@ -91,6 +123,8 @@ export const marketplaceApiSlice = marketplaceApi.injectEndpoints({
 export const {
   useListListingsQuery,
   useListPublicListingsQuery,
+  useGetPublicListingQuery,
+  useContactSellerMutation,
   useGetMyListingsQuery,
   useGetListingQuery,
   useCreateListingMutation,

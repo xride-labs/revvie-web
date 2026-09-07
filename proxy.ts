@@ -24,12 +24,17 @@ function hasSessionCookie(request: NextRequest): boolean {
     .some(({ name, value }) => name.endsWith('session_token') && value.length > 0)
 }
 
-/** Prefixes that require a signed-in visitor. */
+/**
+ * Prefixes that require a signed-in visitor. `/marketplace` and `/events` are
+ * deliberately absent — their list/detail pages are public; only the
+ * management sub-routes nested under them (`/marketplace/create`,
+ * `/events/create`, etc.) require a session, enforced by `AppLayout` itself
+ * since those pages still live under `(club-management)`.
+ */
 const PROTECTED_PREFIXES = [
   '/home',
   '/clubs',
   '/rides',
-  '/marketplace',
   '/business',
   '/profile',
   '/brand',

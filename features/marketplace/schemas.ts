@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { paginationSchema } from '@/entities/shared/model'
-import { listingDetailsSchema, listingSchema } from '@/entities/listing/model'
+import { listingDetailsSchema, listingSchema, listingStatusSchema } from '@/entities/listing/model'
 
 export const listingsResponseSchema = z.object({
   items: z.array(listingSchema),
@@ -71,20 +71,23 @@ export const updateListingInputSchema = createListingInputSchema.partial().exten
   status: z.enum(['ACTIVE', 'SOLD', 'INACTIVE']).optional(),
 })
 
-/** `GET /public/marketplace` — unauthenticated, for the marketing site. A small,
- *  distinct shape from `listingSchema`: no `description`/`specifications`/status
- *  detail, but does carry `seller`/`club`/aggregated `rating` since the backend
- *  handler builds those specifically for this route rather than reusing the
- *  authenticated list's `include`. Verified against
- *  `backend/src/routes/public/public.routes.ts`. */
+/** `GET /public/marketplace` / `GET /public/marketplace/:id` — unauthenticated.
+ *  Backs both the marketing landing page's teaser (`limit=8`, no other params)
+ *  and the real public `/marketplace` browse + detail pages — logged-in or
+ *  not, everyone sees the same listing data; only creating/editing/offering
+ *  needs a session. Verified against `backend/src/routes/public/public.routes.ts`. */
 export const publicListingSchema = z.object({
   id: z.string(),
   title: z.string(),
   price: z.number(),
   currency: z.string(),
   condition: z.string().nullable(),
-  image: z.string().nullable(),
   category: z.string().nullable(),
+  subcategory: z.string().nullable(),
+  images: z.array(z.string()),
+  locationLabel: z.string().nullable(),
+  allowBids: z.boolean(),
+  status: listingStatusSchema,
   featured: z.boolean(),
   seller: z.object({
     id: z.string(),
@@ -99,14 +102,39 @@ export const publicListingSchema = z.object({
     .nullable(),
   rating: z.number().nullable(),
   ratingCount: z.number(),
+  createdAt: z.string(),
+})
+
+/** Adds the fields only the detail page needs — description, full media, specs. */
+export const publicListingDetailSchema = publicListingSchema.extend({
+  description: z.string(),
+  videos: z.array(z.string()),
+  specifications: z.string().nullable(),
+  latitude: z.number().nullable(),
+  longitude: z.number().nullable(),
+  interestCount: z.number(),
 })
 
 export const publicListingsResponseSchema = z.object({
   listings: z.array(publicListingSchema),
+  pagination: paginationSchema,
+})
+
+export const publicListingQueryParamsSchema = z.object({
+  page: z.number().int().positive().optional(),
+  limit: z.number().int().positive().optional(),
+  category: z.string().optional(),
+  condition: z.string().optional(),
+  minPrice: z.number().positive().optional(),
+  maxPrice: z.number().positive().optional(),
+  search: z.string().optional(),
+  sort: z.enum(['newest', 'price_asc', 'price_desc', 'rating']).optional(),
 })
 
 export type PublicListing = z.infer<typeof publicListingSchema>
+export type PublicListingDetail = z.infer<typeof publicListingDetailSchema>
 export type PublicListingsResponse = z.infer<typeof publicListingsResponseSchema>
+export type PublicListingQueryParams = z.infer<typeof publicListingQueryParamsSchema>
 
 export type ListingsResponse = z.infer<typeof listingsResponseSchema>
 export type ListingDetailResponse = z.infer<typeof listingDetailResponseSchema>

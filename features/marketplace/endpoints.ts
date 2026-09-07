@@ -14,6 +14,9 @@ export const MARKETPLACE_ENDPOINTS = {
   detail: (listingId: string) => `/marketplace/${listingId}`,
   interests: (listingId: string) => `/marketplace/${listingId}/interests`,
   offers: (listingId: string) => `/marketplace/${listingId}/offers`,
-  /** Unauthenticated — for the marketing site only, not the authenticated app. */
+  /** Unauthenticated — backs the landing page teaser and the public /marketplace pages. */
   publicList: '/public/marketplace',
+  publicDetail: (listingId: string) => `/public/marketplace/${listingId}`,
+  /** Unauthenticated "contact seller" email relay — no account needed either side. */
+  contact: (listingId: string) => `/public/marketplace/${listingId}/contact`,
 } as const

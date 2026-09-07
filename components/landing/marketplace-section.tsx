@@ -47,9 +47,9 @@ function ListingCard({ listing }: { listing: PublicListing }) {
       >
         {/* Product Image Area */}
         <div className="aspect-square bg-canvas border-b-2 border-border relative overflow-hidden flex items-center justify-center">
-          {listing.image ? (
+          {listing.images[0] ? (
             <Image
-              src={listing.image}
+              src={listing.images[0]}
               alt={listing.title}
               fill
               sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
@@ -138,7 +138,7 @@ function ListingCard({ listing }: { listing: PublicListing }) {
 }
 
 export function MarketplaceSection() {
-  const { data, isLoading, isError } = useListPublicListingsQuery()
+  const { data, isLoading, isError } = useListPublicListingsQuery({ limit: 8 })
   const listings = data?.listings ?? []
 
   return (
