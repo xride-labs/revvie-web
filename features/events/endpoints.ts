@@ -10,4 +10,7 @@ export const EVENT_ENDPOINTS = {
   validateTicket: (id: string) => `/events/${id}/validate-ticket`,
   myTickets: '/events/my-tickets',
   metrics: (id: string) => `/events/${id}/metrics`,
+  /** Unauthenticated — backs the public `/events` pages for signed-out visitors. */
+  publicList: '/public/events',
+  publicDetail: (id: string) => `/public/events/${id}`,
 } as const

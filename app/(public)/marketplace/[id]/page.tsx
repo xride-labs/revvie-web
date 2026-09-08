@@ -2,7 +2,12 @@
 
 import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { useGetListingQuery, useRegisterInterestMutation } from '@/features/marketplace/api'
+import {
+  useGetListingQuery,
+  useGetPublicListingQuery,
+  useContactSellerMutation,
+} from '@/features/marketplace/api'
+import { useAuth } from '@/lib/use-auth'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -17,6 +22,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   ChevronLeft,
@@ -41,15 +47,7 @@ import { useToast } from '@/hooks/use-toast'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
 import { initials } from '@/shared/lib/initials'
 import type { ListingDetails } from '@/entities/listing/model'
-
-/**
- * The local `Listing`/`Seller`/`SellerListing` interfaces this page used to declare
- * claimed a dozen fields the backend has never sent — `views`, `saves`, `listedAt`,
- * `sellerListings`, `seller.rating`/`reviewsCount`/`verified`/`responseTime`. There is no
- * "other listings from this seller" endpoint and no view/save counters on the wire. All
- * removed below rather than kept rendering permanently-empty UI.
- */
-type Listing = ListingDetails
+import type { PublicListingDetail } from '@/features/marketplace/schemas'
 
 /** Prisma stores `specifications` as a JSON-encoded string, not an object. */
 function parseSpecifications(
@@ -64,24 +62,52 @@ function parseSpecifications(
   }
 }
 
+/** Both the authenticated and public detail shapes carry these — the fields that
+ *  differ (`sellerId` vs `seller.id`, `offerSummary.interestCount` vs `interestCount`)
+ *  are normalized once below instead of branching throughout the JSX. */
+type AnyListing = ListingDetails | PublicListingDetail
+
+function interestCountOf(listing: AnyListing): number {
+  const asAuthed = listing as Partial<ListingDetails>
+  const asPublic = listing as Partial<PublicListingDetail>
+  return asAuthed.offerSummary?.interestCount ?? asPublic.interestCount ?? 0
+}
+
 export default function ListingDetailPage() {
   const params = useParams()
   const router = useRouter()
   const { success: successToast, error: errorToast } = useToast()
+  const { user, isAuthenticated, isPending: authPending } = useAuth()
   const [isSaved, setIsSaved] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false)
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false)
-  const [message, setMessage] = useState('')
+  const [contactName, setContactName] = useState('')
+  const [contactEmail, setContactEmail] = useState('')
+  const [contactPhone, setContactPhone] = useState('')
+  const [contactMessage, setContactMessage] = useState('')
 
   const listingId = params.id as string
+
   const {
-    data,
-    isLoading: loading,
-    isError: error,
-  } = useGetListingQuery(listingId, { skip: !listingId })
-  const listing: Listing | null = data?.listing ?? null
-  const [registerInterest, { isLoading: isContacting }] = useRegisterInterestMutation()
+    data: authedData,
+    isLoading: authedLoading,
+    isError: authedError,
+  } = useGetListingQuery(listingId, { skip: !listingId || authPending || !isAuthenticated })
+  const {
+    data: publicData,
+    isLoading: publicLoading,
+    isError: publicError,
+  } = useGetPublicListingQuery(listingId, {
+    skip: !listingId || authPending || isAuthenticated,
+  })
+  const [contactSeller, { isLoading: isSendingContact }] = useContactSellerMutation()
+
+  const listing: AnyListing | null = isAuthenticated
+    ? (authedData?.listing ?? null)
+    : (publicData ?? null)
+  const loading = authPending || (isAuthenticated ? authedLoading : publicLoading)
+  const error = isAuthenticated ? authedError : publicError
 
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat('en-IN', {
@@ -99,17 +125,29 @@ export default function ListingDetailPage() {
     })
   }
 
+  const openContactDialog = () => {
+    if (user?.name) setContactName(user.name)
+    if (user?.email) setContactEmail(user.email)
+    setIsContactDialogOpen(true)
+  }
+
   const handleSendMessage = async () => {
-    if (isContacting) return
+    if (isSendingContact || !listing) return
     try {
-      await registerInterest(listingId).unwrap()
-      successToast('Seller notified', {
-        description: 'They can see your interest and will reach out.',
+      await contactSeller({
+        listingId,
+        name: contactName.trim(),
+        email: contactEmail.trim(),
+        phone: contactPhone.trim() || undefined,
+        message: contactMessage.trim(),
+      }).unwrap()
+      successToast('Message sent', {
+        description: 'The seller will reply straight to your email.',
       })
       setIsContactDialogOpen(false)
-      setMessage('')
+      setContactMessage('')
     } catch (err) {
-      errorToast('Could not contact the seller', {
+      errorToast('Could not send your message', {
         description: err instanceof Error ? err.message : 'Please try again.',
       })
     }
@@ -160,6 +198,7 @@ export default function ListingDetailPage() {
 
   const images = listing.images || []
   const specifications = parseSpecifications(listing.specifications)
+  const interestCount = interestCountOf(listing)
 
   return (
     <div className="min-h-screen pb-24">
@@ -309,7 +348,7 @@ export default function ListingDetailPage() {
         {/* Seller Info */}
         <Card>
           <CardContent className="p-4">
-            <Link href={`/profile/${listing.sellerId}`}>
+            <Link href={`/profile/${listing.seller.id}`}>
               <div className="flex items-center gap-4">
                 <Avatar className="w-14 h-14">
                   <AvatarFallback>{initials(listing.seller.name)}</AvatarFallback>
@@ -323,19 +362,10 @@ export default function ListingDetailPage() {
           </CardContent>
         </Card>
 
-        {/*
-          "More from this seller" and view/save counters lived here, reading
-          `listing.sellerListings`/`listing.views`/`listing.saves`. None of those exist on
-          the backend — there is no related-listings endpoint and no counters on the wire
-          (verified against a live GET /marketplace/:id response). Removed rather than
-          rendering permanently-empty sections. `offerSummary.interestCount` is real and
-          shown below instead.
-        */}
-        {listing.offerSummary && listing.offerSummary.interestCount > 0 && (
+        {interestCount > 0 && (
           <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
             <span>
-              {listing.offerSummary.interestCount} rider
-              {listing.offerSummary.interestCount === 1 ? '' : 's'} interested
+              {interestCount} rider{interestCount === 1 ? '' : 's'} interested
             </span>
           </div>
         )}
@@ -343,43 +373,89 @@ export default function ListingDetailPage() {
 
       {/* Fixed Bottom Action */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4 flex gap-3">
-        <Button
-          variant="outline"
-          className="flex-1"
-          onClick={() => setIsContactDialogOpen(true)}
-        >
+        <Button variant="outline" className="flex-1" onClick={openContactDialog}>
           <MessageCircle className="w-4 h-4 mr-2" />
-          Message Seller
+          Contact Seller
         </Button>
-        <Button className="flex-1">Make an Offer</Button>
+        {isAuthenticated ? (
+          <Button className="flex-1">Make an Offer</Button>
+        ) : (
+          <Button className="flex-1" asChild>
+            <Link href={`/login?next=/marketplace/${listingId}`}>Sign in to Offer</Link>
+          </Button>
+        )}
       </div>
 
-      {/* Contact Dialog */}
+      {/* Contact Dialog — an anonymous email relay, no account needed on either side. */}
       <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Message Seller</DialogTitle>
+            <DialogTitle>Contact Seller</DialogTitle>
             <DialogDescription>
-              Send a message to {listing.seller?.name || 'the seller'} about this listing
+              Your message goes straight to {listing.seller?.name || 'the seller'}&apos;s
+              email — they can reply directly to you.
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
-            <Label htmlFor="message">Your Message</Label>
-            <Textarea
-              id="message"
-              className="mt-2"
-              placeholder={`Hi, I'm interested in your ${listing.title}...`}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={4}
-            />
+          <div className="py-2 space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="contact-name">Your Name</Label>
+                <Input
+                  id="contact-name"
+                  className="mt-1.5"
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
+                  placeholder="Jane Rider"
+                />
+              </div>
+              <div>
+                <Label htmlFor="contact-email">Your Email</Label>
+                <Input
+                  id="contact-email"
+                  type="email"
+                  className="mt-1.5"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  placeholder="jane@example.com"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="contact-phone">Phone (optional)</Label>
+              <Input
+                id="contact-phone"
+                className="mt-1.5"
+                value={contactPhone}
+                onChange={(e) => setContactPhone(e.target.value)}
+                placeholder="+91 98765 43210"
+              />
+            </div>
+            <div>
+              <Label htmlFor="contact-message">Your Message</Label>
+              <Textarea
+                id="contact-message"
+                className="mt-1.5"
+                placeholder={`Hi, I'm interested in your ${listing.title}...`}
+                value={contactMessage}
+                onChange={(e) => setContactMessage(e.target.value)}
+                rows={4}
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsContactDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSendMessage} disabled={!message.trim()}>
-              Send Message
+            <Button
+              onClick={handleSendMessage}
+              disabled={
+                isSendingContact ||
+                !contactName.trim() ||
+                !contactEmail.trim() ||
+                contactMessage.trim().length < 10
+              }
+            >
+              {isSendingContact ? 'Sending…' : 'Send Message'}
             </Button>
           </DialogFooter>
         </DialogContent>

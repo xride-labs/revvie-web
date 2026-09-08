@@ -10,23 +10,18 @@ import {
   CreditCard,
   Banknote,
   ArrowLeft,
-  Users,
   Shield,
-  Clock,
-  Sparkles,
-  QrCode,
   Copy,
-  ExternalLink,
-  ChevronRight,
   AlertCircle,
-  Share2,
   X,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   useGetEventQuery,
+  useGetPublicEventQuery,
   useBookTicketMutation,
 } from '@/features/events/api'
+import { useAuth } from '@/lib/use-auth'
 import type { TicketTier, EventTicket } from '@/features/events/schemas'
 
 function launchConfetti() {
@@ -52,7 +47,20 @@ function launchConfetti() {
 
 export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
-  const { data: event, isLoading } = useGetEventQuery(id)
+  const { isAuthenticated, isPending: authPending } = useAuth()
+
+  // Signed-in visitors keep today's exact behavior (isAttending/isHost, myTickets).
+  // Signed-out visitors get the public detail — no session-dependent fields, and
+  // this route 404s server-side for anything but a PUBLIC event regardless.
+  const { data: authedEvent, isLoading: authedLoading } = useGetEventQuery(id, {
+    skip: authPending || !isAuthenticated,
+  })
+  const { data: publicEvent, isLoading: publicLoading } = useGetPublicEventQuery(id, {
+    skip: authPending || isAuthenticated,
+  })
+  const event = isAuthenticated ? authedEvent : publicEvent
+  const isLoading = authPending || (isAuthenticated ? authedLoading : publicLoading)
+
   const [bookTicket, { isLoading: isBooking }] = useBookTicketMutation()
 
   const [selectedTier, setSelectedTier] = useState<TicketTier | null>(null)
@@ -60,8 +68,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'CASH' | 'FREE'>('UPI')
   const [upiRef, setUpiRef] = useState('')
-  const [buyerName, setBuyerName] = useState('')
-  const [buyerPhone, setBuyerPhone] = useState('')
   const [bookedResult, setBookedResult] = useState<{
     order: any
     tickets: EventTicket[]
@@ -156,13 +162,15 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
           </Link>
 
           <div className="flex items-center gap-3">
-            <Link
-              href="/events/my-tickets"
-              className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-teal-400 border border-teal-500/30 px-3.5 py-1.5 rounded-xl font-medium text-xs transition"
-            >
-              <Ticket className="w-3.5 h-3.5" />
-              <span>Ticket Passes Wallet</span>
-            </Link>
+            {isAuthenticated && (
+              <Link
+                href="/events/my-tickets"
+                className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-teal-400 border border-teal-500/30 px-3.5 py-1.5 rounded-xl font-medium text-xs transition"
+              >
+                <Ticket className="w-3.5 h-3.5" />
+                <span>Ticket Passes Wallet</span>
+              </Link>
+            )}
 
             {event.isHost && (
               <Link
@@ -432,64 +440,76 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                 </p>
               </div>
 
-              {/* Quantity Selector */}
-              <div className="flex items-center justify-between bg-white/5 p-3.5 rounded-2xl border border-white/10">
-                <div>
-                  <span className="text-xs font-semibold text-zinc-300 block">Number of Passes</span>
-                  <span className="text-[10px] text-zinc-500">Max {maxAllowed} per rider</span>
-                </div>
-                <div className="flex items-center gap-3 bg-black/40 px-2 py-1 rounded-xl border border-white/10">
+              {!isAuthenticated ? (
+                <Link
+                  href={`/login?next=/events/${event.id}`}
+                  className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-red-950/50 transition flex items-center justify-center gap-2"
+                >
+                  <Ticket className="w-4 h-4" />
+                  <span>Sign In to Book Tickets</span>
+                </Link>
+              ) : (
+                <>
+                  {/* Quantity Selector */}
+                  <div className="flex items-center justify-between bg-white/5 p-3.5 rounded-2xl border border-white/10">
+                    <div>
+                      <span className="text-xs font-semibold text-zinc-300 block">Number of Passes</span>
+                      <span className="text-[10px] text-zinc-500">Max {maxAllowed} per rider</span>
+                    </div>
+                    <div className="flex items-center gap-3 bg-black/40 px-2 py-1 rounded-xl border border-white/10">
+                      <button
+                        type="button"
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-xs transition cursor-pointer"
+                      >
+                        -
+                      </button>
+                      <span className="font-bold text-sm text-white px-1">{quantity}</span>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity(Math.min(maxAllowed, quantity + 1))}
+                        className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-xs transition cursor-pointer"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Price Breakdown */}
+                  <div className="border-t border-white/10 pt-4 space-y-2 text-xs">
+                    <div className="flex justify-between text-zinc-400">
+                      <span>Pass Tier Price ({quantity}x)</span>
+                      <span className="text-white font-medium">
+                        {isFree ? 'FREE' : `₹${totalAmount}`}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-zinc-400">
+                      <span>Platform Gateway Fee</span>
+                      <span className="text-emerald-400 font-semibold">FREE (Covered)</span>
+                    </div>
+                    <div className="flex justify-between text-base font-bold text-white pt-2 border-t border-white/5">
+                      <span>Total Due</span>
+                      <span className="text-emerald-400 font-black">
+                        {isFree ? 'FREE' : `₹${totalAmount}`}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Booking CTA Button */}
                   <button
                     type="button"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-xs transition cursor-pointer"
+                    onClick={handleOpenCheckout}
+                    className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-red-950/50 transition flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    -
+                    <Ticket className="w-4 h-4" />
+                    <span>
+                      {isFree
+                        ? 'Reserve Free Pass'
+                        : `Proceed to Book &bull; ₹${totalAmount}`}
+                    </span>
                   </button>
-                  <span className="font-bold text-sm text-white px-1">{quantity}</span>
-                  <button
-                    type="button"
-                    onClick={() => setQuantity(Math.min(maxAllowed, quantity + 1))}
-                    className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-bold text-xs transition cursor-pointer"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              {/* Price Breakdown */}
-              <div className="border-t border-white/10 pt-4 space-y-2 text-xs">
-                <div className="flex justify-between text-zinc-400">
-                  <span>Pass Tier Price ({quantity}x)</span>
-                  <span className="text-white font-medium">
-                    {isFree ? 'FREE' : `₹${totalAmount}`}
-                  </span>
-                </div>
-                <div className="flex justify-between text-zinc-400">
-                  <span>Platform Gateway Fee</span>
-                  <span className="text-emerald-400 font-semibold">FREE (Covered)</span>
-                </div>
-                <div className="flex justify-between text-base font-bold text-white pt-2 border-t border-white/5">
-                  <span>Total Due</span>
-                  <span className="text-emerald-400 font-black">
-                    {isFree ? 'FREE' : `₹${totalAmount}`}
-                  </span>
-                </div>
-              </div>
-
-              {/* Booking CTA Button */}
-              <button
-                type="button"
-                onClick={handleOpenCheckout}
-                className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-red-950/50 transition flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Ticket className="w-4 h-4" />
-                <span>
-                  {isFree
-                    ? 'Reserve Free Pass'
-                    : `Proceed to Book &bull; ₹${totalAmount}`}
-                </span>
-              </button>
+                </>
+              )}
 
               <div className="flex items-center justify-center gap-2 text-[11px] text-zinc-500">
                 <Shield className="w-3.5 h-3.5 text-emerald-400" />

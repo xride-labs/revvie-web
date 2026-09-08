@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { MapPin, Search, Filter, Plus, Image as ImageIcon } from 'lucide-react'
 import Link from 'next/link'
-import type { Listing } from '@/entities/listing/model'
+import type { PublicListing } from '@/features/marketplace/schemas'
 import { initials } from '@/shared/lib/initials'
 
 const CATEGORIES = [
@@ -22,19 +22,20 @@ const CATEGORIES = [
 ]
 
 /**
- * `listings` is already scoped to `activeCategory` — fetched server-side in `page.tsx`
- * from the `?category=` search param. Category buttons are plain links so switching one
- * is a real navigation (Next prefetches on hover, so it doesn't feel slower than the old
- * client-side re-fetch — and the category is now part of the URL, so a filtered view is
- * bookmarkable and shareable, which it never was before). Search stays client-side: it's
- * a substring filter over data already on the page, so a server round-trip would only
- * add latency for no benefit.
+ * `listings` is fetched from the unauthenticated `/public/marketplace` list — anyone can
+ * see this page, so there's no session branching for the browse view itself. Only
+ * creating a listing needs an account, and `/marketplace/create` (still under
+ * `(club-management)`) already enforces that on its own.
+ *
+ * Category buttons are plain links so switching one is a real navigation (bookmarkable,
+ * shareable). Search stays client-side: a substring filter over data already on the
+ * page, so a server round-trip would only add latency for no benefit.
  */
 export function MarketplaceBrowser({
   listings,
   activeCategory,
 }: {
-  listings: Listing[]
+  listings: PublicListing[]
   activeCategory: string
 }) {
   const [searchQuery, setSearchQuery] = useState('')
@@ -113,9 +114,9 @@ export function MarketplaceBrowser({
               <Card className="group overflow-hidden rounded-3xl border-white/[0.07] bg-[#111] shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(245,158,11,0.15)] hover:border-amber-500/30 relative h-full">
                 {/* Image placeholder */}
                 <div className="relative overflow-hidden bg-[#1a1a1a]">
-                  {listing.images?.[0] ? (
+                  {listing.images[0] ? (
                     <img
-                      src={listing.images[0] || ''}
+                      src={listing.images[0]}
                       alt={listing.title}
                       className="w-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
                     />
@@ -174,7 +175,8 @@ export function MarketplaceBrowser({
         </div>
       )}
 
-      {/* Floating Create Button */}
+      {/* Floating Create Button — /marketplace/create still requires a session; it
+          redirects to /login on its own if the visitor isn't signed in. */}
       <Link href="/marketplace/create">
         <Button
           className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 rounded-full w-14 h-14 shadow-lg"

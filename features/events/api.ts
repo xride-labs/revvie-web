@@ -36,6 +36,29 @@ export const eventsApiSlice = eventsApi.injectEndpoints({
       providesTags: (_result, _error, id) => [{ type: 'Event', id }],
     }),
 
+    /**
+     * Unauthenticated — PUBLIC-visibility events only, regardless of who's asking.
+     * Used by the public `/events` list for signed-out visitors; signed-in visitors
+     * keep using `getEvents` above (unchanged — club-only visibility, RSVP state,
+     * host/manage links all still work exactly as before).
+     */
+    listPublicEvents: build.query<
+      EventsResponse,
+      { category?: string; search?: string; page?: number } | void
+    >({
+      query: (params) => ({
+        url: EVENT_ENDPOINTS.publicList,
+        params: params || {},
+      }),
+      providesTags: [{ type: 'EventList', id: 'PUBLIC' }],
+    }),
+
+    /** Unauthenticated — the public `/events/:id` page's data source when signed out. */
+    getPublicEvent: build.query<EventItem, string>({
+      query: (id) => ({ url: EVENT_ENDPOINTS.publicDetail(id) }),
+      providesTags: (_result, _error, id) => [{ type: 'Event', id }],
+    }),
+
     createEvent: build.mutation<EventItem, CreateEventInput>({
       query: (data) => ({
         url: EVENT_ENDPOINTS.create,
@@ -137,6 +160,8 @@ export const eventsApiSlice = eventsApi.injectEndpoints({
 export const {
   useGetEventsQuery,
   useGetEventQuery,
+  useListPublicEventsQuery,
+  useGetPublicEventQuery,
   useCreateEventMutation,
   useUpdateEventMutation,
   useDeleteEventMutation,

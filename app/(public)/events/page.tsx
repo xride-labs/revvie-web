@@ -15,9 +15,11 @@ import {
 } from 'lucide-react'
 import {
   useGetEventsQuery,
+  useListPublicEventsQuery,
   useAttendEventMutation,
   useLeaveEventMutation,
 } from '@/features/events/api'
+import { useAuth } from '@/lib/use-auth'
 
 const CATEGORIES = [
   { key: 'ALL', label: 'All Categories' },
@@ -29,20 +31,35 @@ const CATEGORIES = [
 ]
 
 export default function EventsPage() {
+  const { isAuthenticated, isPending: authPending } = useAuth()
   const [category, setCategory] = useState('ALL')
   const [search, setSearch] = useState('')
   const [filterTab, setFilterTab] = useState<'all' | 'club' | 'my_rsvps'>('all')
 
-  const { data, isLoading } = useGetEventsQuery({
-    category: category === 'ALL' ? undefined : category,
-    search: search.trim() || undefined,
-    filter: filterTab === 'all' ? undefined : filterTab,
-  })
+  const categoryParam = category === 'ALL' ? undefined : category
+  const searchParam = search.trim() || undefined
+
+  // Signed-in visitors keep today's exact behavior (club-only visibility, RSVP
+  // state, host/manage links). Signed-out visitors get the PUBLIC-only feed —
+  // no club/my-rsvps filters, since those need a session to mean anything.
+  const { data: authedData, isLoading: authedLoading } = useGetEventsQuery(
+    {
+      category: categoryParam,
+      search: searchParam,
+      filter: filterTab === 'all' ? undefined : filterTab,
+    },
+    { skip: authPending || !isAuthenticated },
+  )
+  const { data: publicData, isLoading: publicLoading } = useListPublicEventsQuery(
+    { category: categoryParam, search: searchParam },
+    { skip: authPending || isAuthenticated },
+  )
 
   const [attendEvent] = useAttendEventMutation()
   const [leaveEvent] = useLeaveEventMutation()
 
-  const events = data?.events || []
+  const isLoading = authPending || (isAuthenticated ? authedLoading : publicLoading)
+  const events = (isAuthenticated ? authedData?.events : publicData?.events) || []
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white p-6 lg:p-10">
@@ -64,14 +81,17 @@ export default function EventsPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              href="/events/my-tickets"
-              className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-teal-400 border border-teal-500/30 px-4 py-2.5 rounded-xl font-medium text-sm transition"
-            >
-              <Ticket className="w-4 h-4" />
-              <span>My Ticket Passes</span>
-            </Link>
+            {isAuthenticated && (
+              <Link
+                href="/events/my-tickets"
+                className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-teal-400 border border-teal-500/30 px-4 py-2.5 rounded-xl font-medium text-sm transition"
+              >
+                <Ticket className="w-4 h-4" />
+                <span>My Ticket Passes</span>
+              </Link>
+            )}
 
+            {/* /events/create still requires a session; it self-gates via AppLayout. */}
             <Link
               href="/events/create"
               className="flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-lg shadow-red-950/40 transition"
@@ -84,39 +104,41 @@ export default function EventsPage() {
 
         {/* Filter Controls & Search */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          {/* Tabs */}
-          <div className="flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/10 w-fit">
-            <button
-              onClick={() => setFilterTab('all')}
-              className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition ${
-                filterTab === 'all'
-                  ? 'bg-red-600 text-white shadow'
-                  : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              All Events
-            </button>
-            <button
-              onClick={() => setFilterTab('club')}
-              className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition ${
-                filterTab === 'club'
-                  ? 'bg-red-600 text-white shadow'
-                  : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              Club Exclusive
-            </button>
-            <button
-              onClick={() => setFilterTab('my_rsvps')}
-              className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition ${
-                filterTab === 'my_rsvps'
-                  ? 'bg-red-600 text-white shadow'
-                  : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              My RSVPs
-            </button>
-          </div>
+          {/* Tabs — club/my_rsvps only mean anything for a signed-in visitor */}
+          {isAuthenticated && (
+            <div className="flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/10 w-fit">
+              <button
+                onClick={() => setFilterTab('all')}
+                className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition ${
+                  filterTab === 'all'
+                    ? 'bg-red-600 text-white shadow'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                All Events
+              </button>
+              <button
+                onClick={() => setFilterTab('club')}
+                className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition ${
+                  filterTab === 'club'
+                    ? 'bg-red-600 text-white shadow'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                Club Exclusive
+              </button>
+              <button
+                onClick={() => setFilterTab('my_rsvps')}
+                className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition ${
+                  filterTab === 'my_rsvps'
+                    ? 'bg-red-600 text-white shadow'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                My RSVPs
+              </button>
+            </div>
+          )}
 
           {/* Search Input */}
           <div className="relative w-full md:w-80">
@@ -274,7 +296,14 @@ export default function EventsPage() {
                       <ChevronRight className="w-3.5 h-3.5" />
                     </Link>
 
-                    {event.isHost ? (
+                    {!isAuthenticated ? (
+                      <Link
+                        href={`/login?next=/events/${event.id}`}
+                        className="bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 text-xs font-bold px-3.5 py-2.5 rounded-xl transition"
+                      >
+                        Sign in to RSVP
+                      </Link>
+                    ) : event.isHost ? (
                       <Link
                         href={`/events/${event.id}/manage`}
                         className="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 text-xs font-bold px-3 py-2.5 rounded-xl transition"
