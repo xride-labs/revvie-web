@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
-import Link from 'next/link'
 import {
   Receipt,
   Plus,
@@ -10,17 +9,12 @@ import {
   Utensils,
   Hotel,
   Tag,
-  Calendar,
-  Filter,
   CheckCircle2,
-  Clock,
   ArrowUpRight,
   ArrowDownLeft,
   Users,
   Search,
-  Sparkles,
   X,
-  IndianRupee,
   RefreshCw,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -32,7 +26,7 @@ import {
 } from '@/features/expenses/api'
 import type { ExpenseCategory, CreateExpenseSplitInput } from '@/features/expenses/schemas'
 
-const CATEGORIES: { key: ExpenseCategory | 'ALL'; label: string; icon: any; color: string }[] = [
+const CATEGORIES: { key: ExpenseCategory | 'ALL'; label: string; icon: React.ComponentType<{ className?: string }>; color: string }[] = [
   { key: 'ALL', label: 'All Categories', icon: Receipt, color: 'text-zinc-400' },
   { key: 'FUEL', label: 'Fuel & Gas', icon: Fuel, color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30' },
   { key: 'SERVICING', label: 'Service & Repairs', icon: Wrench, color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' },
@@ -59,7 +53,7 @@ export default function ExpensesPage() {
   const [activeTab, setActiveTab] = useState<'expenses' | 'splits'>('expenses')
   const [categoryFilter, setCategoryFilter] = useState<ExpenseCategory | 'ALL'>('ALL')
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedMonth, setSelectedMonth] = useState<number | undefined>(undefined)
+  const [selectedMonth] = useState<number | undefined>(undefined)
   const [isLogModalOpen, setIsLogModalOpen] = useState(false)
 
   // API queries
