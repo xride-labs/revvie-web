@@ -135,51 +135,64 @@ export function ClubAnalyticsView({
       {/* Summary cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Members"
-          value={club._count?.members ?? members.length}
-          icon={<Users className="w-5 h-5" />}
-          color="blue"
-        />
-        <StatCard
-          label="Total Rides"
-          value={totalRides}
+          label="Total Club Distance"
+          value={`${(analytics?.summary?.totalClubDistanceKm ?? totalDistance).toLocaleString()} km`}
           icon={<MapPin className="w-5 h-5" />}
           color="green"
+          sub="cumulative odometer"
+        />
+        <StatCard
+          label="Saddle Hours"
+          value={`${analytics?.summary?.totalSaddleHours ?? 0} hrs`}
+          icon={<Clock className="w-5 h-5" />}
+          color="purple"
+          sub="time on the road"
+        />
+        <StatCard
+          label="Active Community"
+          value={`${analytics?.summary?.dau ?? 0} DAU`}
+          icon={<Users className="w-5 h-5" />}
+          color="blue"
+          sub={`${analytics?.summary?.wau ?? 0} WAU · ${analytics?.summary?.mau ?? 0} MAU`}
         />
         <StatCard
           label="Completion Rate"
           value={`${completionRate}%`}
           icon={<CheckCircle2 className="w-5 h-5" />}
-          color="purple"
-          sub={`${completedRides} of ${totalRides} completed`}
-        />
-        <StatCard
-          label="Avg Participants"
-          value={avgParticipants}
-          icon={<TrendingUp className="w-5 h-5" />}
           color="amber"
-          sub="per ride"
+          sub={`${completedRides} of ${totalRides} completed`}
         />
       </div>
 
-      {/* Distance + ride count */}
-      {totalDistance > 0 && (
-        <Card>
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-green-50 dark:bg-green-950">
-              <Trophy className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{totalDistance.toFixed(0)} km</p>
-              <p className="text-sm text-muted-foreground">
-                Total distance covered by completed rides
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       <div className="grid gap-6 lg:grid-cols-2">
+        {/* Peak Riding Days */}
+        {analytics?.peakRidingDays && analytics.peakRidingDays.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Peak Riding Days</CardTitle>
+              <CardDescription>
+                Ride frequency across the week (highlighting peak riding days)
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={analytics.peakRidingDays}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" tick={{ fontSize: 11 }} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                  <Tooltip />
+                  <Bar
+                    dataKey="rides"
+                    name="Rides"
+                    fill="#10b981"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Monthly ride activity */}
         {monthlyData.length > 0 && (
           <Card>
@@ -239,6 +252,59 @@ export function ClubAnalyticsView({
           </Card>
         )}
       </div>
+
+      {/* Top Rider Leaderboard */}
+      {analytics?.leaderboard && analytics.leaderboard.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Trophy className="w-5 h-5 text-amber-500" />
+              Top Rider Leaderboard
+            </CardTitle>
+            <CardDescription>
+              Top riders ranked by community rides joined and distance covered
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-16">Rank</TableHead>
+                  <TableHead>Rider</TableHead>
+                  <TableHead>Rides Joined</TableHead>
+                  <TableHead className="text-right">Distance (km)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {analytics.leaderboard.map((rider) => (
+                  <TableRow key={rider.userId}>
+                    <TableCell className="font-bold">
+                      {rider.rank === 1 ? '🥇' : rider.rank === 2 ? '🥈' : rider.rank === 3 ? '🥉' : `#${rider.rank}`}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback className="text-xs">
+                            {rider.name[0]?.toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium text-sm">{rider.name}</p>
+                          {rider.username && <p className="text-xs text-muted-foreground">@{rider.username}</p>}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm">{rider.ridesJoined} rides</TableCell>
+                    <TableCell className="text-right font-medium text-sm text-green-600">
+                      {rider.totalDistanceKm.toLocaleString()} km
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Members table */}
       {members.length > 0 && (
@@ -308,28 +374,28 @@ export function ClubAnalyticsView({
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <StatCard
             label="Active Today"
-            value={analytics.summary.activeToday}
+            value={analytics.summary.activeToday ?? 0}
             icon={<Clock className="w-5 h-5" />}
             color="green"
-            sub={`${analytics.summary.activeWeek} active this week`}
+            sub={`${analytics.summary.activeWeek ?? 0} active this week`}
           />
           <StatCard
             label="Messages Sent"
-            value={analytics.summary.totalMessages}
+            value={analytics.summary.totalMessages ?? 0}
             icon={<TrendingUp className="w-5 h-5" />}
             color="blue"
-            sub={`across ${analytics.summary.groupCount} groups`}
+            sub={`across ${analytics.summary.groupCount ?? 0} groups`}
           />
           <StatCard
             label="Dormant Members"
-            value={analytics.summary.dormant}
+            value={analytics.summary.dormant ?? 0}
             icon={<Users className="w-5 h-5" />}
             color="amber"
             sub="no activity in 30d"
           />
           <StatCard
             label="Moderated"
-            value={analytics.summary.moderated}
+            value={analytics.summary.moderated ?? 0}
             icon={<CheckCircle2 className="w-5 h-5" />}
             color="purple"
             sub="muted / suspended / banned"
@@ -382,9 +448,9 @@ export function ClubAnalyticsView({
                       <TableCell>
                         <Badge
                           variant="outline"
-                          className={`text-[11px] ${STATUS_BADGE[m.status] ?? ''}`}
+                          className={`text-[11px] ${m.status ? STATUS_BADGE[m.status] ?? '' : ''}`}
                         >
-                          {m.status}
+                          {m.status ?? 'ACTIVE'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">

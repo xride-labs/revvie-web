@@ -100,36 +100,96 @@ export const clubRidesResponseSchema = z.object({
  *  an earlier, never-verified draft of this schema assumed — the real payload is
  *  per-member chat-activity data plus community aggregates, no ride stats at all. */
 export const clubAnalyticsSchema = z.object({
-  club: z.object({
-    name: z.string().optional(),
-    memberCount: z.number().optional(),
-  }),
+  period: z.string().optional(),
   summary: z.object({
-    totalMembers: z.number(),
-    activeToday: z.number(),
-    activeWeek: z.number(),
-    dormant: z.number(),
-    totalMessages: z.number(),
-    groupCount: z.number(),
-    moderated: z.number(),
+    totalMembers: z.number().default(0),
+    dau: z.number().default(0),
+    wau: z.number().default(0),
+    mau: z.number().default(0),
+    memberGrowthRate: z.number().default(0),
+    totalClubDistanceKm: z.number().default(0),
+    totalSaddleHours: z.number().default(0),
+    totalCompletedRides: z.number().default(0),
+    rideCompletionRate: z.number().default(0),
+    totalRidesInPeriod: z.number().default(0),
+    totalEvents: z.number().default(0),
+    activeToday: z.number().optional(),
+    activeWeek: z.number().optional(),
+    dormant: z.number().optional(),
+    totalMessages: z.number().optional(),
+    groupCount: z.number().optional(),
+    moderated: z.number().optional(),
   }),
-  members: z.array(
-    z.object({
-      userId: z.string(),
-      user: z.object({
-        id: z.string(),
-        name: z.string().nullable(),
-        avatar: z.string().nullable(),
-        email: z.string().nullable(),
+  growthTimeline: z
+    .array(
+      z.object({
+        date: z.string(),
+        count: z.number(),
       }),
-      role: z.string(),
-      status: z.string(),
-      joinedAt: z.string(),
-      lastInteractionAt: z.string().nullable(),
-      lastMessageAt: z.string().nullable(),
-      messageCount: z.number(),
-    }),
-  ),
+    )
+    .default([]),
+  peakRidingDays: z
+    .array(
+      z.object({
+        day: z.string(),
+        rides: z.number(),
+        isPeak: z.boolean(),
+      }),
+    )
+    .default([]),
+  peakRidingHours: z
+    .array(
+      z.object({
+        hour: z.number(),
+        label: z.string(),
+        rides: z.number(),
+      }),
+    )
+    .default([]),
+  leaderboard: z
+    .array(
+      z.object({
+        userId: z.string(),
+        name: z.string(),
+        avatar: z.string().nullable(),
+        username: z.string().nullable(),
+        ridesJoined: z.number(),
+        totalDistanceKm: z.number(),
+        rank: z.number(),
+      }),
+    )
+    .default([]),
+  eventsSummary: z
+    .object({
+      total: z.number(),
+      upcoming: z.number(),
+    })
+    .optional(),
+  club: z
+    .object({
+      name: z.string().optional(),
+      memberCount: z.number().optional(),
+    })
+    .optional(),
+  members: z
+    .array(
+      z.object({
+        userId: z.string(),
+        user: z.object({
+          id: z.string(),
+          name: z.string().nullable(),
+          avatar: z.string().nullable(),
+          email: z.string().nullable().optional(),
+        }),
+        role: z.string(),
+        status: z.string().optional(),
+        joinedAt: z.string().optional(),
+        lastInteractionAt: z.string().nullable().optional(),
+        lastMessageAt: z.string().nullable().optional(),
+        messageCount: z.number().optional(),
+      }),
+    )
+    .default([]),
 })
 
 // ── Inputs ───────────────────────────────────────────────────────────────────
