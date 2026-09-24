@@ -3,7 +3,11 @@ export interface ClubSettings {
   name: string
   description: string
   location: string
+  image?: string | null
+  coverImage?: string | null
+  gallery?: string[]
   isPublic: boolean
+  requiresLicense?: boolean
   requireApproval: boolean
   allowMemberInvites: boolean
   showMemberList: boolean

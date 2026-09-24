@@ -12,6 +12,10 @@ import {
   useDeleteClubMutation,
   useUpdateClubMutation,
 } from '@/features/clubs/api'
+import {
+  useUploadClubImageMutation,
+  useUploadClubGalleryMutation,
+} from '@/features/media/api'
 import type { ClubMember } from '@/entities/club/model'
 import type { ClubRequestsResponse } from '@/features/clubs/schemas'
 import { mapApiError } from '@/lib/errors'
@@ -56,6 +60,9 @@ export default function ClubManagePage() {
   const [isDeleteClubDialogOpen, setIsDeleteClubDialogOpen] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
 
+  const [uploadClubImage] = useUploadClubImageMutation()
+  const [uploadClubGallery] = useUploadClubGalleryMutation()
+
   const {
     data: clubResponse,
     isLoading: clubLoading,
@@ -86,6 +93,10 @@ export default function ClubManagePage() {
       description: clubData.description,
       location: clubData.location,
       isPublic: clubData.isPublic,
+      image: clubData.image ?? null,
+      coverImage: clubData.coverImage ?? null,
+      gallery: clubData.gallery ?? [],
+      requiresLicense: clubData.requiresLicense ?? false,
       // The backend does not return these three on GET /clubs/:id — the previous
       // `clubData.requireApproval ?? true` read undefined and fell through to the
       // default on every load, so the toggles never reflected saved state. Kept as
@@ -95,6 +106,89 @@ export default function ClubManagePage() {
       showMemberList: true,
     })
   }, [clubResponse])
+
+  const handleUploadLogo = async (dataUrl: string) => {
+    if (!clubSettings) return
+    const tid = loadingToast('Uploading club logo...')
+    try {
+      const res = await uploadClubImage({
+        clubId: clubSettings.id,
+        file: dataUrl,
+        type: 'logo',
+      }).unwrap()
+      const newUrl = res.media.secureUrl
+      setClubSettings((prev) => (prev ? { ...prev, image: newUrl } : null))
+      successToast('Club logo updated')
+    } catch (err) {
+      errorToast('Failed to upload club logo', {
+        description: err instanceof Error ? err.message : 'Please try again.',
+      })
+    } finally {
+      dismissToast(tid)
+    }
+  }
+
+  const handleUploadCover = async (dataUrl: string) => {
+    if (!clubSettings) return
+    const tid = loadingToast('Uploading cover banner...')
+    try {
+      const res = await uploadClubImage({
+        clubId: clubSettings.id,
+        file: dataUrl,
+        type: 'cover',
+      }).unwrap()
+      const newUrl = res.media.secureUrl
+      setClubSettings((prev) => (prev ? { ...prev, coverImage: newUrl } : null))
+      successToast('Cover banner updated')
+    } catch (err) {
+      errorToast('Failed to upload cover banner', {
+        description: err instanceof Error ? err.message : 'Please try again.',
+      })
+    } finally {
+      dismissToast(tid)
+    }
+  }
+
+  const handleUploadGallery = async (dataUrl: string) => {
+    if (!clubSettings) return
+    const tid = loadingToast('Adding photo to gallery...')
+    try {
+      const res = await uploadClubGallery({
+        clubId: clubSettings.id,
+        file: dataUrl,
+      }).unwrap()
+      const newUrl = res.media.secureUrl
+      setClubSettings((prev) =>
+        prev ? { ...prev, gallery: [...(prev.gallery ?? []), newUrl] } : null,
+      )
+      successToast('Photo added to gallery')
+    } catch (err) {
+      errorToast('Failed to upload photo', {
+        description: err instanceof Error ? err.message : 'Please try again.',
+      })
+    } finally {
+      dismissToast(tid)
+    }
+  }
+
+  const handleRemoveGalleryPhoto = async (photoUrl: string) => {
+    if (!clubSettings) return
+    const updatedGallery = (clubSettings.gallery ?? []).filter((url) => url !== photoUrl)
+    setClubSettings((prev) => (prev ? { ...prev, gallery: updatedGallery } : null))
+    try {
+      await updateClub({
+        clubId: clubSettings.id,
+        data: {
+          gallery: updatedGallery,
+        },
+      }).unwrap()
+      successToast('Gallery photo removed')
+    } catch (err) {
+      errorToast('Failed to remove photo', {
+        description: err instanceof Error ? err.message : 'Please try again.',
+      })
+    }
+  }
 
   const handleApproveRequest = async (requestId: string, userId: string) => {
     if (!clubSettings) return
@@ -243,6 +337,7 @@ export default function ClubManagePage() {
           description: clubSettings.description,
           location: clubSettings.location,
           isPublic: clubSettings.isPublic,
+          requiresLicense: clubSettings.requiresLicense,
         },
       }).unwrap()
       successToast('Club settings saved')
@@ -366,10 +461,14 @@ export default function ClubManagePage() {
         <TabsContent value="settings">
           <SettingsTab
             clubSettings={clubSettings}
-            onChange={setClubSettings}
+            onChange={(next) => setClubSettings(next)}
             fieldErrors={settingsFieldErrors}
             isSaving={isSavingSettings}
             onSave={handleSaveSettings}
+            onUploadLogo={handleUploadLogo}
+            onUploadCover={handleUploadCover}
+            onUploadGallery={handleUploadGallery}
+            onRemoveGalleryPhoto={handleRemoveGalleryPhoto}
           />
         </TabsContent>
 

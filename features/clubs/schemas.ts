@@ -207,6 +207,7 @@ export const createClubInputSchema = z.object({
   requiresLicense: z.boolean().default(false),
   image: z.string().optional(),
   coverImage: z.string().optional(),
+  gallery: z.array(z.string()).optional(),
   latitude: z.number().min(-90).max(90).optional(),
   longitude: z.number().min(-180).max(180).optional(),
 })
