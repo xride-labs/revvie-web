@@ -7,5 +7,6 @@ export const MEDIA_ENDPOINTS = {
   clubGallery: (clubId: string) => `/media/upload/club/${clubId}/gallery`,
   bike: (bikeId: string) => `/media/upload/bike/${bikeId}`,
   listing: (listingId: string) => `/media/upload/listing/${listingId}`,
+  business: (businessId: string) => `/media/upload/business/${businessId}`,
   delete: (publicId: string) => `/media/${publicId}`,
 } as const
