@@ -43,6 +43,19 @@ export const clubMembersResponseSchema = z.object({
   hasMore: z.boolean().default(false),
 })
 
+export const clubJoinAnswerSchema = z.object({
+  questionId: z.string().optional(),
+  question: z.string(),
+  answer: z.union([z.string(), z.array(z.string())]),
+})
+export type ClubJoinAnswer = z.infer<typeof clubJoinAnswerSchema>
+
+export const joinClubInputSchema = z.object({
+  message: z.string().max(500).optional(),
+  answers: z.array(clubJoinAnswerSchema).optional(),
+})
+export type JoinClubInput = z.infer<typeof joinClubInputSchema>
+
 /** `GET /clubs/:id/requests` — a `ClubJoinRequest`, NOT a `ClubMember`. It has no
  *  `role`/`joinedAt` (those only exist once a request is approved); verified against
  *  the `ClubJoinRequest` Prisma model and the route's own `include`. */
@@ -51,6 +64,7 @@ export const clubJoinRequestSchema = z.object({
   clubId: z.string(),
   userId: z.string(),
   message: z.string().nullable(),
+  answers: z.array(clubJoinAnswerSchema).nullable().optional(),
   status: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -205,6 +219,8 @@ export const createClubInputSchema = z.object({
   clubType: z.string().trim().max(100).optional(),
   isPublic: z.boolean().default(true),
   requiresLicense: z.boolean().default(false),
+  joinPolicy: z.enum(['OPEN', 'APPLICATION', 'INVITE_ONLY']).optional(),
+  joinQuestions: z.array(z.any()).optional(),
   image: z.string().optional(),
   coverImage: z.string().optional(),
   gallery: z.array(z.string()).optional(),

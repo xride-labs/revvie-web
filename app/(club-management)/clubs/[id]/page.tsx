@@ -17,6 +17,7 @@ import { useGetMyProfileQuery } from '@/features/user/api'
 import { fileToDataUrl } from '@/lib/media-utils'
 import { useToast } from '@/hooks/use-toast'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
+import type { ClubJoinAnswer } from '@/features/clubs/schemas'
 
 import type { GalleryItem } from './_lib/types'
 import { ClubHeader } from './_components/club-header'
@@ -42,8 +43,10 @@ export default function ClubDetailPage() {
     dismiss: dismissToast,
   } = useToast()
   const clubId = params.id as string
-  const [isMember, setIsMember] = useState(true)
-  const [isPending, setIsPending] = useState(false)
+  const [localMembershipOverride, setLocalMembershipOverride] = useState<
+    'JOINED' | 'LEFT' | 'PENDING' | null
+  >(null)
+  const [isJoining, setIsJoining] = useState(false)
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('about')
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([])
@@ -78,6 +81,24 @@ export default function ClubDetailPage() {
   const error = clubHadError ? 'Failed to load club details' : null
   const currentUserId = meData?.user?.id ?? null
 
+  const backendIsOwner = clubResponse?.club.isOwner ?? (currentUserId ? clubResponse?.club.ownerId === currentUserId : false)
+  const backendIsMember = clubResponse?.club.isMember ?? false
+  const backendIsPending = clubResponse?.club.joinRequestStatus === 'PENDING'
+
+  const isOwner = backendIsOwner
+  const isMember =
+    localMembershipOverride === 'JOINED'
+      ? true
+      : localMembershipOverride === 'LEFT'
+        ? false
+        : (backendIsMember || backendIsOwner)
+  const isPending =
+    localMembershipOverride === 'PENDING'
+      ? true
+      : localMembershipOverride === 'JOINED' || localMembershipOverride === 'LEFT'
+        ? false
+        : backendIsPending
+
   const club = clubResponse
     ? { ...clubResponse.club, rides: ridesResponse?.items ?? [] }
     : null
@@ -98,22 +119,39 @@ export default function ClubDetailPage() {
     })
   }, [clubResponse])
 
-  const handleJoinRequest = async () => {
+  const handleJoinRequest = async (payload?: {
+    message?: string
+    answers?: ClubJoinAnswer[]
+  }) => {
     if (!club) return
-    const loadingToastId = loadingToast('Joining club...', {
-      description: club.isPublic
-        ? 'Adding you to the club.'
-        : 'Submitting your join request.',
-    })
+    const isAutoJoin =
+      club.isPublic &&
+      club.joinPolicy === 'OPEN' &&
+      (!club.joinQuestions || club.joinQuestions.length === 0)
+
+    const loadingToastId = loadingToast(
+      isAutoJoin ? 'Joining club...' : 'Submitting application...',
+      {
+        description: isAutoJoin
+          ? 'Adding you to the club.'
+          : 'Submitting your join request for admin review.',
+      },
+    )
     try {
-      await joinClub(club.id).unwrap()
-      setIsPending(true)
+      setIsJoining(true)
+      await joinClub({ clubId: club.id, data: payload }).unwrap()
+      if (isAutoJoin) {
+        setLocalMembershipOverride('JOINED')
+        successToast('Welcome to the crew!', {
+          description: `You're now a member of ${club.name}`,
+        })
+      } else {
+        setLocalMembershipOverride('PENDING')
+        successToast('Application submitted!', {
+          description: 'The club admins will review your questionnaire answers and details.',
+        })
+      }
       setIsJoinDialogOpen(false)
-      successToast(club.isPublic ? 'Welcome to the crew!' : 'Request sent!', {
-        description: club.isPublic
-          ? `You're now a member of ${club.name}`
-          : 'The club admins will review your request.',
-      })
     } catch (err) {
       console.error('Failed to join club:', err)
       errorToast('Failed to join club', {
@@ -121,6 +159,7 @@ export default function ClubDetailPage() {
           err instanceof Error ? err.message : 'Something went wrong. Try again.',
       })
     } finally {
+      setIsJoining(false)
       dismissToast(loadingToastId)
     }
   }
@@ -132,7 +171,7 @@ export default function ClubDetailPage() {
     })
     try {
       await leaveClub(club.id).unwrap()
-      setIsMember(false)
+      setLocalMembershipOverride('LEFT')
       infoToast('You left the club', {
         description: `You are no longer a member of ${club.name}.`,
       })
@@ -269,7 +308,6 @@ export default function ClubDetailPage() {
 
   const members = club.members || []
   const rides = club.rides || []
-  const isOwner = !!(currentUserId && club.owner?.id === currentUserId)
 
   return (
     <div className="min-h-screen">
@@ -329,6 +367,10 @@ export default function ClubDetailPage() {
         onOpenChange={setIsJoinDialogOpen}
         clubName={club.name}
         isPublic={club.isPublic}
+        joinPolicy={club.joinPolicy}
+        requiresLicense={club.requiresLicense}
+        joinQuestions={club.joinQuestions}
+        isSubmitting={isJoining}
         onConfirm={handleJoinRequest}
       />
 

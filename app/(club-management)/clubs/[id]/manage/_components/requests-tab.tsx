@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Checkbox } from '@/components/ui/checkbox'
 import { BulkActionBar } from '@/components/bulk-action-bar'
-import { Check, X } from 'lucide-react'
+import { Check, X, FileQuestion } from 'lucide-react'
 import type { ClubRequestsResponse } from '@/features/clubs/schemas'
 import type { useBulkSelection } from '@/hooks/use-bulk-selection'
 import { formatDate } from '../_lib/constants'
@@ -95,6 +95,29 @@ export function RequestsTab({
                           &quot;{request.message}&quot;
                         </p>
                       )}
+
+                      {/* Questionnaire Responses */}
+                      {request.answers && request.answers.length > 0 && (
+                        <div className="mt-3 p-3 rounded-lg bg-neutral-900/60 border border-[#3a3a3c] space-y-2">
+                          <p className="text-xs font-mono text-neutral-400 font-semibold flex items-center gap-1.5">
+                            <FileQuestion className="w-3.5 h-3.5 text-[#ff1d2d]" />
+                            Questionnaire Responses ({request.answers.length}):
+                          </p>
+                          <div className="space-y-2 divide-y divide-[#2c2c2e]/60">
+                            {request.answers.map((ans, aIdx) => (
+                              <div key={aIdx} className={aIdx > 0 ? 'pt-2' : ''}>
+                                <p className="text-xs font-medium text-neutral-300">
+                                  {ans.question}
+                                </p>
+                                <p className="text-xs text-white mt-0.5 font-sans bg-black/30 p-1.5 rounded border border-[#2c2c2e]">
+                                  {Array.isArray(ans.answer) ? ans.answer.join(', ') : ans.answer || '—'}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       <div className="flex gap-2 mt-3">
                         <Button
                           size="sm"

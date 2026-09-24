@@ -24,7 +24,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useBulkSelection } from '@/hooks/use-bulk-selection'
 import { usePerformClubManagerBulkActionMutation } from '@/features/admin/api'
-import { ChevronLeft, Settings, Users, Shield, Bell, BarChart3, FileQuestion } from 'lucide-react'
+import { ChevronLeft, Settings, Users, Shield, ShieldAlert, Bell, BarChart3, FileQuestion } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
 
@@ -387,6 +387,29 @@ export default function ClubManagePage() {
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <p className="text-muted-foreground">{error || 'Club not found'}</p>
         <Button onClick={() => router.back()}>Go Back</Button>
+      </div>
+    )
+  }
+
+  const isOwner = clubResponse?.club.isOwner ?? false
+  const viewerPermissions = clubResponse?.club.viewerPermissions ?? []
+  const viewerRole = clubResponse?.club.viewerRole
+  const canManage =
+    isOwner ||
+    ['FOUNDER', 'ADMIN', 'OFFICER'].includes(viewerRole ?? '') ||
+    viewerPermissions.some((p) =>
+      ['club:manage_settings', 'club:manage_members', 'club:manage_roles'].includes(p),
+    )
+
+  if (!canManage && !clubLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center px-4">
+        <ShieldAlert className="w-12 h-12 text-amber-500 mx-auto" />
+        <h2 className="text-xl font-bold text-white">Access Denied</h2>
+        <p className="text-sm text-neutral-400 max-w-sm">
+          You do not have administrative permissions to manage {clubResponse?.club.name || 'this club'}.
+        </p>
+        <Button onClick={() => router.push(`/clubs/${clubId}`)}>Return to Club</Button>
       </div>
     )
   }

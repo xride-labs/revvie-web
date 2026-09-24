@@ -63,6 +63,9 @@ export const clubSchema = z.object({
   verified: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
 
+  joinPolicy: z.enum(['OPEN', 'APPLICATION', 'INVITE_ONLY']).default('OPEN'),
+  joinQuestions: z.array(z.any()).nullable().optional(),
+
   trophies: z.array(z.string()).default([]),
   trophyCount: z.number().int().default(0),
   reputation: z.number().default(0),
@@ -88,14 +91,40 @@ export const clubSchema = z.object({
   updatedAt: z.string().optional(),
 })
 
+export const clubJoinQuestionSchema = z.object({
+  id: z.string(),
+  question: z.string(),
+  type: z.enum(['TEXT', 'CHOICE']).default('TEXT'),
+  options: z.array(z.string()).optional(),
+  required: z.boolean().default(false),
+})
+export type ClubJoinQuestion = z.infer<typeof clubJoinQuestionSchema>
+
 /**
- * `GET /clubs/:id`. Membership state is expressed as `joinRequestStatus` plus the
- * `members` array — there is no `isMember`, `isPending` or `userRole` on the wire.
+ * `GET /clubs/:id`. Membership state and viewer permissions calculated directly by backend.
  */
 export const clubDetailsSchema = clubSchema.extend({
   members: z.array(clubMemberSchema),
   joinRequestStatus: z.enum(['PENDING', 'APPROVED', 'REJECTED']).nullable().default(null),
   pendingRequestCount: z.number().int().default(0),
+  isMember: z.boolean().default(false),
+  isOwner: z.boolean().default(false),
+  viewerRole: z.string().nullable().default(null),
+  viewerPermissions: z.array(z.string()).default([]),
+  viewerCustomRole: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      slug: z.string(),
+      color: z.string().nullable().optional(),
+      badgeIcon: z.string().nullable().optional(),
+      permissions: z.array(z.string()).optional(),
+    })
+    .nullable()
+    .optional(),
+  rideCount: z.number().int().default(0),
+  announcementsGroupId: z.string().nullable().optional(),
+  announcementsConversationId: z.string().nullable().optional(),
 })
 
 /** Convenience derivations the UI wants but the backend does not send. */

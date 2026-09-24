@@ -11,6 +11,7 @@ import type {
   ClubRole,
   CreateClubInput,
   CreateClubRoleInput,
+  JoinClubInput,
   ModerateMemberInput,
   MyClubsResponse,
   UpdateClubInput,
@@ -133,12 +134,26 @@ export const clubsApiSlice = clubsApi.injectEndpoints({
       ],
     }),
 
-    joinClub: build.mutation<unknown, string>({
-      query: (clubId) => ({ url: CLUB_ENDPOINTS.join(clubId), method: 'POST' }),
-      invalidatesTags: (_result, _error, clubId) => [
-        { type: 'Club', id: clubId },
-        { type: 'ClubList', id: 'MINE' },
-      ],
+    joinClub: build.mutation<
+      unknown,
+      string | { clubId: string; data?: JoinClubInput }
+    >({
+      query: (arg) => {
+        const clubId = typeof arg === 'string' ? arg : arg.clubId
+        const body = typeof arg === 'string' ? undefined : arg.data
+        return {
+          url: CLUB_ENDPOINTS.join(clubId),
+          method: 'POST',
+          body,
+        }
+      },
+      invalidatesTags: (_result, _error, arg) => {
+        const clubId = typeof arg === 'string' ? arg : arg.clubId
+        return [
+          { type: 'Club', id: clubId },
+          { type: 'ClubList', id: 'MINE' },
+        ]
+      },
     }),
 
     leaveClub: build.mutation<void, string>({

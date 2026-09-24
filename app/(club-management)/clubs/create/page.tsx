@@ -20,7 +20,7 @@ import { useCreateClubMutation, useUpdateClubMutation } from '@/features/clubs/a
 import { useUploadClubImageMutation } from '@/features/media/api'
 import { fileToDataUrl } from '@/lib/media-utils'
 import { useToast } from '@/hooks/use-toast'
-import { ImageUrlInput } from '@/components/ui/image-url-input'
+import { ImageDropzone } from '@/components/ui/image-dropzone'
 import { LocationPicker } from '@/components/ui/location-picker'
 import type { LocationValue } from '@/components/ui/location-picker'
 
@@ -101,22 +101,17 @@ export default function CreateClubPage() {
         clubType: clubData.clubType || undefined,
         isPublic: clubData.isPublic,
         requiresLicense: false,
+        joinPolicy: clubData.requireApproval ? 'APPLICATION' : 'OPEN',
       }).unwrap()
 
-      if (logoUrl) {
-        await updateClub({ clubId: club.id, data: { image: logoUrl } }).unwrap()
-      } else if (logoFile) {
-        const logoDataUrl = await fileToDataUrl(logoFile)
-        await uploadClubImage({ clubId: club.id, file: logoDataUrl, type: 'logo' }).unwrap()
+      if (logoPreview) {
+        await uploadClubImage({ clubId: club.id, file: logoPreview, type: 'logo' }).unwrap()
       }
 
-      if (coverUrl) {
-        await updateClub({ clubId: club.id, data: { coverImage: coverUrl } }).unwrap()
-      } else if (coverFile) {
-        const coverDataUrl = await fileToDataUrl(coverFile)
+      if (coverPreview) {
         await uploadClubImage({
           clubId: club.id,
-          file: coverDataUrl,
+          file: coverPreview,
           type: 'cover',
         }).unwrap()
       }
@@ -186,39 +181,33 @@ export default function CreateClubPage() {
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
-                <ImageUrlInput
+                <ImageDropzone
                   label="Club Logo"
-                  hint="Square, at least 256×256px"
-                  value={logoUrl}
-                  onChange={(url) => {
-                    setLogoUrl(url)
-                    if (url) setLogoFile(null)
+                  description="Square PNG, JPG, WebP up to 5MB"
+                  aspectRatio="square"
+                  value={logoPreview}
+                  onUpload={(dataUrl, file) => {
+                    setLogoFile(file)
+                    setLogoPreview(dataUrl)
                   }}
-                  filePreview={logoPreview}
-                  onFileChange={async (f) => {
-                    setLogoFile(f)
-                    setLogoUrl(null)
-                    setLogoPreview(await fileToDataUrl(f))
+                  onRemove={() => {
+                    setLogoFile(null)
+                    setLogoPreview(null)
                   }}
-                  searchQuery="motorcycle club logo"
-                  aspectClass="aspect-square"
                 />
-                <ImageUrlInput
+                <ImageDropzone
                   label="Cover Banner"
-                  hint="Wide, at least 1200×400px"
-                  value={coverUrl}
-                  onChange={(url) => {
-                    setCoverUrl(url)
-                    if (url) setCoverFile(null)
+                  description="Wide banner (3:1) up to 5MB"
+                  aspectRatio="banner"
+                  value={coverPreview}
+                  onUpload={(dataUrl, file) => {
+                    setCoverFile(file)
+                    setCoverPreview(dataUrl)
                   }}
-                  filePreview={coverPreview}
-                  onFileChange={async (f) => {
-                    setCoverFile(f)
-                    setCoverUrl(null)
-                    setCoverPreview(await fileToDataUrl(f))
+                  onRemove={() => {
+                    setCoverFile(null)
+                    setCoverPreview(null)
                   }}
-                  searchQuery="motorcycle club cover banner"
-                  aspectClass="aspect-[3/1]"
                 />
               </div>
 
