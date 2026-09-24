@@ -16,9 +16,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ChevronLeft, ImagePlus } from 'lucide-react'
-import { useCreateClubMutation, useUpdateClubMutation } from '@/features/clubs/api'
+import { useCreateClubMutation } from '@/features/clubs/api'
 import { useUploadClubImageMutation } from '@/features/media/api'
-import { fileToDataUrl } from '@/lib/media-utils'
+
 import { useToast } from '@/hooks/use-toast'
 import { ImageDropzone } from '@/components/ui/image-dropzone'
 import { LocationPicker } from '@/components/ui/location-picker'
@@ -47,15 +47,9 @@ export default function CreateClubPage() {
   } = useToast()
   const [step, setStep] = useState(1)
   const [createClub, { isLoading: isSubmitting }] = useCreateClubMutation()
-  const [updateClub] = useUpdateClubMutation()
   const [uploadClubImage] = useUploadClubImageMutation()
-  const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
-  const [coverFile, setCoverFile] = useState<File | null>(null)
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
-  // Direct URL state — when set, bypasses Cloudinary upload
-  const [logoUrl, setLogoUrl] = useState<string | null>(null)
-  const [coverUrl, setCoverUrl] = useState<string | null>(null)
   const [homeBase, setHomeBase] = useState<LocationValue | null>(null)
   const [clubData, setClubData] = useState({
     name: '',
@@ -63,27 +57,8 @@ export default function CreateClubPage() {
     clubType: '',
     isPublic: true,
     requireApproval: true,
+    requiresLicense: false,
   })
-
-  const handleLogoChange = async (file: File | null) => {
-    setLogoFile(file)
-    if (file) {
-      const preview = await fileToDataUrl(file)
-      setLogoPreview(preview)
-    } else {
-      setLogoPreview(null)
-    }
-  }
-
-  const handleCoverChange = async (file: File | null) => {
-    setCoverFile(file)
-    if (file) {
-      const preview = await fileToDataUrl(file)
-      setCoverPreview(preview)
-    } else {
-      setCoverPreview(null)
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -100,7 +75,7 @@ export default function CreateClubPage() {
         longitude: homeBase?.lng,
         clubType: clubData.clubType || undefined,
         isPublic: clubData.isPublic,
-        requiresLicense: false,
+        requiresLicense: clubData.requiresLicense,
         joinPolicy: clubData.requireApproval ? 'APPLICATION' : 'OPEN',
       }).unwrap()
 
@@ -186,12 +161,10 @@ export default function CreateClubPage() {
                   description="Square PNG, JPG, WebP up to 5MB"
                   aspectRatio="square"
                   value={logoPreview}
-                  onUpload={(dataUrl, file) => {
-                    setLogoFile(file)
+                  onUpload={(dataUrl) => {
                     setLogoPreview(dataUrl)
                   }}
                   onRemove={() => {
-                    setLogoFile(null)
                     setLogoPreview(null)
                   }}
                 />
@@ -200,12 +173,10 @@ export default function CreateClubPage() {
                   description="Wide banner (3:1) up to 5MB"
                   aspectRatio="banner"
                   value={coverPreview}
-                  onUpload={(dataUrl, file) => {
-                    setCoverFile(file)
+                  onUpload={(dataUrl) => {
                     setCoverPreview(dataUrl)
                   }}
                   onRemove={() => {
-                    setCoverFile(null)
                     setCoverPreview(null)
                   }}
                 />
@@ -394,6 +365,20 @@ export default function CreateClubPage() {
                     checked={clubData.requireApproval}
                     onCheckedChange={(checked) =>
                       setClubData({ ...clubData, requireApproval: checked })
+                    }
+                  />
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl border bg-muted/20">
+                  <div>
+                    <p className="font-semibold">Requires Driving License</p>
+                    <p className="text-sm text-muted-foreground">
+                      Members must hold a verified motorcycle license
+                    </p>
+                  </div>
+                  <Switch
+                    checked={clubData.requiresLicense}
+                    onCheckedChange={(checked) =>
+                      setClubData({ ...clubData, requiresLicense: checked })
                     }
                   />
                 </div>
