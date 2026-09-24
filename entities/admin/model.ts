@@ -376,6 +376,16 @@ export const pendingBusinessSchema = z.object({
     name: z.string().nullable(),
     email: z.string().nullable(),
   }),
+  documents: z
+    .array(
+      z.object({
+        type: z.string(),
+        url: z.string(),
+        uploadedAt: z.string().optional(),
+      }),
+    )
+    .nullable()
+    .optional(),
 })
 
 export const adCampaignStatusSchema = z.enum([

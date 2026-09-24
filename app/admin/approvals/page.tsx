@@ -23,7 +23,17 @@ import {
   Percent,
   Trash2,
   ExternalLink,
+  FileText,
+  Eye,
 } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   useGetApprovalsQuery,
   useGetBusinessSubmissionsQuery,
@@ -50,6 +60,11 @@ import { toast } from 'sonner'
 export default function AdminApprovalsPage() {
   const [actioningId, setActioningId] = useState<string | null>(null)
   const [rejectNotes, setRejectNotes] = useState<Record<string, string>>({})
+  const [previewDoc, setPreviewDoc] = useState<{
+    url: string
+    type: string
+    title: string
+  } | null>(null)
 
   const { data, isLoading: approvalsLoading, refetch: refetchApprovals } = useGetApprovalsQuery()
   const { data: bizData, refetch: refetchBusinesses } = useGetBusinessSubmissionsQuery()
@@ -319,6 +334,63 @@ export default function AdminApprovalsPage() {
                             <Clock className="w-3 h-3 inline mr-1" />
                             Submitted {new Date(biz.createdAt).toLocaleDateString()}
                           </p>
+
+                          {/* Verification Documents Viewer */}
+                          {biz.documents && biz.documents.length > 0 ? (
+                            <div className="mt-2.5 p-2.5 rounded-lg bg-neutral-900/60 border border-[#3a3a3c] space-y-1.5">
+                              <div className="flex items-center gap-1.5 text-[11px] font-mono text-neutral-400">
+                                <FileText className="w-3.5 h-3.5 text-[#ff1d2d]" />
+                                <span>Verification Documents ({biz.documents.length}):</span>
+                              </div>
+                              <div className="flex flex-wrap gap-2 pt-0.5">
+                                {biz.documents.map((doc, idx) => (
+                                  <div key={idx} className="flex items-center gap-1">
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        setPreviewDoc({
+                                          url: doc.url,
+                                          type: doc.type,
+                                          title: biz.displayName,
+                                        })
+                                      }
+                                      className="h-7 px-2.5 bg-[#1c1c1e] hover:bg-neutral-800 border-[#3a3a3c] text-xs gap-1.5"
+                                    >
+                                      <span className="font-mono font-bold text-[10px] text-amber-400 uppercase">
+                                        {doc.type}
+                                      </span>
+                                      <Eye className="w-3 h-3 text-neutral-400" />
+                                      <span className="text-[11px] text-neutral-300">Preview</span>
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-7 w-7 p-0 text-neutral-400 hover:text-white"
+                                      asChild
+                                    >
+                                      <a
+                                        href={doc.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        title="Open in new tab"
+                                      >
+                                        <ExternalLink className="w-3.5 h-3.5" />
+                                      </a>
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="mt-2 flex items-center gap-1.5 text-[11px] text-neutral-500 font-mono">
+                              <FileText className="w-3.5 h-3.5 text-neutral-600" />
+                              <span>No verification documents uploaded</span>
+                            </div>
+                          )}
+
                           <div className="mt-2">
                             <Textarea
                               placeholder="Rejection notes (optional)"
@@ -807,6 +879,65 @@ export default function AdminApprovalsPage() {
           )}
         </TabsContent>
       </Tabs>
+      {/* Verification Document Preview Modal */}
+      <Dialog open={!!previewDoc} onOpenChange={(open) => !open && setPreviewDoc(null)}>
+        <DialogContent className="max-w-2xl bg-[#1c1c1e] border-[#3a3a3c] text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <FileText className="w-5 h-5 text-[#ff1d2d]" />
+              {previewDoc?.title} - {previewDoc?.type} Document
+            </DialogTitle>
+            <DialogDescription className="text-xs text-neutral-400 font-mono">
+              Review document validity and compliance before approving business profile.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4">
+            {previewDoc?.url &&
+            (previewDoc.url.match(/\.pdf($|\?)/i) || previewDoc.url.includes('application/pdf')) ? (
+              <iframe
+                src={previewDoc.url}
+                className="w-full h-[450px] rounded-lg border border-[#3a3a3c] bg-white"
+                title="Document PDF Preview"
+              />
+            ) : (
+              <div className="flex items-center justify-center p-2 rounded-lg border border-[#3a3a3c] bg-black/40 min-h-[300px]">
+                {previewDoc?.url && (
+                  <img
+                    src={previewDoc.url}
+                    alt={previewDoc.type}
+                    className="max-h-[450px] w-auto object-contain rounded-md"
+                  />
+                )}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="flex items-center justify-between sm:justify-between">
+            {previewDoc?.url && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-[#3a3a3c] bg-neutral-900 text-neutral-300 hover:text-white text-xs gap-1.5"
+                asChild
+              >
+                <a href={previewDoc.url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Open in New Tab
+                </a>
+              </Button>
+            )}
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => setPreviewDoc(null)}
+              className="bg-neutral-800 hover:bg-neutral-700 text-white text-xs"
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

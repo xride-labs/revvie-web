@@ -43,6 +43,7 @@ import {
   XCircle,
   Loader2,
   ExternalLink,
+  FileText,
 } from 'lucide-react'
 import {
   useGetAllBusinessesQuery,
@@ -392,6 +393,32 @@ export default function AdminBrandsPage() {
                   {new Date(viewBiz.createdAt).toLocaleDateString()}
                 </Field>
               </div>
+
+              {/* Verification Documents */}
+              {viewBiz.documents && viewBiz.documents.length > 0 && (
+                <div className="rounded-md border p-3 bg-muted/40 space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
+                    <FileText className="w-3.5 h-3.5 text-[#ff1d2d]" />
+                    <span>Verification Documents ({viewBiz.documents.length})</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {viewBiz.documents.map((doc, idx) => (
+                      <a
+                        key={idx}
+                        href={doc.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-background border text-xs hover:bg-muted transition-colors"
+                      >
+                        <span className="font-mono font-bold text-[10px] text-amber-500 uppercase">
+                          {doc.type}
+                        </span>
+                        <ExternalLink className="w-3 h-3 text-muted-foreground" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {viewBiz.verificationNotes && (
                 <div className="rounded-md border p-3 bg-muted/40">
