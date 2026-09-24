@@ -10,8 +10,10 @@ import type {
 
 import { BUSINESS_ENDPOINTS } from './endpoints'
 import type {
+  AttachDocumentsInput,
   BillingStatus,
   BusinessAnalytics,
+  BusinessInquiry,
   CreateBrandProductInput,
   CreateBusinessInput,
   CreateCampaignInput,
@@ -23,6 +25,7 @@ import type {
   UpdateBusinessInput,
   UpdateCampaignInput,
   UpdateDiscountInput,
+  UpdateInquiryStatusInput,
   UpdateServiceInput,
   UpdateTeamMemberRoleInput,
 } from './schemas'
@@ -272,6 +275,35 @@ export const businessApiSlice = businessApi.injectEndpoints({
         body: { businessId },
       }),
     }),
+
+    attachDocuments: build.mutation<
+      BusinessProfile,
+      { id: string; data: AttachDocumentsInput }
+    >({
+      query: ({ id, data }) => ({
+        url: BUSINESS_ENDPOINTS.documents(id),
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: (_r, _e, { id }) => [{ type: 'Business', id }],
+    }),
+
+    getBusinessInquiries: build.query<BusinessInquiry[], string>({
+      query: (id) => ({ url: BUSINESS_ENDPOINTS.inquiries(id) }),
+      providesTags: (_r, _e, id) => [{ type: 'Business', id }],
+    }),
+
+    updateInquiryStatus: build.mutation<
+      BusinessInquiry,
+      { businessId: string; inquiryId: string; data: UpdateInquiryStatusInput }
+    >({
+      query: ({ businessId, inquiryId, data }) => ({
+        url: BUSINESS_ENDPOINTS.inquiry(businessId, inquiryId),
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: (_r, _e, { businessId }) => [{ type: 'Business', id: businessId }],
+    }),
   }),
 })
 
@@ -304,4 +336,7 @@ export const {
   useGetBusinessAnalyticsQuery,
   useGetBillingStatusQuery,
   useCreateBillingCheckoutMutation,
+  useAttachDocumentsMutation,
+  useGetBusinessInquiriesQuery,
+  useUpdateInquiryStatusMutation,
 } = businessApiSlice

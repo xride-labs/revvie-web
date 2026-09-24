@@ -15,7 +15,7 @@ export interface ImageDropzoneProps {
   maxSizeMB?: number
   disabled?: boolean
   className?: string
-  onUpload: (dataUrl: string, file: File) => Promise<string | void>
+  onUpload: (dataUrl: string, file: File) => Promise<string | void> | Promise<void> | void
   onRemove?: () => void
 }
 

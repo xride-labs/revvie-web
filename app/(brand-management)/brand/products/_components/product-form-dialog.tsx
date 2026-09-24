@@ -17,7 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2, Tag } from 'lucide-react'
+import { Loader2, Tag, ImageIcon, Trash2 } from 'lucide-react'
+import { ImageDropzone } from '@/components/ui/image-dropzone'
 import type {
   BrandProduct,
   BrandProductCategory,
@@ -35,6 +36,7 @@ export type ProductFormState = {
   availability: ProductAvailability
   tags: string
   stockQty: string
+  images: string[]
 }
 
 export interface ProductFormDialogProps {
@@ -192,6 +194,51 @@ export function ProductFormDialog({
               value={form.tags}
               onChange={(e) => set({ tags: e.target.value })}
             />
+          </div>
+
+          {/* Product Photos */}
+          <div className="grid gap-2 pt-2 border-t border-border/40">
+            <Label className="flex items-center gap-1.5">
+              <ImageIcon className="w-3.5 h-3.5 text-amber-500" />
+              Product Photos ({form.images?.length ?? 0}/10)
+            </Label>
+
+            {form.images && form.images.length > 0 && (
+              <div className="grid grid-cols-4 gap-2 mb-2">
+                {form.images.map((img, idx) => (
+                  <div
+                    key={idx}
+                    className="relative group rounded-lg overflow-hidden border border-border/60 aspect-square bg-muted/30"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={img}
+                      alt={`Product photo ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        set({ images: form.images.filter((_, i) => i !== idx) })
+                      }
+                      className="absolute top-1 right-1 p-1 rounded-full bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {(form.images?.length ?? 0) < 10 && (
+              <ImageDropzone
+                onUpload={(dataUrl) => {
+                  set({ images: [...(form.images ?? []), dataUrl] })
+                }}
+                aspectRatio="square"
+                label="Add product photo (square 1:1, max 5MB)"
+              />
+            )}
           </div>
         </div>
 

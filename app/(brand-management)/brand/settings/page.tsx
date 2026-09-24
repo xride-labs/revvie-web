@@ -16,12 +16,26 @@ import {
   Loader2,
   MapPin,
   Navigation,
+  ImageIcon,
+  FileText,
+  ExternalLink,
+  Trash2,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import {
   useUpdateBusinessMutation,
   useSubmitBusinessMutation,
+  useAttachDocumentsMutation,
 } from '@/features/business/api'
+import { useUploadBusinessImageMutation } from '@/features/media/api'
+import { ImageDropzone } from '@/components/ui/image-dropzone'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import type { BusinessCategory } from '@/entities/business/model'
 import { mapApiError } from '@/lib/errors'
 import { useBusinessContext } from '@/contexts/business-context'
@@ -50,10 +64,25 @@ const VERIFICATION_CONFIG: Record<
 }
 
 export default function BrandSettingsPage() {
-  const { success: successToast, error: errorToast } = useToast()
+  const {
+    success: successToast,
+    error: errorToast,
+    loading: loadingToast,
+    dismiss: dismissToast,
+  } = useToast()
   const { business, reload } = useBusinessContext()
   const [updateBusiness, { isLoading: isSaving }] = useUpdateBusinessMutation()
   const [submitBusiness, { isLoading: isSubmitting }] = useSubmitBusinessMutation()
+  const [uploadBusinessImage] = useUploadBusinessImageMutation()
+  const [attachDocuments, { isLoading: isAttachingDoc }] = useAttachDocumentsMutation()
+
+  const [logoUrl, setLogoUrl] = useState<string | null>(null)
+  const [bannerUrl, setBannerUrl] = useState<string | null>(null)
+  const [documents, setDocuments] = useState<
+    Array<{ type: string; url: string; uploadedAt?: string }>
+  >([])
+  const [docType, setDocType] = useState('GST_CERTIFICATE')
+
   const [locating, setLocating] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [profile, setProfile] = useState({
@@ -75,6 +104,9 @@ export default function BrandSettingsPage() {
 
   useEffect(() => {
     if (!business) return
+    setLogoUrl(business.logoUrl ?? null)
+    setBannerUrl(business.bannerUrl ?? null)
+    setDocuments((business.documents as any) ?? [])
     setProfile({
       displayName: business.displayName ?? '',
       tagline: business.tagline ?? '',
@@ -91,7 +123,81 @@ export default function BrandSettingsPage() {
       latitude: business.latitude != null ? String(business.latitude) : '',
       longitude: business.longitude != null ? String(business.longitude) : '',
     })
-  }, [business?.id])
+  }, [business?.id, business?.logoUrl, business?.bannerUrl, business?.documents])
+
+  const handleUploadLogo = async (dataUrl: string) => {
+    if (!business) return
+    const tid = loadingToast('Uploading brand logo...')
+    try {
+      const res = await uploadBusinessImage({
+        businessId: business.id,
+        file: dataUrl,
+        type: 'logo',
+      }).unwrap()
+      setLogoUrl(res.media.secureUrl)
+      await updateBusiness({ id: business.id, data: { logoUrl: res.media.secureUrl } }).unwrap()
+      await reload()
+      successToast('Brand logo updated')
+    } catch (err) {
+      errorToast('Failed to upload logo', {
+        description: err instanceof Error ? err.message : 'Please try again',
+      })
+    } finally {
+      dismissToast(tid)
+    }
+  }
+
+  const handleUploadBanner = async (dataUrl: string) => {
+    if (!business) return
+    const tid = loadingToast('Uploading brand banner...')
+    try {
+      const res = await uploadBusinessImage({
+        businessId: business.id,
+        file: dataUrl,
+        type: 'banner',
+      }).unwrap()
+      setBannerUrl(res.media.secureUrl)
+      await updateBusiness({ id: business.id, data: { bannerUrl: res.media.secureUrl } }).unwrap()
+      await reload()
+      successToast('Brand banner updated')
+    } catch (err) {
+      errorToast('Failed to upload banner', {
+        description: err instanceof Error ? err.message : 'Please try again',
+      })
+    } finally {
+      dismissToast(tid)
+    }
+  }
+
+  const handleAttachDocument = async (dataUrl: string) => {
+    if (!business) return
+    const tid = loadingToast('Attaching verification document...')
+    try {
+      const res = await uploadBusinessImage({
+        businessId: business.id,
+        file: dataUrl,
+        type: 'banner',
+      }).unwrap()
+      const newDoc = {
+        type: docType,
+        url: res.media.secureUrl,
+        uploadedAt: new Date().toISOString(),
+      }
+      await attachDocuments({
+        id: business.id,
+        data: { documents: [newDoc] },
+      }).unwrap()
+      setDocuments((prev) => [...prev, newDoc])
+      await reload()
+      successToast('Document attached successfully')
+    } catch (err) {
+      errorToast('Failed to attach document', {
+        description: err instanceof Error ? err.message : 'Please try again',
+      })
+    } finally {
+      dismissToast(tid)
+    }
+  }
 
   const toggleCategory = (cat: BusinessCategory) => {
     setProfile((p) => ({
@@ -235,6 +341,53 @@ export default function BrandSettingsPage() {
                 {business.verificationNotes}
               </p>
             )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Brand Visuals (Logo & Banner) */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <ImageIcon className="w-5 h-5 text-amber-500" />
+            <CardTitle className="text-base">Brand Visual Identity</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div>
+            <Label className="block mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Brand Logo (Square / Avatar)
+            </Label>
+            <ImageDropzone
+              value={logoUrl}
+              onUpload={handleUploadLogo}
+              onRemove={async () => {
+                if (!business) return
+                setLogoUrl(null)
+                await updateBusiness({ id: business.id, data: { logoUrl: null } }).unwrap()
+                await reload()
+              }}
+              aspectRatio="square"
+              label="Drop brand logo here (PNG/JPG, max 5MB)"
+            />
+          </div>
+
+          <div>
+            <Label className="block mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Brand Cover Banner (Storefront Header)
+            </Label>
+            <ImageDropzone
+              value={bannerUrl}
+              onUpload={handleUploadBanner}
+              onRemove={async () => {
+                if (!business) return
+                setBannerUrl(null)
+                await updateBusiness({ id: business.id, data: { bannerUrl: null } }).unwrap()
+                await reload()
+              }}
+              aspectRatio="banner"
+              label="Drop brand banner header here (1200x400 recommended)"
+            />
           </div>
         </CardContent>
       </Card>
@@ -487,21 +640,78 @@ export default function BrandSettingsPage() {
       {/* Verification Documents */}
       <Card id="verification">
         <CardHeader>
-          <CardTitle className="text-base">Verification Documents</CardTitle>
+          <div className="flex items-center gap-2">
+            <FileText className="w-5 h-5 text-amber-500" />
+            <CardTitle className="text-base">Verification Documents</CardTitle>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
             Upload your business registration, GST certificate, or brand authorization
             letter to get verified and go live on the marketplace.
           </p>
-          <div className="border-2 border-dashed rounded-xl p-8 text-center">
-            <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
-            <p className="text-sm font-medium mb-1">Upload documents</p>
-            <p className="text-xs text-muted-foreground">PDF, JPG, PNG up to 10MB each</p>
-            <Button variant="outline" size="sm" className="mt-4">
-              Choose Files
-            </Button>
+
+          {/* Uploaded Documents List */}
+          {documents.length > 0 && (
+            <div className="space-y-2 rounded-lg border border-border/40 p-3 bg-muted/20">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Attached Documents ({documents.length})
+              </p>
+              <div className="space-y-2">
+                {documents.map((doc, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-2 rounded bg-background/60 border border-border/40 text-xs"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-amber-500" />
+                      <span className="font-medium text-foreground">
+                        {doc.type.replace(/_/g, ' ')}
+                      </span>
+                    </div>
+                    <a
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-amber-500 hover:underline flex items-center gap-1"
+                    >
+                      View <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* New Document Uploader */}
+          <div className="space-y-3 pt-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Document Type</Label>
+              <Select value={docType} onValueChange={setDocType}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="GST_CERTIFICATE">GST Registration Certificate</SelectItem>
+                  <SelectItem value="BUSINESS_PAN">Company / Business PAN Card</SelectItem>
+                  <SelectItem value="TRADE_LICENSE">Trade License / Shop & Establishment</SelectItem>
+                  <SelectItem value="CERTIFICATE_OF_INCORPORATION">
+                    Certificate of Incorporation
+                  </SelectItem>
+                  <SelectItem value="BRAND_AUTHORIZATION">
+                    Brand Authorization Letter
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <ImageDropzone
+              onUpload={handleAttachDocument}
+              aspectRatio="any"
+              label={`Upload ${docType.replace(/_/g, ' ')} proof (PNG/JPG, max 5MB)`}
+            />
           </div>
+
           <Button
             className="w-full bg-amber-500 hover:bg-amber-600 text-white"
             disabled={!canSubmit || isSubmitting}

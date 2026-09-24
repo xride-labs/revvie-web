@@ -118,6 +118,7 @@ export default function BrandProductsPage() {
       availability: p.availability,
       tags: p.tags.join(', '),
       stockQty: typeof stockQty === 'number' ? String(stockQty) : '',
+      images: p.images ?? [],
     })
     setDialogOpen(true)
   }
@@ -142,7 +143,7 @@ export default function BrandProductsPage() {
           .map((t) => t.trim())
           .filter(Boolean),
         specs: Object.keys(specs).length > 0 ? specs : undefined,
-        images: editTarget?.images ?? [],
+        images: form.images ?? editTarget?.images ?? [],
         isActive: editTarget?.isActive ?? true,
         isFeatured: editTarget?.isFeatured ?? false,
       }

@@ -171,6 +171,43 @@ export type UpdateServiceInput = z.infer<typeof updateServiceInputSchema>
 export type CreateBrandProductInput = z.infer<typeof createBrandProductInputSchema>
 export type UpdateBrandProductInput = z.infer<typeof updateBrandProductInputSchema>
 
+export const businessDocumentSchema = z.object({
+  type: z.string(),
+  url: z.string(),
+  uploadedAt: z.string().optional(),
+})
+export type BusinessDocument = z.infer<typeof businessDocumentSchema>
+
+export const businessInquirySchema = z.object({
+  id: z.string(),
+  businessId: z.string(),
+  fromUserId: z.string(),
+  subject: z.string(),
+  message: z.string(),
+  status: z.enum(['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED']),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  fromUser: z
+    .object({
+      id: z.string(),
+      name: z.string().nullable(),
+      email: z.string().nullable(),
+      avatar: z.string().nullable(),
+    })
+    .optional(),
+})
+export type BusinessInquiry = z.infer<typeof businessInquirySchema>
+
+export const attachDocumentsInputSchema = z.object({
+  documents: z.array(businessDocumentSchema),
+})
+export type AttachDocumentsInput = z.infer<typeof attachDocumentsInputSchema>
+
+export const updateInquiryStatusInputSchema = z.object({
+  status: z.enum(['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED']),
+})
+export type UpdateInquiryStatusInput = z.infer<typeof updateInquiryStatusInputSchema>
+
 export {
   adCampaignSchema,
   brandTeamMemberSchema,
@@ -178,3 +215,4 @@ export {
   discountSchema,
   serviceListingSchema,
 }
+

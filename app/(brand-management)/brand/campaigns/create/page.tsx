@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { useToast } from '@/hooks/use-toast'
 import { useCreateCampaignMutation } from '@/features/business/api'
 import { useBusinessContext } from '@/contexts/business-context'
+import { ImageDropzone } from '@/components/ui/image-dropzone'
 import type { AdPlacementSlot as AdSlot } from '@/entities/business/model'
 
 const AD_SLOTS: { value: AdSlot; label: string; description: string }[] = [
@@ -58,6 +59,10 @@ export default function CreateCampaignPage() {
     e.preventDefault()
     if (form.selectedSlots.length === 0) {
       errorToast('Select at least one ad placement')
+      return
+    }
+    if (!form.imageUrl) {
+      errorToast('Please upload a campaign banner image')
       return
     }
     if (!business) {
@@ -142,12 +147,13 @@ export default function CreateCampaignPage() {
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label>Ad Image URL</Label>
-              <Input
-                placeholder="https://cdn.example.com/banner.jpg"
-                value={form.imageUrl}
-                onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                required
+              <Label>Campaign Ad Creative (Banner / Graphic)</Label>
+              <ImageDropzone
+                value={form.imageUrl || null}
+                onUpload={(dataUrl) => setForm((f) => ({ ...f, imageUrl: dataUrl }))}
+                onRemove={() => setForm((f) => ({ ...f, imageUrl: '' }))}
+                aspectRatio="banner"
+                label="Drop campaign ad creative here (banner format, max 5MB)"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">

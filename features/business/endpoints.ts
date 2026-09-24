@@ -15,6 +15,9 @@ export const BUSINESS_ENDPOINTS = {
   service: (id: string, serviceId: string) => `/business/${id}/services/${serviceId}`,
   products: (id: string) => `/business/${id}/products`,
   product: (id: string, productId: string) => `/business/${id}/products/${productId}`,
+  documents: (id: string) => `/business/${id}/documents`,
+  inquiries: (id: string) => `/business/${id}/inquiries`,
+  inquiry: (id: string, inquiryId: string) => `/business/${id}/inquiries/${inquiryId}`,
   billingStatus: (id: string) => `/payments/brand-status/${id}`,
   billingCheckout: '/payments/brand-checkout',
 } as const

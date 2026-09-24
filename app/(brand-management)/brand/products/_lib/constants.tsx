@@ -68,6 +68,7 @@ export const EMPTY_FORM = {
   availability: 'IN_STOCK' as ProductAvailability,
   tags: '',
   stockQty: '',
+  images: [] as string[],
 }
 
 /** Copy varies by the seller's primary business category — a helmet seller sees
