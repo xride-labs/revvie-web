@@ -24,7 +24,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useBulkSelection } from '@/hooks/use-bulk-selection'
 import { usePerformClubManagerBulkActionMutation } from '@/features/admin/api'
-import { ChevronLeft, Settings, Users, Shield, Bell, BarChart3 } from 'lucide-react'
+import { ChevronLeft, Settings, Users, Shield, Bell, BarChart3, FileQuestion } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
 
@@ -32,6 +32,7 @@ import type { ClubSettings } from './_lib/constants'
 import { MembersTab } from './_components/members-tab'
 import { RequestsTab } from './_components/requests-tab'
 import { SettingsTab } from './_components/settings-tab'
+import { JoinFlowTab } from './_components/join-flow-tab'
 import { DangerTab } from './_components/danger-tab'
 import { RemoveMemberDialog } from './_components/remove-member-dialog'
 import { DeleteClubDialog } from './_components/delete-club-dialog'
@@ -429,6 +430,10 @@ export default function ClubManagePage() {
             <Settings className="w-4 h-4" />
             Settings
           </TabsTrigger>
+          <TabsTrigger value="join-flow" className="gap-2">
+            <FileQuestion className="w-4 h-4" />
+            Join Policy
+          </TabsTrigger>
           <TabsTrigger value="danger" className="gap-2 text-red-600">
             <Shield className="w-4 h-4" />
             Danger Zone
@@ -470,6 +475,10 @@ export default function ClubManagePage() {
             onUploadGallery={handleUploadGallery}
             onRemoveGalleryPhoto={handleRemoveGalleryPhoto}
           />
+        </TabsContent>
+
+        <TabsContent value="join-flow">
+          <JoinFlowTab clubId={clubSettings.id} />
         </TabsContent>
 
         <TabsContent value="danger">

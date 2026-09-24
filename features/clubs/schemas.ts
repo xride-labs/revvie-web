@@ -231,3 +231,93 @@ export type ClubAnalytics = z.infer<typeof clubAnalyticsSchema>
 export type CreateClubInput = z.infer<typeof createClubInputSchema>
 export type UpdateClubInput = z.infer<typeof updateClubInputSchema>
 export type ListParams = z.infer<typeof listParamsSchema>
+
+// ── Join Flow Schemas ────────────────────────────────────────────────────────
+export const clubJoinQuestionSchema = z.object({
+  id: z.string(),
+  question: z.string(),
+  type: z.enum(['text', 'choice']),
+  options: z.array(z.string()).optional(),
+  required: z.boolean().default(false),
+})
+export type ClubJoinQuestion = z.infer<typeof clubJoinQuestionSchema>
+
+export const clubJoinFlowSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  joinPolicy: z.enum(['OPEN', 'APPLICATION', 'INVITE_ONLY']).default('OPEN'),
+  joinQuestions: z.array(clubJoinQuestionSchema).nullable().default([]),
+  isPublic: z.boolean().default(true),
+  requiresLicense: z.boolean().default(false),
+})
+export type ClubJoinFlow = z.infer<typeof clubJoinFlowSchema>
+
+export const updateClubJoinFlowInputSchema = z.object({
+  joinPolicy: z.enum(['OPEN', 'APPLICATION', 'INVITE_ONLY']).optional(),
+  joinQuestions: z.array(clubJoinQuestionSchema).optional(),
+  isPublic: z.boolean().optional(),
+  requiresLicense: z.boolean().optional(),
+})
+export type UpdateClubJoinFlowInput = z.infer<typeof updateClubJoinFlowInputSchema>
+
+// ── Custom Roles & Permissions Schemas ────────────────────────────────────────
+export const clubPermissionSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  name: z.string(),
+  description: z.string().nullable().optional(),
+  category: z.string(),
+  scope: z.string(),
+})
+export type ClubPermission = z.infer<typeof clubPermissionSchema>
+
+export const clubRoleSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  slug: z.string().optional(),
+  description: z.string().nullable().optional(),
+  color: z.string().default('#EF4444'),
+  icon: z.string().default('shield'),
+  isSystem: z.boolean().default(false),
+  priority: z.number().default(50),
+  permissions: z
+    .array(
+      z.object({
+        permissionId: z.string().optional(),
+        permission: clubPermissionSchema.optional(),
+      }),
+    )
+    .default([]),
+})
+export type ClubRole = z.infer<typeof clubRoleSchema>
+
+export const createClubRoleInputSchema = z.object({
+  name: z.string().min(2),
+  description: z.string().optional(),
+  color: z.string().optional(),
+  icon: z.string().optional(),
+  permissionCodes: z.array(z.string()),
+})
+export type CreateClubRoleInput = z.infer<typeof createClubRoleInputSchema>
+
+export const updateClubRoleInputSchema = createClubRoleInputSchema.partial()
+export type UpdateClubRoleInput = z.infer<typeof updateClubRoleInputSchema>
+
+// ── Moderation Schemas ────────────────────────────────────────────────────────
+export const moderationActionSchema = z.enum([
+  'MUTE',
+  'UNMUTE',
+  'SUSPEND',
+  'UNSUSPEND',
+  'BAN',
+  'UNBAN',
+])
+export type ModerationAction = z.infer<typeof moderationActionSchema>
+
+export const moderateMemberInputSchema = z.object({
+  action: moderationActionSchema,
+  expiresInMs: z.number().positive().optional(),
+  reason: z.string().max(500).optional(),
+})
+export type ModerateMemberInput = z.infer<typeof moderateMemberInputSchema>
+

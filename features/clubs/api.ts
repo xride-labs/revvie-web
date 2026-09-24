@@ -4,11 +4,18 @@ import type { Club, ClubDetails, ClubMember } from '@/entities/club/model'
 import { CLUB_ENDPOINTS } from './endpoints'
 import type {
   ClubAnalytics,
+  ClubJoinFlow,
+  ClubPermission,
   ClubRequestsResponse,
   ClubRidesResponse,
+  ClubRole,
   CreateClubInput,
+  CreateClubRoleInput,
+  ModerateMemberInput,
   MyClubsResponse,
   UpdateClubInput,
+  UpdateClubJoinFlowInput,
+  UpdateClubRoleInput,
   UpdateMemberRoleInput,
   UpdateMemberRoleResponse,
 } from './schemas'
@@ -162,6 +169,102 @@ export const clubsApiSlice = clubsApi.injectEndpoints({
         { type: 'ClubMember', id: clubId },
       ],
     }),
+
+    getClubJoinFlow: build.query<{ joinFlow: ClubJoinFlow }, string>({
+      query: (clubId) => ({ url: CLUB_ENDPOINTS.joinFlow(clubId) }),
+      providesTags: (_result, _error, clubId) => [{ type: 'Club', id: clubId }],
+    }),
+
+    updateClubJoinFlow: build.mutation<
+      { joinFlow: ClubJoinFlow },
+      { clubId: string; data: UpdateClubJoinFlowInput }
+    >({
+      query: ({ clubId, data }) => ({
+        url: CLUB_ENDPOINTS.joinFlow(clubId),
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { clubId }) => [
+        { type: 'Club', id: clubId },
+      ],
+    }),
+
+    getClubRoles: build.query<{ roles: ClubRole[] }, string>({
+      query: (clubId) => ({ url: CLUB_ENDPOINTS.roles(clubId) }),
+      providesTags: (_result, _error, clubId) => [{ type: 'Club', id: clubId }],
+    }),
+
+    getClubPermissions: build.query<{ permissions: ClubPermission[] }, string>({
+      query: (clubId) => ({ url: CLUB_ENDPOINTS.permissions(clubId) }),
+    }),
+
+    createClubRole: build.mutation<
+      { role: ClubRole },
+      { clubId: string; data: CreateClubRoleInput }
+    >({
+      query: ({ clubId, data }) => ({
+        url: CLUB_ENDPOINTS.roles(clubId),
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { clubId }) => [
+        { type: 'Club', id: clubId },
+      ],
+    }),
+
+    updateClubRole: build.mutation<
+      { role: ClubRole },
+      { clubId: string; roleId: string; data: UpdateClubRoleInput }
+    >({
+      query: ({ clubId, roleId, data }) => ({
+        url: CLUB_ENDPOINTS.role(clubId, roleId),
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { clubId }) => [
+        { type: 'Club', id: clubId },
+      ],
+    }),
+
+    deleteClubRole: build.mutation<void, { clubId: string; roleId: string }>({
+      query: ({ clubId, roleId }) => ({
+        url: CLUB_ENDPOINTS.role(clubId, roleId),
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_result, _error, { clubId }) => [
+        { type: 'Club', id: clubId },
+      ],
+    }),
+
+    assignClubMemberRole: build.mutation<
+      { member: unknown },
+      { clubId: string; userId: string; roleId: string | null }
+    >({
+      query: ({ clubId, userId, roleId }) => ({
+        url: CLUB_ENDPOINTS.assignMemberRole(clubId, userId),
+        method: 'POST',
+        body: { roleId },
+      }),
+      invalidatesTags: (_result, _error, { clubId }) => [
+        { type: 'ClubMember', id: clubId },
+        { type: 'Club', id: clubId },
+      ],
+    }),
+
+    moderateClubMember: build.mutation<
+      unknown,
+      { clubId: string; userId: string; data: ModerateMemberInput }
+    >({
+      query: ({ clubId, userId, data }) => ({
+        url: CLUB_ENDPOINTS.moderateMember(clubId, userId),
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: (_result, _error, { clubId }) => [
+        { type: 'ClubMember', id: clubId },
+        { type: 'Club', id: clubId },
+      ],
+    }),
   }),
 })
 
@@ -182,4 +285,13 @@ export const {
   useLeaveClubMutation,
   useApproveRequestMutation,
   useRejectRequestMutation,
+  useGetClubJoinFlowQuery,
+  useUpdateClubJoinFlowMutation,
+  useGetClubRolesQuery,
+  useGetClubPermissionsQuery,
+  useCreateClubRoleMutation,
+  useUpdateClubRoleMutation,
+  useDeleteClubRoleMutation,
+  useAssignClubMemberRoleMutation,
+  useModerateClubMemberMutation,
 } = clubsApiSlice

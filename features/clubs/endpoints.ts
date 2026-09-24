@@ -21,4 +21,12 @@ export const CLUB_ENDPOINTS = {
     `/clubs/${clubId}/requests/${userId}/reject`,
   rides: (clubId: string) => `/clubs/${clubId}/rides`,
   analytics: (clubId: string) => `/clubs/${clubId}/analytics`,
+  joinFlow: (clubId: string) => `/clubs/${clubId}/join-flow`,
+  roles: (clubId: string) => `/clubs/${clubId}/roles`,
+  role: (clubId: string, roleId: string) => `/clubs/${clubId}/roles/${roleId}`,
+  permissions: (clubId: string) => `/clubs/${clubId}/roles/permissions`,
+  assignMemberRole: (clubId: string, userId: string) => `/clubs/${clubId}/members/${userId}/role`,
+  moderateMember: (clubId: string, userId: string) =>
+    `/clubs/${clubId}/members/${userId}/moderation`,
+  moderationAudit: (clubId: string) => `/clubs/${clubId}/moderation`,
 } as const
