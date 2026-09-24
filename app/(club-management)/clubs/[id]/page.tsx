@@ -7,6 +7,7 @@ import {
   useGetClubRidesQuery,
   useJoinClubMutation,
   useLeaveClubMutation,
+  useCancelJoinRequestMutation,
   useUpdateClubMutation,
   useDeleteClubMutation,
 } from '@/features/clubs/api'
@@ -72,6 +73,7 @@ export default function ClubDetailPage() {
   const { data: meData } = useGetMyProfileQuery()
   const [joinClub] = useJoinClubMutation()
   const [leaveClub] = useLeaveClubMutation()
+  const [cancelJoinRequest] = useCancelJoinRequestMutation()
   const [updateClub] = useUpdateClubMutation()
   const [deleteClub] = useDeleteClubMutation()
   const [uploadClubGallery, { isLoading: isGalleryUploading }] =
@@ -178,6 +180,27 @@ export default function ClubDetailPage() {
     } catch (err) {
       console.error('Failed to leave club:', err)
       errorToast('Failed to leave club', {
+        description: err instanceof Error ? err.message : 'Something went wrong.',
+      })
+    } finally {
+      dismissToast(loadingToastId)
+    }
+  }
+
+  const handleCancelJoinRequest = async () => {
+    if (!club) return
+    const loadingToastId = loadingToast('Cancelling request...', {
+      description: 'Withdrawing your join application.',
+    })
+    try {
+      await cancelJoinRequest(club.id).unwrap()
+      setLocalMembershipOverride('LEFT')
+      infoToast('Request cancelled', {
+        description: `Your application to join ${club.name} has been withdrawn.`,
+      })
+    } catch (err) {
+      console.error('Failed to cancel join request:', err)
+      errorToast('Failed to cancel request', {
         description: err instanceof Error ? err.message : 'Something went wrong.',
       })
     } finally {
@@ -308,6 +331,13 @@ export default function ClubDetailPage() {
 
   const members = club.members || []
   const rides = club.rides || []
+  const canManage =
+    isOwner ||
+    ['FOUNDER', 'ADMIN', 'OFFICER'].includes(club.viewerRole ?? '') ||
+    (club.viewerPermissions &&
+      club.viewerPermissions.some((p) =>
+        ['club:manage_settings', 'club:manage_members', 'club:manage_roles'].includes(p),
+      ))
 
   return (
     <div className="min-h-screen">
@@ -317,6 +347,7 @@ export default function ClubDetailPage() {
         isOwner={isOwner}
         isPending={isPending}
         onJoin={() => setIsJoinDialogOpen(true)}
+        onCancelJoin={handleCancelJoinRequest}
         onLeave={handleLeaveClub}
         onEdit={() => setIsEditDialogOpen(true)}
         onDelete={() => setIsDeleteDialogOpen(true)}
@@ -336,28 +367,32 @@ export default function ClubDetailPage() {
           </TabsList>
 
           <TabsContent value="about" className="mt-6">
-            <AboutTab
-              club={club}
-              members={members}
-              isOwner={isOwner}
-              onAddPhotos={() => setIsGalleryDialogOpen(true)}
-            />
+            <AboutTab club={club} members={members} />
           </TabsContent>
 
           <TabsContent value="members" className="mt-6">
-            <MembersTab members={members} isMember={isMember} />
+            <MembersTab
+              members={members}
+              isMember={isMember}
+              clubId={club.id}
+              clubName={club.name}
+            />
           </TabsContent>
 
           <TabsContent value="rides" className="mt-6">
-            <RidesTab rides={rides} isMember={isMember} />
+            <RidesTab rides={rides} isMember={isMember} clubId={club.id} />
           </TabsContent>
 
           <TabsContent value="events" className="mt-6">
-            <EventsTab clubId={club.id} isOwner={isOwner} />
+            <EventsTab clubId={club.id} isOwner={canManage} />
           </TabsContent>
 
           <TabsContent value="gallery" className="mt-6">
-            <GalleryTab gallery={galleryItems} />
+            <GalleryTab
+              gallery={galleryItems}
+              canManage={canManage}
+              onAddPhotos={() => setIsGalleryDialogOpen(true)}
+            />
           </TabsContent>
         </Tabs>
       </div>

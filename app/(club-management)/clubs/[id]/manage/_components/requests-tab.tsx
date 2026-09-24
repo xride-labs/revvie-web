@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Checkbox } from '@/components/ui/checkbox'
 import { BulkActionBar } from '@/components/bulk-action-bar'
@@ -74,6 +74,7 @@ export function RequestsTab({
                       aria-label={`Select ${request.user.name ?? 'requester'}`}
                     />
                     <Avatar>
+                      <AvatarImage src={request.user.avatar || undefined} />
                       <AvatarFallback>
                         {(request.user.name ?? 'U')
                           .split(' ')

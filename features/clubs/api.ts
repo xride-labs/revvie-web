@@ -164,6 +164,14 @@ export const clubsApiSlice = clubsApi.injectEndpoints({
       ],
     }),
 
+    cancelJoinRequest: build.mutation<void, string>({
+      query: (clubId) => ({ url: CLUB_ENDPOINTS.join(clubId), method: 'DELETE' }),
+      invalidatesTags: (_result, _error, clubId) => [
+        { type: 'Club', id: clubId },
+        { type: 'ClubList', id: 'MINE' },
+      ],
+    }),
+
     approveRequest: build.mutation<void, { clubId: string; userId: string }>({
       query: ({ clubId, userId }) => ({
         url: CLUB_ENDPOINTS.approveRequest(clubId, userId),
@@ -298,6 +306,7 @@ export const {
   useDeleteClubMutation,
   useJoinClubMutation,
   useLeaveClubMutation,
+  useCancelJoinRequestMutation,
   useApproveRequestMutation,
   useRejectRequestMutation,
   useGetClubJoinFlowQuery,

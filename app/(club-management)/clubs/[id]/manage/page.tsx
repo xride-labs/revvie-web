@@ -340,6 +340,7 @@ export default function ClubManagePage() {
           location: clubSettings.location,
           isPublic: clubSettings.isPublic,
           requiresLicense: clubSettings.requiresLicense,
+          joinPolicy: clubSettings.requireApproval ? 'APPLICATION' : 'OPEN',
         },
       }).unwrap()
       successToast('Club settings saved')

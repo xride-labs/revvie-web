@@ -2,11 +2,12 @@
 
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { MapPin, Users, ChevronRight, Plus } from 'lucide-react'
+import { MapPin, Users, ChevronRight, Plus, Search } from 'lucide-react'
 import Link from 'next/link'
 import type { Club } from '@/entities/club/model'
 import { initials } from '@/shared/lib/initials'
@@ -26,45 +27,102 @@ export function ClubsTabs({
   discoveredClubs: Club[]
 }) {
   const [activeTab, setActiveTab] = useState<'my' | 'discover'>('my')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const matchesSearch = (club: Club) => {
+    const q = searchQuery.toLowerCase().trim()
+    if (!q) return true
+    return (
+      club.name.toLowerCase().includes(q) ||
+      (club.description && club.description.toLowerCase().includes(q)) ||
+      (club.location && club.location.toLowerCase().includes(q)) ||
+      (club.clubType && club.clubType.toLowerCase().includes(q))
+    )
+  }
+
+  const filteredMyClubs = myClubs.filter(matchesSearch)
+  const filteredDiscoveredClubs = discoveredClubs.filter(matchesSearch)
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-8 py-10">
+      {/* Header & Search */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-3xl font-extrabold tracking-tight text-white">Clubs & Crews</h1>
+          <p className="text-sm text-text-secondary mt-1">
+            Connect, ride, and build community with motorcycle clubs
+          </p>
+        </div>
+        <Link href="/clubs/create">
+          <Button className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg">
+            <Plus className="w-4 h-4" />
+            Create Club
+          </Button>
+        </Link>
+      </div>
+
+      {/* Search Input */}
+      <div className="relative mb-6">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input
+          placeholder="Search clubs by name, location, or riding style…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10 h-11 bg-[#111] border-white/10 text-sm rounded-xl focus-visible:ring-primary/50 text-white placeholder:text-neutral-500"
+        />
+      </div>
+
       {/* Tabs */}
       <div className="flex gap-2 mb-6">
         <Button
           variant={activeTab === 'my' ? 'default' : 'outline'}
           onClick={() => setActiveTab('my')}
-          className="flex-1 rounded-full"
+          className="flex-1 rounded-full cursor-pointer"
         >
-          My Clubs
+          My Clubs ({filteredMyClubs.length})
         </Button>
         <Button
           variant={activeTab === 'discover' ? 'default' : 'outline'}
           onClick={() => setActiveTab('discover')}
-          className="flex-1 rounded-full"
+          className="flex-1 rounded-full cursor-pointer"
         >
-          Discover
+          Discover ({filteredDiscoveredClubs.length})
         </Button>
       </div>
 
       {activeTab === 'my' ? (
         <>
           {/* My Clubs */}
-          {myClubs.length > 0 ? (
+          {filteredMyClubs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {myClubs.map((club) => (
+              {filteredMyClubs.map((club) => (
                 <Link key={club.id} href={`/clubs/${club.id}`} className="block h-full">
                   <Card className="group h-full flex flex-col rounded-3xl border-white/[0.07] bg-[#111] overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.1)] relative">
                     <div className="relative flex-none">
                       {/* Club Cover/Banner */}
                       <div className="h-36 bg-linear-to-r from-[#1a1a1a] to-[#0a0a0a] relative overflow-hidden transition-transform duration-500">
-                        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.03%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20 group-hover:scale-110 transition-transform duration-700" />
+                        {club.coverImage ? (
+                          <img
+                            src={club.coverImage}
+                            alt=""
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.03%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20 group-hover:scale-110 transition-transform duration-700" />
+                        )}
                         <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent opacity-80" />
                       </div>
 
                       {/* Avatar positioned over the banner */}
                       <div className="absolute -bottom-8 left-6">
-                        <Avatar className="w-16 h-16 border-4 border-[#111] shadow-lg rounded-2xl">
+                        <Avatar className="w-16 h-16 border-4 border-[#111] shadow-lg rounded-2xl bg-neutral-900 overflow-hidden">
+                          {club.image && (
+                            <AvatarImage
+                              src={club.image}
+                              alt={club.name}
+                              className="object-cover"
+                            />
+                          )}
                           <AvatarFallback className="bg-[#1a1a1a] text-white border border-white/10 text-lg font-bold rounded-2xl">
                             {initials(club.name)}
                           </AvatarFallback>
@@ -135,11 +193,21 @@ export function ClubsTabs({
           ) : (
             <div className="text-center py-16">
               <Users className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
-              <h3 className="font-semibold mb-2">No clubs yet</h3>
+              <h3 className="font-semibold mb-2">
+                {searchQuery ? 'No matching clubs' : 'No clubs yet'}
+              </h3>
               <p className="text-muted-foreground mb-4">
-                Discover clubs through rider profiles or create your own!
+                {searchQuery
+                  ? `No clubs found matching "${searchQuery}".`
+                  : 'Discover clubs through rider profiles or create your own!'}
               </p>
-              <Button onClick={() => setActiveTab('discover')}>Discover Clubs</Button>
+              {searchQuery ? (
+                <Button variant="outline" onClick={() => setSearchQuery('')}>
+                  Clear Search
+                </Button>
+              ) : (
+                <Button onClick={() => setActiveTab('discover')}>Discover Clubs</Button>
+              )}
             </div>
           )}
 
@@ -174,46 +242,70 @@ export function ClubsTabs({
           <h2 className="font-bold text-xl text-white tracking-wide mb-6">
             Clubs Near You
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {discoveredClubs.map((club) => (
-              <Link key={club.id} href={`/clubs/${club.id}`} className="block h-full">
-                <Card className="group h-full flex flex-col rounded-3xl border-white/[0.07] bg-[#111] overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.1)] relative">
-                  <CardContent className="p-5 flex-1 flex flex-col">
-                    <div className="flex items-start gap-4 flex-1">
-                      <Avatar className="w-12 h-12 rounded-xl border border-white/10 shadow-md group-hover:border-neon-green/50 transition-colors shrink-0">
-                        <AvatarFallback className="bg-[#1a1a1a] text-white font-bold rounded-xl">
-                          {initials(club.name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between">
-                          <h3 className="font-bold text-white group-hover:text-neon-green transition-colors truncate pr-2">
-                            {club.name}
-                          </h3>
-                          <ChevronRight className="w-4 h-4 shrink-0 text-text-secondary/50 group-hover:text-neon-green group-hover:translate-x-0.5 transition-all" />
-                        </div>
-                        <p className="text-xs text-text-secondary mt-1.5 line-clamp-2 leading-relaxed">
-                          {club.description}
-                        </p>
-                        <div className="flex items-center gap-3 mt-4 pt-3 border-t border-white/5 text-[11px] text-text-secondary">
-                          <span className="flex items-center gap-1.5">
-                            <MapPin className="w-3 h-3 text-white/30" />
-                            <span className="text-white/70 truncate max-w-[80px]">
-                              {club.location}
+          {filteredDiscoveredClubs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredDiscoveredClubs.map((club) => (
+                <Link key={club.id} href={`/clubs/${club.id}`} className="block h-full">
+                  <Card className="group h-full flex flex-col rounded-3xl border-white/[0.07] bg-[#111] overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.1)] relative">
+                    <CardContent className="p-5 flex-1 flex flex-col">
+                      <div className="flex items-start gap-4 flex-1">
+                        <Avatar className="w-12 h-12 rounded-xl border border-white/10 shadow-md group-hover:border-neon-green/50 transition-colors shrink-0 bg-neutral-900 overflow-hidden">
+                          {club.image && (
+                            <AvatarImage
+                              src={club.image}
+                              alt={club.name}
+                              className="object-cover"
+                            />
+                          )}
+                          <AvatarFallback className="bg-[#1a1a1a] text-white font-bold rounded-xl">
+                            {initials(club.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between">
+                            <h3 className="font-bold text-white group-hover:text-neon-green transition-colors truncate pr-2">
+                              {club.name}
+                            </h3>
+                            <ChevronRight className="w-4 h-4 shrink-0 text-text-secondary/50 group-hover:text-neon-green group-hover:translate-x-0.5 transition-all" />
+                          </div>
+                          <p className="text-xs text-text-secondary mt-1.5 line-clamp-2 leading-relaxed">
+                            {club.description}
+                          </p>
+                          <div className="flex items-center gap-3 mt-4 pt-3 border-t border-white/5 text-[11px] text-text-secondary">
+                            <span className="flex items-center gap-1.5">
+                              <MapPin className="w-3 h-3 text-white/30" />
+                              <span className="text-white/70 truncate max-w-[80px]">
+                                {club.location}
+                              </span>
                             </span>
-                          </span>
-                          <span className="flex items-center gap-1.5">
-                            <Users className="w-3 h-3 text-white/30" />
-                            <span className="text-white/70">{club.memberCount}</span>
-                          </span>
+                            <span className="flex items-center gap-1.5">
+                              <Users className="w-3 h-3 text-white/30" />
+                              <span className="text-white/70">{club.memberCount}</span>
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <Users className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+              <h3 className="font-semibold mb-2">No clubs found</h3>
+              <p className="text-muted-foreground mb-4">
+                {searchQuery
+                  ? `No clubs found matching "${searchQuery}".`
+                  : 'No clubs available to discover at the moment.'}
+              </p>
+              {searchQuery && (
+                <Button variant="outline" onClick={() => setSearchQuery('')}>
+                  Clear Search
+                </Button>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>
