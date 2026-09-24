@@ -24,6 +24,7 @@ import {
   CheckSquare,
   Store,
   UserCog,
+  Palette,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -51,10 +52,11 @@ const adminNavigation: AdminNavItem[] = [
   { name: 'Notifications', href: '/admin/notifications', icon: Bell },
   { name: 'Reports', href: '/admin/reports', icon: Flag },
   { name: 'Monitoring', href: '/admin/monitoring', icon: Activity },
+  { name: 'Branding', href: '/admin/branding', icon: Palette },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
-const SUPER_ADMIN_ONLY_ROUTES = ['/admin/monitoring', '/admin/settings']
+const SUPER_ADMIN_ONLY_ROUTES = ['/admin/monitoring', '/admin/settings', '/admin/branding']
 
 function isSuperAdminOnlyRoute(pathname: string): boolean {
   return SUPER_ADMIN_ONLY_ROUTES.some(

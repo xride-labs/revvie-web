@@ -36,6 +36,9 @@ export const ADMIN_ENDPOINTS = {
   bulkApproveBusinesses: '/admin/bulk/businesses/approve',
   bulkApproveAdCampaigns: '/admin/bulk/ad-campaigns/approve',
   bulkAction: '/admin/bulk/action',
+  branding: '/admin/branding',
+  brandingUpload: '/admin/branding/upload',
+  brandingTestEmail: '/admin/branding/test-email',
   /** Not under /admin — scoped bulk-action endpoints mounted at the API root. */
   clubManagerBulkAction: '/bulk/club-manager/action',
   brandManagerBulkAction: '/bulk/brand-manager/action',

@@ -5,6 +5,7 @@ import type {
   AdminUserDetails,
   AdminUserRecord,
   AdminWeeklyActivity,
+  BrandingConfig,
 } from '@/entities/admin/model'
 
 import { ADMIN_ENDPOINTS } from './endpoints'
@@ -195,6 +196,34 @@ export const adminApiSlice = adminApi.injectEndpoints({
     updateSettings: build.mutation<AdminSettings, Partial<AdminSettings>>({
       query: (body) => ({ url: ADMIN_ENDPOINTS.settings, method: 'PATCH', body }),
       invalidatesTags: [{ type: 'AdminStats', id: 'SETTINGS' }],
+    }),
+
+    getBranding: build.query<BrandingConfig, void>({
+      query: () => ({ url: ADMIN_ENDPOINTS.branding }),
+      providesTags: [{ type: 'AdminStats', id: 'BRANDING' }],
+    }),
+
+    updateBranding: build.mutation<BrandingConfig, Partial<BrandingConfig>>({
+      query: (body) => ({ url: ADMIN_ENDPOINTS.branding, method: 'PUT', body }),
+      invalidatesTags: [{ type: 'AdminStats', id: 'BRANDING' }],
+    }),
+
+    uploadBrandAsset: build.mutation<
+      { url: string; secureUrl: string; publicId: string },
+      { file: string; type: string }
+    >({
+      query: (body) => ({ url: ADMIN_ENDPOINTS.brandingUpload, method: 'POST', body }),
+    }),
+
+    sendBrandTestEmail: build.mutation<
+      { recipient: string; sentAt: string },
+      { to?: string } | void
+    >({
+      query: (body) => ({
+        url: ADMIN_ENDPOINTS.brandingTestEmail,
+        method: 'POST',
+        body: body ?? {},
+      }),
     }),
 
     getApprovals: build.query<AdminApprovalsResponse, void>({
@@ -401,6 +430,10 @@ export const {
   useGetNotificationsQuery,
   useGetSettingsQuery,
   useUpdateSettingsMutation,
+  useGetBrandingQuery,
+  useUpdateBrandingMutation,
+  useUploadBrandAssetMutation,
+  useSendBrandTestEmailMutation,
   useGetApprovalsQuery,
   useGetBusinessSubmissionsQuery,
   useGetAllBusinessesQuery,

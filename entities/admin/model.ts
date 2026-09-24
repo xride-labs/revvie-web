@@ -454,3 +454,23 @@ export type PendingBusiness = z.infer<typeof pendingBusinessSchema>
 export type AdCampaignStatus = z.infer<typeof adCampaignStatusSchema>
 export type AdminAdCampaign = z.infer<typeof adminAdCampaignSchema>
 export type AdminDiscount = z.infer<typeof adminDiscountSchema>
+
+export const brandingConfigSchema = z.object({
+  siteName: z.string(),
+  siteUrl: z.string(),
+  supportEmail: z.string(),
+  tagline: z.string(),
+  logoUrl: z.string(),
+  iconUrl: z.string(),
+  faviconUrl: z.string().nullable().optional(),
+  primaryColor: z.string(),
+  deepColor: z.string(),
+  canvasColor: z.string(),
+  surfaceColor: z.string(),
+  borderColor: z.string(),
+  fontFamily: z.string(),
+  emailHeaderBadge: z.string(),
+  updatedAt: z.string().optional().nullable(),
+})
+
+export type BrandingConfig = z.infer<typeof brandingConfigSchema>
