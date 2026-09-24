@@ -33,6 +33,7 @@ import { MembersTab } from './_components/members-tab'
 import { RequestsTab } from './_components/requests-tab'
 import { SettingsTab } from './_components/settings-tab'
 import { JoinFlowTab } from './_components/join-flow-tab'
+import { RolesTab } from './_components/roles-tab'
 import { DangerTab } from './_components/danger-tab'
 import { RemoveMemberDialog } from './_components/remove-member-dialog'
 import { DeleteClubDialog } from './_components/delete-club-dialog'
@@ -434,6 +435,10 @@ export default function ClubManagePage() {
             <FileQuestion className="w-4 h-4" />
             Join Policy
           </TabsTrigger>
+          <TabsTrigger value="roles" className="gap-2">
+            <Shield className="w-4 h-4" />
+            Roles
+          </TabsTrigger>
           <TabsTrigger value="danger" className="gap-2 text-red-600">
             <Shield className="w-4 h-4" />
             Danger Zone
@@ -442,6 +447,7 @@ export default function ClubManagePage() {
 
         <TabsContent value="members">
           <MembersTab
+            clubId={clubSettings.id}
             members={members}
             onRoleChange={handleRoleChange}
             onSelectForRemoval={(member) => {
@@ -479,6 +485,10 @@ export default function ClubManagePage() {
 
         <TabsContent value="join-flow">
           <JoinFlowTab clubId={clubSettings.id} />
+        </TabsContent>
+
+        <TabsContent value="roles">
+          <RolesTab clubId={clubSettings.id} />
         </TabsContent>
 
         <TabsContent value="danger">
