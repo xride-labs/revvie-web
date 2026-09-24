@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
 
 import userReducer from '@/store/slices/userSlice'
+import brandingReducer from '@/store/slices/brandingSlice'
 
 import {
   ALL_APIS,
@@ -15,6 +16,7 @@ import {
   userApi,
   eventsApi,
   expensesApi,
+  platformApi,
 } from './api/services'
 
 /**
@@ -42,8 +44,10 @@ const rootReducer = combineReducers({
   [adminApi.reducerPath]: adminApi.reducer,
   [eventsApi.reducerPath]: eventsApi.reducer,
   [expensesApi.reducerPath]: expensesApi.reducer,
+  [platformApi.reducerPath]: platformApi.reducer,
 
   user: userReducer,
+  branding: brandingReducer,
 })
 
 export function makeStore() {

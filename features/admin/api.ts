@@ -200,12 +200,12 @@ export const adminApiSlice = adminApi.injectEndpoints({
 
     getBranding: build.query<BrandingConfig, void>({
       query: () => ({ url: ADMIN_ENDPOINTS.branding }),
-      providesTags: [{ type: 'AdminStats', id: 'BRANDING' }],
+      providesTags: [{ type: 'AdminBranding', id: 'CURRENT' }],
     }),
 
     updateBranding: build.mutation<BrandingConfig, Partial<BrandingConfig>>({
       query: (body) => ({ url: ADMIN_ENDPOINTS.branding, method: 'PUT', body }),
-      invalidatesTags: [{ type: 'AdminStats', id: 'BRANDING' }],
+      invalidatesTags: [{ type: 'AdminBranding', id: 'CURRENT' }],
     }),
 
     uploadBrandAsset: build.mutation<

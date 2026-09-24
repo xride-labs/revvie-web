@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { motion, useReducedMotion } from 'motion/react'
+import { useBranding } from '@/components/providers/branding-provider'
 
 const sectionLinks = [
   { label: 'Ecosystem', href: '#ecosystem' },
@@ -17,6 +18,7 @@ const sectionLinks = [
 export function Navbar() {
   const shouldReduceMotion = useReducedMotion()
   const [activeSection, setActiveSection] = useState<string>('#ecosystem')
+  const { logoUrl, siteName } = useBranding()
 
   const sectionIds = useMemo(
     () => sectionLinks.map((link) => link.href.replace('#', '')),
@@ -65,15 +67,15 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Image
-              src="/logo-mark.png"
-              alt="Revvie"
+              src={logoUrl || '/logo-mark.png'}
+              alt={siteName || 'Revvie'}
               width={44}
               height={44}
               priority
-              className="w-8 h-8 sm:w-11 sm:h-11 rounded-xl"
+              className="w-8 h-8 sm:w-11 sm:h-11 rounded-xl object-contain"
             />
             <span className="text-lg sm:text-2xl font-bold text-white tracking-wide uppercase">
-              Revvie
+              {siteName || 'Revvie'}
             </span>
           </Link>
 

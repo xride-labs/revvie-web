@@ -80,6 +80,7 @@ export const adminApi = createApi({
     'AdminReport',
     'AdminNotification',
     'AdminApproval',
+    'AdminBranding',
   ],
   endpoints: () => ({}),
 })
@@ -98,6 +99,13 @@ export const expensesApi = createApi({
   endpoints: () => ({}),
 })
 
+export const platformApi = createApi({
+  reducerPath: 'platformApi',
+  baseQuery: axiosBaseQuery(),
+  tagTypes: ['PlatformBranding'],
+  endpoints: () => ({}),
+})
+
 export const ALL_APIS = [
   clubsApi,
   ridesApi,
@@ -109,4 +117,5 @@ export const ALL_APIS = [
   adminApi,
   eventsApi,
   expensesApi,
+  platformApi,
 ] as const

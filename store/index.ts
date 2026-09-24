@@ -11,3 +11,4 @@ export { StoreProvider } from '@/core/store/store-provider'
 export { useAppDispatch, useAppSelector, useAppStore } from '@/core/store/hooks'
 
 export * from './features'
+export * from './slices/brandingSlice'

@@ -2,6 +2,7 @@
 
 import { StoreProvider } from '@/core/store/store-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { BrandingProvider } from '@/components/providers/branding-provider'
 
 interface ProvidersProps {
   children: React.ReactNode
@@ -10,8 +11,10 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
   return (
     <StoreProvider>
-      {children}
-      <Toaster position="top-right" richColors closeButton />
+      <BrandingProvider>
+        {children}
+        <Toaster position="top-right" richColors closeButton />
+      </BrandingProvider>
     </StoreProvider>
   )
 }
