@@ -43,9 +43,9 @@ const STATUS_CONFIG: Record<
 > = {
   OPEN: {
     label: 'Open',
-    bg: 'bg-amber-500/10',
-    text: 'text-amber-500',
-    border: 'border-amber-500/20',
+    bg: 'bg-primary/10',
+    text: 'text-primary',
+    border: 'border-primary/20',
   },
   IN_PROGRESS: {
     label: 'In Progress',
@@ -149,7 +149,7 @@ export default function BrandMessagesPage() {
   if (!business) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-        <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+        <AlertCircle className="w-12 h-12 text-primary mx-auto mb-4" />
         <h2 className="text-xl font-bold text-white mb-2">No Active Business Profile</h2>
         <p className="text-sm text-neutral-400">
           Please select or register a business profile to view customer inquiries.
@@ -364,7 +364,7 @@ export default function BrandMessagesPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1c1c1e] border-[#3a3a3c] text-white">
-                    <SelectItem value="OPEN" className="text-amber-400">
+                    <SelectItem value="OPEN" className="text-primary">
                       Open
                     </SelectItem>
                     <SelectItem value="IN_PROGRESS" className="text-blue-400">
@@ -454,7 +454,7 @@ export default function BrandMessagesPage() {
                     size="sm"
                     disabled={selectedInquiry.status === 'OPEN' || isUpdating}
                     onClick={() => handleStatusChange(selectedInquiry.id, 'OPEN')}
-                    className="border-[#3a3a3c] bg-[#0d0d0f] hover:bg-neutral-800 text-xs font-mono text-amber-400"
+                    className="border-[#3a3a3c] bg-[#0d0d0f] hover:bg-neutral-800 text-xs font-mono text-primary"
                   >
                     Mark Open
                   </Button>

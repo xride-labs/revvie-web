@@ -199,7 +199,7 @@ export default function BrandDiscountsPage() {
           </p>
         </div>
         <Button
-          className="bg-amber-500 hover:bg-amber-600 text-white"
+          className="bg-primary hover:bg-brand-red text-white"
           onClick={openCreate}
         >
           <Plus className="w-4 h-4 mr-2" /> New Discount
@@ -208,7 +208,7 @@ export default function BrandDiscountsPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       ) : discounts.length === 0 ? (
         <Card className="border-dashed border-2">
@@ -220,7 +220,7 @@ export default function BrandDiscountsPage() {
               product listings.
             </p>
             <Button
-              className="bg-amber-500 hover:bg-amber-600 text-white"
+              className="bg-primary hover:bg-brand-red text-white"
               onClick={openCreate}
             >
               <Plus className="w-4 h-4 mr-2" /> Create your first discount
@@ -234,14 +234,14 @@ export default function BrandDiscountsPage() {
             return (
               <Card key={d.id} className={expired ? 'opacity-60' : ''}>
                 <CardContent className="p-4 flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
-                    <Ticket className="w-6 h-6 text-amber-500" />
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Ticket className="w-6 h-6 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <span className="font-semibold truncate">{d.title}</span>
                       {d.isFeatured && (
-                        <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/30 text-xs">
+                        <Badge className="bg-primary/10 text-primary border-primary/30 text-xs">
                           <Star className="w-2.5 h-2.5 mr-1" /> Featured
                         </Badge>
                       )}
@@ -271,7 +271,7 @@ export default function BrandDiscountsPage() {
                           )}
                         </button>
                       )}
-                      <span className="font-medium text-amber-500">
+                      <span className="font-medium text-primary">
                         {d.percentOff != null
                           ? `${d.percentOff}% off`
                           : d.amountOffPaise != null
@@ -363,8 +363,8 @@ export default function BrandDiscountsPage() {
                   onClick={() => setForm({ ...form, type: 'percent' })}
                   className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
                     form.type === 'percent'
-                      ? 'border-amber-500 bg-amber-500/10 text-amber-500'
-                      : 'border-border text-muted-foreground hover:border-amber-500/40'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border text-muted-foreground hover:border-brand-red/40'
                   }`}
                 >
                   % Percentage Off
@@ -374,8 +374,8 @@ export default function BrandDiscountsPage() {
                   onClick={() => setForm({ ...form, type: 'amount' })}
                   className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
                     form.type === 'amount'
-                      ? 'border-amber-500 bg-amber-500/10 text-amber-500'
-                      : 'border-border text-muted-foreground hover:border-amber-500/40'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border text-muted-foreground hover:border-brand-red/40'
                   }`}
                 >
                   ₹ Fixed Amount Off
@@ -485,7 +485,7 @@ export default function BrandDiscountsPage() {
               Cancel
             </Button>
             <Button
-              className="bg-amber-500 hover:bg-amber-600 text-white"
+              className="bg-primary hover:bg-brand-red text-white"
               onClick={handleSave}
               disabled={saving}
             >

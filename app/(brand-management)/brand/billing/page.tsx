@@ -66,9 +66,9 @@ function StatusBanner({ status }: { status: string | null }) {
   }
   if (status === 'cancelled') {
     return (
-      <div className="mb-6 flex items-center gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4">
-        <XCircle className="w-5 h-5 text-amber-500 shrink-0" />
-        <p className="text-sm text-amber-300">
+      <div className="mb-6 flex items-center gap-3 rounded-2xl border border-primary/30 bg-primary/10 px-5 py-4">
+        <XCircle className="w-5 h-5 text-primary shrink-0" />
+        <p className="text-sm text-primary">
           Payment was cancelled. You can try again whenever you&apos;re ready.
         </p>
       </div>
@@ -110,7 +110,7 @@ export default function BrandBillingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     )
   }
@@ -145,8 +145,8 @@ export default function BrandBillingPage() {
             <div className="flex items-center gap-3">
               <h2 className="text-3xl font-bold">{isPro ? 'Brand Pro' : 'Free'}</h2>
               {isPro && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-500/40 px-3 py-1 text-xs font-bold text-amber-400 uppercase tracking-wide">
-                  <Star className="w-3 h-3 fill-amber-400" />
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/20 border border-primary/40 px-3 py-1 text-xs font-bold text-primary uppercase tracking-wide">
+                  <Star className="w-3 h-3 fill-primary" />
                   Active
                 </span>
               )}
@@ -172,7 +172,7 @@ export default function BrandBillingPage() {
           </div>
           {isPro ? (
             <div className="text-right">
-              <p className="text-2xl font-bold text-amber-400">
+              <p className="text-2xl font-bold text-primary">
                 ₹999<span className="text-sm font-normal text-muted-foreground">/mo</span>
               </p>
             </div>
@@ -185,19 +185,19 @@ export default function BrandBillingPage() {
       </div>
 
       {/* Pro Features */}
-      <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-6 space-y-4">
+      <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
-          <Zap className="w-5 h-5 text-amber-400" />
+          <Zap className="w-5 h-5 text-primary" />
           <h3 className="font-bold text-lg">Brand Pro — ₹999/month</h3>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           {PRO_FEATURES.map((f) => (
             <div key={f.label} className="flex items-start gap-3">
               <div
-                className={`mt-0.5 rounded-lg p-1.5 ${isPro ? 'bg-amber-500/20' : 'bg-muted'}`}
+                className={`mt-0.5 rounded-lg p-1.5 ${isPro ? 'bg-primary/20' : 'bg-muted'}`}
               >
                 <f.icon
-                  className={`w-4 h-4 ${isPro ? 'text-amber-400' : 'text-muted-foreground'}`}
+                  className={`w-4 h-4 ${isPro ? 'text-primary' : 'text-muted-foreground'}`}
                 />
               </div>
               <div>
@@ -229,7 +229,7 @@ export default function BrandBillingPage() {
         <Button
           onClick={handleUpgrade}
           disabled={upgrading}
-          className="w-full h-12 text-base font-bold bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white rounded-2xl shadow-[0_0_20px_rgba(245,158,11,0.3)]"
+          className="w-full h-12 text-base font-bold bg-linear-to-r from-primary to-primary hover:from-primary hover:to-primary text-white rounded-2xl shadow-[0_0_20px_rgba(255, 29, 45,0.3)]"
         >
           {upgrading ? (
             <>
@@ -248,8 +248,8 @@ export default function BrandBillingPage() {
       {isPro && (
         <p className="text-center text-sm text-muted-foreground">
           To cancel or manage your subscription, contact{' '}
-          <a href="mailto:support@revvie.app" className="text-amber-400 hover:underline">
-            support@revvie.app
+          <a href="mailto:support@xride-labs.in" className="text-primary hover:underline">
+            support@xride-labs.in
           </a>
         </p>
       )}

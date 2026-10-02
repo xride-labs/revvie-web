@@ -48,18 +48,18 @@ import { PhantomLoader } from '@/components/loading/phantom-loader'
 
 const TYPE_ICON: Record<string, { icon: LucideIcon; color: string }> = {
   RIDE_INVITE: { icon: MapPin, color: 'text-blue-500' },
-  RIDE_JOIN_REQUEST: { icon: MapPin, color: 'text-amber-500' },
+  RIDE_JOIN_REQUEST: { icon: MapPin, color: 'text-primary' },
   RIDE_JOIN_ACCEPTED: { icon: CalendarCheck, color: 'text-green-500' },
   RIDE_REMINDER: { icon: Clock, color: 'text-blue-400' },
   RIDE_CANCELLED: { icon: AlertTriangle, color: 'text-red-500' },
   CLUB_INVITE: { icon: Users, color: 'text-purple-500' },
-  CLUB_JOIN_REQUEST: { icon: Users, color: 'text-amber-500' },
+  CLUB_JOIN_REQUEST: { icon: Users, color: 'text-primary' },
   CLUB_JOIN_ACCEPTED: { icon: Users, color: 'text-green-500' },
-  CLUB_ANNOUNCEMENT: { icon: Megaphone, color: 'text-amber-500' },
+  CLUB_ANNOUNCEMENT: { icon: Megaphone, color: 'text-primary' },
   MARKETPLACE_MESSAGE: { icon: ShoppingBag, color: 'text-indigo-500' },
   LISTING_SOLD: { icon: ShoppingBag, color: 'text-green-500' },
   LISTING_OFFER: { icon: ShoppingBag, color: 'text-blue-500' },
-  LISTING_INTERESTED: { icon: ShoppingBag, color: 'text-amber-500' },
+  LISTING_INTERESTED: { icon: ShoppingBag, color: 'text-primary' },
   MESSAGE: { icon: MessageSquare, color: 'text-cyan-500' },
   FOLLOW: { icon: UserPlus, color: 'text-violet-500' },
   COMMENT: { icon: MessageSquare, color: 'text-slate-500' },
@@ -159,11 +159,11 @@ export default function AdminNotificationsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-100 rounded-lg">
-                <Clock className="w-5 h-5 text-amber-600" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Clock className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-amber-600">{stats.unread}</p>
+                <p className="text-2xl font-bold text-primary">{stats.unread}</p>
                 <p className="text-sm text-muted-foreground">Unread</p>
               </div>
             </div>

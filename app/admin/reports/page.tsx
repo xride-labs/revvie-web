@@ -51,7 +51,7 @@ const typeIcons: Record<string, LucideIcon> = {
 }
 
 const statusColors: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700',
+  pending: 'bg-primary/10 text-primary',
   investigating: 'bg-blue-100 text-blue-700',
   resolved: 'bg-green-100 text-green-700',
   dismissed: 'bg-gray-100 text-gray-700',
@@ -59,7 +59,7 @@ const statusColors: Record<string, string> = {
 
 const priorityColors: Record<string, string> = {
   high: 'bg-red-100 text-red-700',
-  medium: 'bg-amber-100 text-amber-700',
+  medium: 'bg-primary/10 text-primary',
   low: 'bg-gray-100 text-gray-700',
 }
 
@@ -119,11 +119,11 @@ export default function AdminReportsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-100 rounded-lg">
-                <Clock className="w-5 h-5 text-amber-600" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Clock className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-amber-600">{stats.pending}</p>
+                <p className="text-2xl font-bold text-primary">{stats.pending}</p>
                 <p className="text-sm text-muted-foreground">Pending</p>
               </div>
             </div>

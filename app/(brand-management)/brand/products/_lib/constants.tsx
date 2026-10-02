@@ -46,8 +46,8 @@ export const AVAILABILITY_CONFIG: Record<
   },
   PRE_ORDER: {
     label: 'Pre-Order',
-    color: 'text-amber-600 dark:text-amber-400',
-    bg: 'bg-amber-500/10 border-amber-500/20',
+    color: 'text-primary dark:text-primary',
+    bg: 'bg-primary/10 border-primary/20',
     icon: Clock,
   },
   DISCONTINUED: {

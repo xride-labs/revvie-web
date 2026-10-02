@@ -46,8 +46,8 @@ interface RolesTabProps {
 
 const PRESET_COLORS = [
   '#EF4444', // Red
-  '#F97316', // Orange
-  '#F59E0B', // Amber
+  '#ff1d2d', // Orange
+  '#ff1d2d', // Amber
   '#10B981', // Emerald
   '#06B6D4', // Cyan
   '#3B82F6', // Blue

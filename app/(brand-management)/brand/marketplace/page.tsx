@@ -18,7 +18,7 @@ export default async function BrandMarketplacePage() {
             Manage your active listings on the Revvie marketplace
           </p>
         </div>
-        <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
+        <Button className="bg-primary hover:bg-brand-red text-white" asChild>
           <Link href="/brand/products/create">
             <Plus className="w-4 h-4 mr-2" /> New Listing
           </Link>
@@ -34,7 +34,7 @@ export default async function BrandMarketplacePage() {
               Create a product listing to appear on the Revvie marketplace and reach
               riders across India.
             </p>
-            <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
+            <Button className="bg-primary hover:bg-brand-red text-white" asChild>
               <Link href="/brand/products/create">
                 <Plus className="w-4 h-4 mr-2" /> Create your first listing
               </Link>
@@ -59,7 +59,7 @@ export default async function BrandMarketplacePage() {
               <CardContent className="p-4 space-y-2">
                 <p className="font-medium truncate">{l.title}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-amber-500">
+                  <span className="text-sm font-bold text-primary">
                     ₹{l.price.toLocaleString()}
                   </span>
                   <div className="flex items-center gap-2">
@@ -77,7 +77,7 @@ export default async function BrandMarketplacePage() {
                 </div>
                 <Link
                   href={`/marketplace/${l.id}`}
-                  className="flex items-center gap-1 text-xs text-amber-500 hover:underline"
+                  className="flex items-center gap-1 text-xs text-primary hover:underline"
                 >
                   <ExternalLink className="w-3 h-3" /> View public listing
                 </Link>

@@ -41,7 +41,7 @@ export function AboutTab({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-amber-500" />
+              <Trophy className="w-4 h-4 text-primary" />
               <span className="text-sm">{club.trophyCount || 0} trophies earned</span>
             </div>
             {club.requiresLicense && (

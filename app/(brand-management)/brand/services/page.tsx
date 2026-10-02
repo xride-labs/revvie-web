@@ -175,7 +175,7 @@ export default function BrandServicesPage() {
           </p>
         </div>
         <Button
-          className="bg-amber-500 hover:bg-amber-600 text-white"
+          className="bg-primary hover:bg-brand-red text-white"
           onClick={openCreate}
         >
           <Plus className="w-4 h-4 mr-2" /> Add Service
@@ -184,7 +184,7 @@ export default function BrandServicesPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       ) : services.length === 0 ? (
         <Card className="border-dashed border-2">
@@ -205,8 +205,8 @@ export default function BrandServicesPage() {
           <CardContent className="p-0 divide-y divide-border">
             {services.map((s) => (
               <div key={s.id} className="flex items-start gap-3 px-4 py-4">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                  <Wrench className="w-5 h-5 text-amber-500" />
+                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <Wrench className="w-5 h-5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -351,7 +351,7 @@ export default function BrandServicesPage() {
               Cancel
             </Button>
             <Button
-              className="bg-amber-500 hover:bg-amber-600 text-white"
+              className="bg-primary hover:bg-brand-red text-white"
               onClick={handleSave}
               disabled={saving || !form.title.trim()}
             >

@@ -25,7 +25,7 @@ export function RidesTab({
           </div>
           {isMember && (
             <Link href={`/rides/create?clubId=${clubId}`}>
-              <Button size="sm" className="gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Button size="sm" className="gap-1.5 bg-primary hover:bg-brand-red/90 text-primary-foreground">
                 <Plus className="w-4 h-4" />
                 Schedule Ride
               </Button>
@@ -53,7 +53,7 @@ export function RidesTab({
               <Link
                 key={ride.id}
                 href={`/rides/${ride.id}`}
-                className="group flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/5 hover:border-primary/40 transition-all"
+                className="group flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/5 hover:border-brand-red/40 transition-all"
               >
                 <div className="space-y-1">
                   <p className="font-semibold text-foreground group-hover:text-primary transition-colors">

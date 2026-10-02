@@ -43,7 +43,7 @@ import type { BrandTeamMember, BrandMemberRole } from '@/entities/business/model
 const ROLE_BADGE: Record<BrandMemberRole, { label: string; className: string }> = {
   OWNER: {
     label: 'Owner',
-    className: 'text-amber-500 border-amber-500/30 bg-amber-500/5',
+    className: 'text-primary border-primary/30 bg-primary/5',
   },
   ADMIN: { label: 'Admin', className: 'text-blue-400 border-blue-400/30 bg-blue-400/5' },
   MODERATOR: {
@@ -130,7 +130,7 @@ export default function BrandTeamPage() {
           </p>
         </div>
         <Button
-          className="bg-amber-500 hover:bg-amber-600 text-white"
+          className="bg-primary hover:bg-brand-red text-white"
           onClick={() => setInviteOpen(true)}
         >
           <Plus className="w-4 h-4 mr-2" /> Invite Member
@@ -139,7 +139,7 @@ export default function BrandTeamPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       ) : members.length === 0 ? (
         <Card className="border-dashed border-2">
@@ -166,7 +166,7 @@ export default function BrandTeamPage() {
               return (
                 <div key={m.id} className="flex items-center gap-3 px-4 py-3">
                   <Avatar>
-                    <AvatarFallback className="bg-amber-500/20 text-amber-500 font-bold">
+                    <AvatarFallback className="bg-primary/20 text-primary font-bold">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
@@ -176,7 +176,7 @@ export default function BrandTeamPage() {
                         {m.user.name ?? 'Unknown'}
                       </p>
                       {m.role === 'OWNER' && (
-                        <ShieldCheck className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                        <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground truncate">
@@ -265,7 +265,7 @@ export default function BrandTeamPage() {
               Cancel
             </Button>
             <Button
-              className="bg-amber-500 hover:bg-amber-600 text-white"
+              className="bg-primary hover:bg-brand-red text-white"
               onClick={handleInvite}
               disabled={inviting || !inviteEmail.trim()}
             >

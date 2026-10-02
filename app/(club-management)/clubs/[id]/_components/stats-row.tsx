@@ -29,7 +29,7 @@ export function StatsRow({ club, rideCount }: { club: ClubWithRides; rideCount: 
         <Card className="hidden md:block">
           <CardContent className="p-4 text-center">
             <p className="text-2xl font-bold flex items-center justify-center gap-1">
-              <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
+              <Star className="w-5 h-5 text-primary fill-primary" />
               {club.reputation}
             </p>
             <p className="text-sm text-muted-foreground">Rating</p>

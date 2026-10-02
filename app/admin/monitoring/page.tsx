@@ -99,7 +99,7 @@ interface MetricsData {
 const STATUS_COLORS: Record<string, string> = {
   '2xx': '#10b981', // emerald
   '3xx': '#0ea5e9', // sky blue
-  '4xx': '#f59e0b', // amber
+  '4xx': '#ff1d2d', // red
   '5xx': '#ef4444', // red
 }
 
@@ -311,7 +311,7 @@ export default function AdminMonitoringPage() {
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">HTTP Volume</p>
               <p className="text-2xl font-bold">{metrics?.traffic.totalRequests.toLocaleString() ?? '—'}</p>
               <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <span className={metrics?.traffic.errorRatePct ? 'text-amber-500 font-medium' : 'text-emerald-500 font-medium'}>
+                <span className={metrics?.traffic.errorRatePct ? 'text-primary font-medium' : 'text-emerald-500 font-medium'}>
                   {metrics?.traffic.errorRatePct ?? 0}%
                 </span>{' '}
                 error rate
@@ -553,7 +553,7 @@ export default function AdminMonitoringPage() {
                                 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
                                 : r.method === 'DELETE'
                                   ? 'bg-red-500/10 text-red-500 border-red-500/20'
-                                  : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                                  : 'bg-primary/10 text-primary border-primary/20'
                           }
                         >
                           {r.method}
@@ -634,7 +634,7 @@ export default function AdminMonitoringPage() {
                     className={
                       metrics?.dependencies?.mongodb?.status === 'up'
                         ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
-                        : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
+                        : 'bg-primary/10 text-primary border-primary/20'
                     }
                   >
                     {metrics?.dependencies?.mongodb?.status?.toUpperCase() ?? 'UP'}

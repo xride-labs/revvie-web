@@ -262,7 +262,7 @@ export default function CreateListingPage() {
               {imagePreviews.length < 10 && (
                 <button
                   type="button"
-                  className="aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-1 text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                  className="aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-1 text-muted-foreground hover:border-brand-red hover:text-primary transition-colors"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Plus className="w-6 h-6" />

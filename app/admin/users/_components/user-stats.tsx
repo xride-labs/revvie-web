@@ -21,7 +21,7 @@ export function UserStats({
       </Card>
       <Card>
         <CardContent className="p-4">
-          <p className="text-2xl font-bold text-amber-600">{stats.pending}</p>
+          <p className="text-2xl font-bold text-primary">{stats.pending}</p>
           <p className="text-sm text-muted-foreground">Pending Verification</p>
         </CardContent>
       </Card>

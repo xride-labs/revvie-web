@@ -287,10 +287,10 @@ export default function CreateRidePage() {
                           key={index}
                           className="flex items-center gap-2 p-2.5 bg-muted/40 rounded-lg border"
                         >
-                          <div className="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-xs font-bold text-amber-600 shrink-0">
+                          <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary shrink-0">
                             {index + 1}
                           </div>
-                          <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                          <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
                           <span className="flex-1 text-sm truncate">{wp.name}</span>
                           <p className="text-xs text-muted-foreground font-mono shrink-0">
                             {wp.lat.toFixed(4)}, {wp.lng.toFixed(4)}
@@ -315,7 +315,7 @@ export default function CreateRidePage() {
                         placeholder="Search pit stop location…"
                         value={pendingWaypoint}
                         onChange={setPendingWaypoint}
-                        pinColor="amber"
+                        pinColor="red"
                       />
                       <div className="flex gap-2">
                         <Button
@@ -594,7 +594,7 @@ export default function CreateRidePage() {
               {/* Photos */}
               <div className="space-y-3">
                 <Label className="text-base font-semibold">Add Ride Photos</Label>
-                <label className="flex cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed border-border bg-muted/20 p-5 transition-all hover:border-primary/50 hover:bg-muted/40">
+                <label className="flex cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed border-border bg-muted/20 p-5 transition-all hover:border-brand-red/50 hover:bg-muted/40">
                   <ImagePlus className="w-8 h-8 text-muted-foreground" />
                   <div className="flex-1">
                     <p className="font-medium">

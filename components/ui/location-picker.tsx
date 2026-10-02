@@ -86,7 +86,7 @@ export function LocationPicker({
   const pinColorClass: Record<string, string> = {
     green: 'text-green-500',
     red: 'text-red-500',
-    amber: 'text-amber-500',
+    amber: 'text-primary',
     blue: 'text-blue-500',
   }
 

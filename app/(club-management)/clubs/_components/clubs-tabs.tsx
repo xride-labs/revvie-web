@@ -54,7 +54,7 @@ export function ClubsTabs({
           </p>
         </div>
         <Link href="/clubs/create">
-          <Button className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg">
+          <Button className="gap-2 bg-primary hover:bg-brand-red/90 text-primary-foreground font-semibold shadow-lg">
             <Plus className="w-4 h-4" />
             Create Club
           </Button>
@@ -213,7 +213,7 @@ export function ClubsTabs({
 
           {/* Create Club CTA */}
           <Separator className="my-6" />
-          <Card className="bg-linear-to-r from-primary/10 to-amber-100/50 border-primary/20">
+          <Card className="bg-linear-to-r from-primary/10 to-brand-red/10 border-primary/20">
             <CardContent className="p-6 text-center">
               <h3 className="font-semibold mb-2">Start Your Own Club</h3>
               <p className="text-sm text-muted-foreground mb-4">

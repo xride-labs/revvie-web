@@ -44,8 +44,8 @@ const BRAND_TYPES: {
     label: 'Brand / Manufacturer',
     description: 'Motorcycle brands, OEMs, official distributors',
     icon: Building2,
-    color: 'text-amber-400',
-    gradient: 'from-amber-500 to-orange-500',
+    color: 'text-primary',
+    gradient: 'from-primary to-primary',
   },
   {
     value: 'GEAR_SELLER',
@@ -84,8 +84,8 @@ const BRAND_TYPES: {
     label: 'Independent Mechanic',
     description: 'Freelance technician, roadside assistance',
     icon: Wrench,
-    color: 'text-orange-400',
-    gradient: 'from-orange-500 to-amber-400',
+    color: 'text-primary',
+    gradient: 'from-primary to-primary',
   },
   {
     value: 'MARKETPLACE_SELLER',
@@ -158,17 +158,17 @@ function launchConfetti() {
     fire(0.25, {
       spread: 26,
       startVelocity: 55,
-      colors: ['#F59E0B', '#EF4444', '#10B981'],
+      colors: ['#ff1d2d', '#EF4444', '#10B981'],
     })
-    fire(0.2, { spread: 60, colors: ['#F59E0B', '#F97316'] })
+    fire(0.2, { spread: 60, colors: ['#ff1d2d', '#ff1d2d'] })
     fire(0.35, {
       spread: 100,
       decay: 0.91,
       scalar: 0.8,
-      colors: ['#fff', '#F59E0B', '#c83737'],
+      colors: ['#fff', '#ff1d2d', '#c83737'],
     })
     fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 })
-    fire(0.1, { spread: 120, startVelocity: 45, colors: ['#F59E0B', '#EF4444'] })
+    fire(0.1, { spread: 120, startVelocity: 45, colors: ['#ff1d2d', '#EF4444'] })
   })
 }
 
@@ -247,7 +247,7 @@ export default function BrandOnboardPage() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <div className="border-b border-border px-6 py-4 flex items-center gap-3">
-        <div className="w-9 h-9 bg-linear-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+        <div className="w-9 h-9 bg-linear-to-br from-primary to-primary rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(255, 29, 45,0.3)]">
           <Store className="w-4 h-4 text-white" />
         </div>
         <div>
@@ -270,9 +270,9 @@ export default function BrandOnboardPage() {
                     <div
                       className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-all duration-300 ${
                         i < stepIndex
-                          ? 'bg-amber-500 text-white shadow-[0_0_10px_rgba(245,158,11,0.4)]'
+                          ? 'bg-primary text-white shadow-[0_0_10px_rgba(255, 29, 45,0.4)]'
                           : i === stepIndex
-                            ? 'bg-amber-500 text-white ring-4 ring-amber-500/20'
+                            ? 'bg-primary text-white ring-4 ring-primary/20'
                             : 'bg-muted text-muted-foreground'
                       }`}
                     >
@@ -285,7 +285,7 @@ export default function BrandOnboardPage() {
                     </span>
                     {i < STEPS.length - 2 && (
                       <div
-                        className={`flex-1 h-0.5 rounded-full transition-colors duration-500 ${i < stepIndex ? 'bg-amber-500' : 'bg-muted'}`}
+                        className={`flex-1 h-0.5 rounded-full transition-colors duration-500 ${i < stepIndex ? 'bg-primary' : 'bg-muted'}`}
                       />
                     )}
                   </div>
@@ -294,7 +294,7 @@ export default function BrandOnboardPage() {
               {/* Mini progress bar */}
               <div className="h-1 bg-muted rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full bg-amber-500 rounded-full"
+                  className="h-full bg-primary rounded-full"
                   initial={{ width: 0 }}
                   animate={{ width: `${(stepIndex / (STEPS.length - 2)) * 100}%` }}
                   transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -330,7 +330,7 @@ export default function BrandOnboardPage() {
                         onClick={() => toggleCategory(type.value)}
                         className={`text-left p-4 rounded-2xl border-2 transition-all duration-200 ${
                           selected
-                            ? 'border-amber-500 bg-amber-500/5 shadow-[0_0_0_1px_rgba(245,158,11,0.2)]'
+                            ? 'border-primary bg-primary/5 shadow-[0_0_0_1px_rgba(255, 29, 45,0.2)]'
                             : 'border-border hover:border-muted-foreground/40 hover:bg-muted/30'
                         }`}
                       >
@@ -350,7 +350,7 @@ export default function BrandOnboardPage() {
                             initial={{ scale: 0 }}
                             animate={{ scale: selected ? 1 : 0 }}
                             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                            className="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center shrink-0 mt-0.5"
+                            className="w-5 h-5 rounded-full bg-primary flex items-center justify-center shrink-0 mt-0.5"
                           >
                             <Check className="w-3 h-3 text-white" />
                           </motion.div>
@@ -363,7 +363,7 @@ export default function BrandOnboardPage() {
                   <motion.p
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-3 text-xs text-amber-500 font-medium"
+                    className="mt-3 text-xs text-primary font-medium"
                   >
                     {form.categories.length} type{form.categories.length !== 1 ? 's' : ''}{' '}
                     selected
@@ -371,7 +371,7 @@ export default function BrandOnboardPage() {
                 )}
                 <div className="mt-6 flex justify-end">
                   <Button
-                    className="bg-amber-500 hover:bg-amber-600 text-white px-8 gap-2"
+                    className="bg-primary hover:bg-brand-red text-white px-8 gap-2"
                     disabled={form.categories.length === 0}
                     onClick={goNext}
                   >
@@ -472,7 +472,7 @@ export default function BrandOnboardPage() {
                     <ChevronLeft className="w-4 h-4" /> Back
                   </Button>
                   <Button
-                    className="bg-amber-500 hover:bg-amber-600 text-white px-8 gap-2"
+                    className="bg-primary hover:bg-brand-red text-white px-8 gap-2"
                     disabled={!form.displayName.trim()}
                     onClick={goNext}
                   >
@@ -519,7 +519,7 @@ export default function BrandOnboardPage() {
                           Phone
                           {(form.categories.includes('MECHANIC') ||
                             form.categories.includes('SERVICE_STORE')) && (
-                            <span className="ml-1 text-[10px] text-amber-500 font-medium">
+                            <span className="ml-1 text-[10px] text-primary font-medium">
                               Recommended
                             </span>
                           )}
@@ -549,7 +549,7 @@ export default function BrandOnboardPage() {
                           City
                           {(form.categories.includes('MECHANIC') ||
                             form.categories.includes('SERVICE_STORE')) && (
-                            <span className="ml-1 text-[10px] text-amber-500 font-medium">
+                            <span className="ml-1 text-[10px] text-primary font-medium">
                               Required
                             </span>
                           )}
@@ -585,7 +585,7 @@ export default function BrandOnboardPage() {
                     <ChevronLeft className="w-4 h-4" /> Back
                   </Button>
                   <Button
-                    className="bg-amber-500 hover:bg-amber-600 text-white px-8 gap-2"
+                    className="bg-primary hover:bg-brand-red text-white px-8 gap-2"
                     onClick={handleCreate}
                     disabled={creating}
                   >
@@ -616,7 +616,7 @@ export default function BrandOnboardPage() {
                   initial={{ scale: 0, rotate: -20 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 18, delay: 0.1 }}
-                  className="w-24 h-24 bg-linear-to-br from-amber-400 to-orange-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_50px_rgba(245,158,11,0.5)]"
+                  className="w-24 h-24 bg-linear-to-br from-primary to-brand-red rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_50px_rgba(255, 29, 45,0.5)]"
                 >
                   <Check className="w-12 h-12 text-white" />
                 </motion.div>
@@ -651,8 +651,8 @@ export default function BrandOnboardPage() {
                         transition={{ delay: 0.35 + i * 0.07 }}
                         className="flex items-center gap-2 p-3 rounded-xl bg-muted/50 border border-border text-left"
                       >
-                        <div className="w-5 h-5 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
-                          <Check className="w-3 h-3 text-amber-500" />
+                        <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                          <Check className="w-3 h-3 text-primary" />
                         </div>
                         <p className="text-xs font-medium">{h}</p>
                       </motion.div>
@@ -667,7 +667,7 @@ export default function BrandOnboardPage() {
                   className="flex flex-col sm:flex-row gap-3 justify-center mt-8"
                 >
                   <Button
-                    className="bg-amber-500 hover:bg-amber-600 text-white px-8 gap-2 shadow-[0_0_20px_rgba(245,158,11,0.35)]"
+                    className="bg-primary hover:bg-brand-red text-white px-8 gap-2 shadow-[0_0_20px_rgba(255, 29, 45,0.35)]"
                     onClick={() => router.push('/brand/dashboard?onboarding=1')}
                   >
                     <Store className="w-4 h-4" /> Go to Dashboard

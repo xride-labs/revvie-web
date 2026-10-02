@@ -397,7 +397,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                               isSoldOut
                                 ? 'text-red-400 font-bold'
                                 : isFewLeft
-                                ? 'text-amber-400 font-bold'
+                                ? 'text-primary font-bold'
                                 : 'text-emerald-400 font-medium'
                             }
                           >
@@ -409,7 +409,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                         <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all ${
-                              isSoldOut ? 'bg-zinc-700' : isFewLeft ? 'bg-amber-500' : 'bg-emerald-500'
+                              isSoldOut ? 'bg-zinc-700' : isFewLeft ? 'bg-primary' : 'bg-emerald-500'
                             }`}
                             style={{
                               width: `${Math.min(
@@ -625,9 +625,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                   )}
 
                   {paymentMethod === 'CASH' && (
-                    <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex items-start gap-3">
-                      <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                      <p className="text-xs text-amber-200 leading-relaxed">
+                    <div className="bg-primary/10 border border-primary/30 rounded-2xl p-4 flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                      <p className="text-xs text-primary/10 leading-relaxed">
                         Your pass will be issued immediately with a <strong>Cash Due</strong> note. Please present your QR pass and pay ₹{totalAmount} in cash at the entry gate.
                       </p>
                     </div>

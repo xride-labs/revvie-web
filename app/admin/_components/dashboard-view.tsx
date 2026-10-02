@@ -43,7 +43,7 @@ import type {
   AdminReportRecord,
 } from '@/entities/admin/model'
 
-const PIE_COLORS = ['#2563eb', '#16a34a', '#d97706', '#dc2626', '#7c3aed', '#0891b2']
+const PIE_COLORS = ['#2563eb', '#16a34a', '#b3151f', '#dc2626', '#7c3aed', '#0891b2']
 
 export function AdminDashboardView({
   stats,
@@ -73,7 +73,7 @@ export function AdminDashboardView({
     if (total === 0) return []
     return [
       { name: 'Planned', value: breakdown.PLANNED ?? 0, fill: '#3b82f6' },
-      { name: 'In Progress', value: breakdown.IN_PROGRESS ?? 0, fill: '#f59e0b' },
+      { name: 'In Progress', value: breakdown.IN_PROGRESS ?? 0, fill: '#ff1d2d' },
       { name: 'Completed', value: breakdown.COMPLETED ?? 0, fill: '#22c55e' },
     ]
   })()
@@ -111,14 +111,14 @@ export function AdminDashboardView({
     <div className="space-y-6">
       {/* Pending approvals banner */}
       {totalPending > 0 && (
-        <Card className="border-amber-200 bg-amber-50/60 dark:bg-amber-950/20">
+        <Card className="border-primary/10 bg-primary/60 dark:bg-primary/20">
           <CardContent className="p-4 flex items-center gap-3">
-            <CheckSquare className="w-5 h-5 text-amber-600 shrink-0" />
+            <CheckSquare className="w-5 h-5 text-primary shrink-0" />
             <div className="flex-1">
-              <p className="font-semibold text-sm text-amber-900 dark:text-amber-100">
+              <p className="font-semibold text-sm text-primary dark:text-primary/10">
                 {totalPending} item{totalPending !== 1 ? 's' : ''} need your approval
               </p>
-              <p className="text-xs text-amber-700 dark:text-amber-300">
+              <p className="text-xs text-primary dark:text-primary">
                 {pendingCounts.clubs > 0 &&
                   `${pendingCounts.clubs} club${pendingCounts.clubs !== 1 ? 's' : ''} to verify  ·  `}
                 {pendingCounts.clubRequests > 0 &&
@@ -127,7 +127,7 @@ export function AdminDashboardView({
                   `${pendingCounts.rideRequests} ride join request${pendingCounts.rideRequests !== 1 ? 's' : ''}`}
               </p>
             </div>
-            <Button size="sm" asChild className="bg-amber-600 hover:bg-amber-700 shrink-0">
+            <Button size="sm" asChild className="bg-primary hover:bg-brand-red shrink-0">
               <Link href="/admin/approvals">Review →</Link>
             </Button>
           </CardContent>
@@ -177,8 +177,8 @@ export function AdminDashboardView({
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-amber-50 dark:bg-amber-950">
-                <Clock className="w-5 h-5 text-amber-600" />
+              <div className="p-2 rounded-lg bg-primary/10 dark:bg-primary">
+                <Clock className="w-5 h-5 text-primary" />
               </div>
             </div>
             <p className="text-2xl font-bold">{totalPending}</p>
@@ -236,7 +236,7 @@ export function AdminDashboardView({
               <Line
                 type="monotone"
                 dataKey="clubsCreated"
-                stroke="#d97706"
+                stroke="#b3151f"
                 strokeWidth={2}
                 name="Clubs"
                 dot={false}
@@ -317,7 +317,7 @@ export function AdminDashboardView({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-500" />
+              <AlertTriangle className="w-4 h-4 text-primary" />
               Moderation Queue
             </CardTitle>
             <CardDescription>Recent pending reports</CardDescription>

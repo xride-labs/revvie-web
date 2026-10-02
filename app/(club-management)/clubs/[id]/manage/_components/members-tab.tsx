@@ -166,14 +166,14 @@ export function MembersTab({
     switch (member.status) {
       case 'MUTED':
         return (
-          <Badge variant="outline" className="text-amber-400 border-amber-500/30 bg-amber-500/10">
+          <Badge variant="outline" className="text-primary border-primary/30 bg-primary/10">
             <VolumeX className="w-3 h-3 mr-1" />
             Muted
           </Badge>
         )
       case 'SUSPENDED':
         return (
-          <Badge variant="outline" className="text-orange-400 border-orange-500/30 bg-orange-500/10">
+          <Badge variant="outline" className="text-primary border-primary/30 bg-primary/10">
             <PauseCircle className="w-3 h-3 mr-1" />
             Suspended
           </Badge>
@@ -284,7 +284,7 @@ export function MembersTab({
                           onClick={() => handleOpenModeration(member)}
                           className="gap-2"
                         >
-                          <ShieldAlert className="w-4 h-4 text-amber-400" />
+                          <ShieldAlert className="w-4 h-4 text-primary" />
                           Moderate Member
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -310,7 +310,7 @@ export function MembersTab({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <div className="flex items-center gap-2">
-              <ShieldAlert className="h-5 w-5 text-amber-400" />
+              <ShieldAlert className="h-5 w-5 text-primary" />
               <DialogTitle>Moderate Member</DialogTitle>
             </div>
             <DialogDescription>
@@ -331,7 +331,7 @@ export function MembersTab({
                 <SelectContent>
                   <SelectItem value="MUTE">
                     <div className="flex items-center gap-2">
-                      <VolumeX className="w-4 h-4 text-amber-400" />
+                      <VolumeX className="w-4 h-4 text-primary" />
                       <span>Mute (Cannot post in club chat)</span>
                     </div>
                   </SelectItem>
@@ -343,7 +343,7 @@ export function MembersTab({
                   </SelectItem>
                   <SelectItem value="SUSPEND">
                     <div className="flex items-center gap-2">
-                      <PauseCircle className="w-4 h-4 text-orange-400" />
+                      <PauseCircle className="w-4 h-4 text-primary" />
                       <span>Suspend (Cannot RSVP or join club rides)</span>
                     </div>
                   </SelectItem>

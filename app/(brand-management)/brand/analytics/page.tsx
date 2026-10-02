@@ -32,7 +32,7 @@ export default function BrandAnalyticsPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       ) : (
         <>
@@ -44,7 +44,7 @@ export default function BrandAnalyticsPage() {
                     <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
                       {s.label}
                     </p>
-                    <s.icon className="w-4 h-4 text-amber-500" />
+                    <s.icon className="w-4 h-4 text-primary" />
                   </div>
                   <p className="text-3xl font-bold">{s.value.toLocaleString()}</p>
                 </CardContent>

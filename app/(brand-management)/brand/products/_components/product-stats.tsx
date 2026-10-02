@@ -14,7 +14,7 @@ export function ProductStats({ stats }: { stats: ProductStatsData }) {
     { label: 'In Stock', value: stats.inStock, color: 'text-green-500' },
     { label: 'Out of Stock', value: stats.outOfStock, color: 'text-destructive' },
     { label: 'Hidden', value: stats.hidden, color: 'text-muted-foreground' },
-    { label: 'Featured', value: stats.featured, color: 'text-amber-500' },
+    { label: 'Featured', value: stats.featured, color: 'text-primary' },
   ]
 
   return (

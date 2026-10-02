@@ -103,8 +103,8 @@ export function ProductFilters({
             className={cn(
               'px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap transition-all',
               filterCategory === 'ALL'
-                ? 'border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                : 'border-border text-muted-foreground hover:border-amber-500/40',
+                ? 'border-primary bg-primary/10 text-primary dark:text-primary'
+                : 'border-border text-muted-foreground hover:border-brand-red/40',
             )}
           >
             All ({totalCount})
@@ -116,8 +116,8 @@ export function ProductFilters({
               className={cn(
                 'px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap transition-all',
                 filterCategory === c.value
-                  ? 'border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                  : 'border-border text-muted-foreground hover:border-amber-500/40',
+                  ? 'border-primary bg-primary/10 text-primary dark:text-primary'
+                  : 'border-border text-muted-foreground hover:border-brand-red/40',
               )}
             >
               {c.emoji} {c.label} ({categoryCounts.get(c.value) ?? 0})

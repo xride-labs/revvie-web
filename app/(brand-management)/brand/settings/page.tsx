@@ -58,7 +58,7 @@ const VERIFICATION_CONFIG: Record<
   { label: string; color: string; icon: React.ElementType }
 > = {
   PENDING: { label: 'Not submitted', color: 'text-muted-foreground', icon: Clock },
-  SUBMITTED: { label: 'Under review', color: 'text-amber-500', icon: Clock },
+  SUBMITTED: { label: 'Under review', color: 'text-primary', icon: Clock },
   APPROVED: { label: 'Verified', color: 'text-green-500', icon: CheckCircle2 },
   REJECTED: { label: 'Rejected', color: 'text-destructive', icon: AlertCircle },
 }
@@ -303,7 +303,7 @@ export default function BrandSettingsPage() {
   if (!business) {
     return (
       <div className="flex items-center justify-center min-h-100">
-        <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     )
   }
@@ -332,7 +332,7 @@ export default function BrandSettingsPage() {
               </div>
             </div>
             {verificationStatus === 'PENDING' && (
-              <Badge variant="outline" className="text-amber-500 border-amber-500/30">
+              <Badge variant="outline" className="text-primary border-primary/30">
                 Action needed
               </Badge>
             )}
@@ -349,7 +349,7 @@ export default function BrandSettingsPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <ImageIcon className="w-5 h-5 text-amber-500" />
+            <ImageIcon className="w-5 h-5 text-primary" />
             <CardTitle className="text-base">Brand Visual Identity</CardTitle>
           </div>
         </CardHeader>
@@ -430,8 +430,8 @@ export default function BrandSettingsPage() {
                       onClick={() => toggleCategory(c.value)}
                       className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                         profile.categories.includes(c.value)
-                          ? 'border-amber-500 bg-amber-500/10 text-amber-500'
-                          : 'border-border text-muted-foreground hover:border-amber-500/50'
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-border text-muted-foreground hover:border-brand-red/50'
                       }`}
                     >
                       {c.label}
@@ -510,7 +510,7 @@ export default function BrandSettingsPage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-amber-500" />
+                  <MapPin className="w-4 h-4 text-primary" />
                   Location
                 </Label>
                 <Button
@@ -621,7 +621,7 @@ export default function BrandSettingsPage() {
 
             <Button
               type="submit"
-              className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+              className="w-full bg-primary hover:bg-brand-red text-white"
               disabled={isSaving}
             >
               {isSaving ? (
@@ -641,7 +641,7 @@ export default function BrandSettingsPage() {
       <Card id="verification">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-amber-500" />
+            <FileText className="w-5 h-5 text-primary" />
             <CardTitle className="text-base">Verification Documents</CardTitle>
           </div>
         </CardHeader>
@@ -664,7 +664,7 @@ export default function BrandSettingsPage() {
                     className="flex items-center justify-between p-2 rounded bg-background/60 border border-border/40 text-xs"
                   >
                     <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-amber-500" />
+                      <FileText className="w-4 h-4 text-primary" />
                       <span className="font-medium text-foreground">
                         {doc.type.replace(/_/g, ' ')}
                       </span>
@@ -673,7 +673,7 @@ export default function BrandSettingsPage() {
                       href={doc.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-amber-500 hover:underline flex items-center gap-1"
+                      className="text-primary hover:underline flex items-center gap-1"
                     >
                       View <ExternalLink className="w-3 h-3" />
                     </a>
@@ -713,7 +713,7 @@ export default function BrandSettingsPage() {
           </div>
 
           <Button
-            className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+            className="w-full bg-primary hover:bg-brand-red text-white"
             disabled={!canSubmit || isSubmitting}
             onClick={handleSubmitVerification}
           >

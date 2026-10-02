@@ -105,7 +105,7 @@ export function ProductTable({
                   <div>
                     <p className="font-medium text-sm">{p.title}</p>
                     {p.isFeatured && (
-                      <Badge className="bg-amber-500 text-white text-[10px] px-1.5 gap-0.5 mt-0.5">
+                      <Badge className="bg-primary text-white text-[10px] px-1.5 gap-0.5 mt-0.5">
                         <Star className="w-2.5 h-2.5 fill-white" /> Featured
                       </Badge>
                     )}
@@ -127,7 +127,7 @@ export function ProductTable({
                 </TableCell>
                 <TableCell>
                   {p.price != null ? (
-                    <span className="font-semibold text-amber-500 text-sm">
+                    <span className="font-semibold text-primary text-sm">
                       ₹{p.price.toLocaleString('en-IN')}
                     </span>
                   ) : (

@@ -62,7 +62,7 @@ const ROLE_META: Record<
   CO_ADMIN: {
     label: 'Co-Admin',
     description: 'Full access except settings and monitoring',
-    color: 'bg-orange-100 text-orange-700',
+    color: 'bg-primary/10 text-primary',
     icon: UserCog,
   },
   MODERATOR: {

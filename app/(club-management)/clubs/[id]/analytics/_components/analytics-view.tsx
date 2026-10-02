@@ -49,15 +49,15 @@ import type { ClubAnalytics } from '@/features/clubs/schemas'
 
 const STATUS_COLORS: Record<string, string> = {
   PLANNED: '#3b82f6',
-  IN_PROGRESS: '#f59e0b',
+  IN_PROGRESS: '#ff1d2d',
   COMPLETED: '#22c55e',
   CANCELLED: '#ef4444',
 }
 
 const STATUS_BADGE: Record<string, string> = {
   ACTIVE: 'text-green-600 border-green-600/40',
-  MUTED: 'text-amber-600 border-amber-600/40',
-  SUSPENDED: 'text-orange-600 border-orange-600/40',
+  MUTED: 'text-primary border-primary/40',
+  SUSPENDED: 'text-primary border-primary/40',
   BANNED: 'text-red-600 border-red-600/40',
 }
 
@@ -159,7 +159,7 @@ export function ClubAnalyticsView({
           label="Completion Rate"
           value={`${completionRate}%`}
           icon={<CheckCircle2 className="w-5 h-5" />}
-          color="amber"
+          color="red"
           sub={`${completedRides} of ${totalRides} completed`}
         />
       </div>
@@ -258,7 +258,7 @@ export function ClubAnalyticsView({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-amber-500" />
+              <Trophy className="w-5 h-5 text-primary" />
               Top Rider Leaderboard
             </CardTitle>
             <CardDescription>
@@ -390,7 +390,7 @@ export function ClubAnalyticsView({
             label="Dormant Members"
             value={analytics.summary.dormant ?? 0}
             icon={<Users className="w-5 h-5" />}
-            color="amber"
+            color="red"
             sub="no activity in 30d"
           />
           <StatCard
@@ -497,14 +497,14 @@ function StatCard({
   label: string
   value: string | number
   icon: React.ReactNode
-  color: 'blue' | 'green' | 'purple' | 'amber'
+  color: 'blue' | 'green' | 'purple' | 'red'
   sub?: string
 }) {
   const colors = {
     blue: 'bg-blue-50 dark:bg-blue-950 text-blue-600',
     green: 'bg-green-50 dark:bg-green-950 text-green-600',
     purple: 'bg-violet-50 dark:bg-violet-950 text-violet-600',
-    amber: 'bg-amber-50 dark:bg-amber-950 text-amber-600',
+    red: 'bg-primary/10 dark:bg-primary text-primary',
   }
   return (
     <Card>

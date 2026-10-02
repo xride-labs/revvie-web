@@ -225,14 +225,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   isActive
                     ? 'bg-red-600 text-white'
                     : highlight
-                      ? 'text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/30'
+                      ? 'text-primary hover:text-primary hover:bg-brand-red/10 dark:hover:bg-brand-red/30'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted',
                 )}
               >
                 <item.icon className="w-5 h-5" />
                 {item.name}
                 {highlight && (
-                  <span className="ml-auto flex h-2 w-2 rounded-full bg-amber-500" />
+                  <span className="ml-auto flex h-2 w-2 rounded-full bg-primary" />
                 )}
               </Link>
             )

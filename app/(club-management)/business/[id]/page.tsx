@@ -53,7 +53,7 @@ function statusBadge(status: BusinessProfile['verification']) {
     case 'REJECTED':
       return <Badge className="bg-red-500/20 text-red-200">Rejected</Badge>
     case 'SUBMITTED':
-      return <Badge className="bg-amber-500/20 text-amber-200">Submitted</Badge>
+      return <Badge className="bg-primary/20 text-primary/10">Submitted</Badge>
     default:
       return <Badge className="bg-muted text-muted-foreground">Pending</Badge>
   }

@@ -1,5 +1,5 @@
 export const roleColors = {
-  FOUNDER: 'bg-amber-100 text-amber-700',
+  FOUNDER: 'bg-primary/10 text-primary',
   ADMIN: 'bg-red-100 text-red-700',
   OFFICER: 'bg-blue-100 text-blue-700',
   MEMBER: 'bg-gray-100 text-gray-700',

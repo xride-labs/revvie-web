@@ -119,7 +119,7 @@ export function JoinDialog({
                   isInviteOnly
                     ? 'border-neutral-500 text-neutral-400'
                     : isApplication
-                      ? 'border-amber-500/30 bg-amber-500/10 text-amber-400'
+                      ? 'border-primary/30 bg-primary/10 text-primary'
                       : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
                 }`}
               >
@@ -145,13 +145,13 @@ export function JoinDialog({
           ) : (
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
               {requiresLicense && (
-                <div className="p-3 rounded-lg border border-amber-500/30 bg-amber-500/10 flex items-start gap-2.5">
-                  <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <div className="p-3 rounded-lg border border-primary/30 bg-primary/10 flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-semibold text-amber-300">
+                    <p className="text-xs font-semibold text-primary">
                       Driving License Required
                     </p>
-                    <p className="text-[11px] text-amber-200/80 mt-0.5">
+                    <p className="text-[11px] text-primary/80 mt-0.5">
                       This club requires all riders to hold a valid motorcycle driver&apos;s license for group rides.
                     </p>
                   </div>

@@ -197,7 +197,7 @@ export function RidesTabs({
           <Separator className="my-6" />
 
           {/* Create Ride CTA */}
-          <Card className="bg-linear-to-r from-primary/10 to-amber-100/50 border-primary/20">
+          <Card className="bg-linear-to-r from-primary/10 to-brand-red/10 border-primary/20">
             <CardContent className="p-6 text-center">
               <h3 className="font-semibold mb-2">Plan Your Own Ride</h3>
               <p className="text-sm text-muted-foreground mb-4">
@@ -239,7 +239,7 @@ export function RidesTabs({
             <div className="space-y-4">
               {myRides.map((ride) => (
                 <Link key={ride.id} href={`/rides/${ride.id}`}>
-                  <Card className="hover:border-primary/50 transition-colors">
+                  <Card className="hover:border-brand-red/50 transition-colors">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
@@ -275,7 +275,7 @@ export function RidesTabs({
             <div className="space-y-4">
               {pastRides.map((ride) => (
                 <Link key={ride.id} href={`/rides/${ride.id}`}>
-                  <Card className="hover:border-primary/50 transition-colors opacity-80">
+                  <Card className="hover:border-brand-red/50 transition-colors opacity-80">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div>

@@ -44,7 +44,7 @@ import type { AdCampaign } from '@/entities/business/model'
 
 const STATUS_BADGE: Record<string, string> = {
   DRAFT: 'text-muted-foreground border-border',
-  PENDING_APPROVAL: 'text-amber-500 border-amber-500/30 bg-amber-500/5',
+  PENDING_APPROVAL: 'text-primary border-primary/30 bg-primary/5',
   ACTIVE: 'text-green-500 border-green-500/30 bg-green-500/5',
   PAUSED: 'text-blue-400 border-blue-400/30 bg-blue-400/5',
   COMPLETED: 'text-muted-foreground border-border',
@@ -148,7 +148,7 @@ export default function BrandCampaignsPage() {
             Reach riders based on location, bike type, and riding style
           </p>
         </div>
-        <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
+        <Button className="bg-primary hover:bg-brand-red text-white" asChild>
           <Link href="/brand/campaigns/create">
             <Plus className="w-4 h-4 mr-2" /> New Campaign
           </Link>
@@ -157,7 +157,7 @@ export default function BrandCampaignsPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       ) : campaigns.length === 0 ? (
         <Card className="border-dashed border-2">
@@ -323,7 +323,7 @@ export default function BrandCampaignsPage() {
               Cancel
             </Button>
             <Button
-              className="bg-amber-500 hover:bg-amber-600 text-white"
+              className="bg-primary hover:bg-brand-red text-white"
               onClick={handleSave}
               disabled={saving || !editForm.title.trim()}
             >

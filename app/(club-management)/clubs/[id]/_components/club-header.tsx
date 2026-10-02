@@ -104,7 +104,7 @@ export function ClubHeader({
   return (
     <>
       {/* Cover Image Banner */}
-      <div className="relative h-48 md:h-64 bg-linear-to-br from-primary/20 via-neutral-900 to-amber-950/30 overflow-hidden">
+      <div className="relative h-48 md:h-64 bg-linear-to-br from-primary/20 via-neutral-900 to-primary/30 overflow-hidden">
         {club.coverImage ? (
           <img
             src={club.coverImage}
@@ -201,7 +201,7 @@ export function ClubHeader({
               <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{club.name}</h1>
               {club.verified && <ShieldCheck className="w-6 h-6 text-blue-500" />}
               {!club.isPublic ? (
-                <Badge variant="outline" className="border-amber-500/40 text-amber-400 bg-amber-500/10">
+                <Badge variant="outline" className="border-primary/40 text-primary bg-primary/10">
                   Private
                 </Badge>
               ) : (
@@ -234,7 +234,7 @@ export function ClubHeader({
                 </span>
               )}
               <span className="flex items-center gap-1.5">
-                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                <Star className="w-4 h-4 text-primary fill-primary" />
                 {club.reputation || 0}
               </span>
             </div>
@@ -264,7 +264,7 @@ export function ClubHeader({
               </>
             ) : isPending ? (
               <div className="flex items-center gap-2">
-                <Button disabled variant="secondary" className="border border-amber-500/30 text-amber-400 bg-amber-500/10">
+                <Button disabled variant="secondary" className="border border-primary/30 text-primary bg-primary/10">
                   <Clock className="w-4 h-4 mr-2 animate-pulse" />
                   Request Pending
                 </Button>
@@ -281,7 +281,7 @@ export function ClubHeader({
                 )}
               </div>
             ) : (
-              <Button onClick={onJoin} className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+              <Button onClick={onJoin} className="bg-primary hover:bg-brand-red/90 text-primary-foreground font-semibold">
                 <UserPlus className="w-4 h-4 mr-2" />
                 Join Club
               </Button>

@@ -233,7 +233,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen">
       {/* Cover Image */}
-      <div className="relative h-32 md:h-48 bg-linear-to-br from-primary/20 to-amber-100">
+      <div className="relative h-32 md:h-48 bg-linear-to-br from-primary/20 to-primary/10">
         <Button
           variant="ghost"
           size="icon"
@@ -361,7 +361,7 @@ export default function ProfilePage() {
               <span className="text-muted-foreground">following</span>
             </div>
             <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+              <Star className="w-4 h-4 text-primary fill-primary" />
               <span className="font-semibold">{user.stats.reviewRating}</span>
               <span className="text-muted-foreground">({user.stats.reviewsGiven})</span>
             </div>

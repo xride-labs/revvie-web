@@ -29,8 +29,8 @@ import type { ExpenseCategory, CreateExpenseSplitInput } from '@/features/expens
 const CATEGORIES: { key: ExpenseCategory | 'ALL'; label: string; icon: React.ComponentType<{ className?: string }>; color: string }[] = [
   { key: 'ALL', label: 'All Categories', icon: Receipt, color: 'text-zinc-400' },
   { key: 'FUEL', label: 'Fuel & Gas', icon: Fuel, color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30' },
-  { key: 'SERVICING', label: 'Service & Repairs', icon: Wrench, color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' },
-  { key: 'FOOD', label: 'Food & Refreshments', icon: Utensils, color: 'text-orange-400 bg-orange-500/10 border-orange-500/30' },
+  { key: 'SERVICING', label: 'Service & Repairs', icon: Wrench, color: 'text-primary bg-primary/10 border-primary/30' },
+  { key: 'FOOD', label: 'Food & Refreshments', icon: Utensils, color: 'text-primary bg-primary/10 border-primary/30' },
   { key: 'ACCOMMODATION', label: 'Hotels & Stay', icon: Hotel, color: 'text-purple-400 bg-purple-500/10 border-purple-500/30' },
   { key: 'OTHER', label: 'Gear & Miscellaneous', icon: Tag, color: 'text-zinc-400 bg-zinc-500/10 border-zinc-500/30' },
 ]
@@ -256,15 +256,15 @@ export default function ExpensesPage() {
           </div>
 
           {/* Card 3: You Owe */}
-          <div className="bg-gradient-to-br from-amber-950/20 to-white/[0.02] border border-amber-500/20 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+          <div className="bg-gradient-to-br from-primary/20 to-white/[0.02] border border-primary/20 rounded-2xl p-5 shadow-xl relative overflow-hidden">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-amber-400 uppercase tracking-wider">You Owe</span>
-              <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <span className="text-xs font-medium text-primary uppercase tracking-wider">You Owe</span>
+              <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center text-primary">
                 <ArrowUpRight className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-3">
-              <span className="text-2xl lg:text-3xl font-bold text-amber-300 tracking-tight">
+              <span className="text-2xl lg:text-3xl font-bold text-primary tracking-tight">
                 {formatINR(owedByMePaise)}
               </span>
               <p className="text-[11px] text-zinc-400 mt-1">
@@ -317,7 +317,7 @@ export default function ExpensesPage() {
               <Users className="w-3.5 h-3.5" />
               <span>Splits Tracker</span>
               {(owedToMePaise > 0 || owedByMePaise > 0) && (
-                <span className="w-2 h-2 rounded-full bg-amber-400" />
+                <span className="w-2 h-2 rounded-full bg-primary" />
               )}
             </button>
           </div>
@@ -451,7 +451,7 @@ export default function ExpensesPage() {
             <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 space-y-4">
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                  <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center text-primary">
                     <ArrowUpRight className="w-4 h-4" />
                   </div>
                   <div>
@@ -459,7 +459,7 @@ export default function ExpensesPage() {
                     <p className="text-zinc-500 text-xs">Amounts requested by other ride buddies</p>
                   </div>
                 </div>
-                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300">
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/15 border border-primary/30 text-primary">
                   {formatINR(owedByMePaise)} Pending
                 </span>
               </div>
@@ -480,7 +480,7 @@ export default function ExpensesPage() {
                         key={split.id}
                         className={`p-4 rounded-2xl border transition ${
                           isPending
-                            ? 'bg-amber-950/10 border-amber-500/20'
+                            ? 'bg-primary/10 border-primary/20'
                             : 'bg-white/[0.02] border-white/5 opacity-60'
                         }`}
                       >
@@ -498,7 +498,7 @@ export default function ExpensesPage() {
                           </div>
 
                           <div className="text-right flex flex-col items-end gap-2">
-                            <span className="text-sm font-bold text-amber-300">
+                            <span className="text-sm font-bold text-primary">
                               {formatINR(split.amountPaise)}
                             </span>
                             {isPending ? (

@@ -45,7 +45,7 @@ export function GalleryTab({
             {gallery.map((item) => (
               <div
                 key={item.id}
-                className="group relative aspect-square bg-muted rounded-xl border border-white/10 overflow-hidden shadow-md hover:border-primary/50 transition-colors"
+                className="group relative aspect-square bg-muted rounded-xl border border-white/10 overflow-hidden shadow-md hover:border-brand-red/50 transition-colors"
               >
                 {item.url ? (
                   <img

@@ -179,7 +179,7 @@ export default function CreateProductPage() {
                     <X className="w-3 h-3" />
                   </button>
                   {i === 0 && (
-                    <span className="absolute bottom-1 left-1 text-[10px] bg-amber-500 text-white px-1 rounded">
+                    <span className="absolute bottom-1 left-1 text-[10px] bg-primary text-white px-1 rounded">
                       Cover
                     </span>
                   )}
@@ -188,7 +188,7 @@ export default function CreateProductPage() {
               {imagePreviews.length < 10 && (
                 <button
                   type="button"
-                  className="aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-1 text-muted-foreground hover:border-amber-500 hover:text-amber-500 transition-colors"
+                  className="aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-1 text-muted-foreground hover:border-brand-red hover:text-primary transition-colors"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Plus className="w-6 h-6" />
@@ -264,8 +264,8 @@ export default function CreateProductPage() {
                     onClick={() => setForm({ ...form, category: cat.value })}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                       form.category === cat.value
-                        ? 'border-amber-500 bg-amber-500/10 text-amber-500'
-                        : 'border-border text-muted-foreground hover:border-amber-500/50'
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border text-muted-foreground hover:border-brand-red/50'
                     }`}
                   >
                     {cat.label}
@@ -283,8 +283,8 @@ export default function CreateProductPage() {
                     onClick={() => setForm({ ...form, condition: c.value })}
                     className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                       form.condition === c.value
-                        ? 'border-amber-500 bg-amber-500/10 text-amber-500'
-                        : 'border-border text-muted-foreground hover:border-amber-500/50'
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border text-muted-foreground hover:border-brand-red/50'
                     }`}
                   >
                     {c.label}
@@ -297,7 +297,7 @@ export default function CreateProductPage() {
 
         <Button
           type="submit"
-          className="w-full bg-amber-500 hover:bg-amber-600 text-white h-12"
+          className="w-full bg-primary hover:bg-brand-red text-white h-12"
           disabled={loading || !form.title || !form.price || !form.category}
         >
           {loading ? (

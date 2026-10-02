@@ -405,7 +405,7 @@ export default function ClubManagePage() {
   if (!canManage && !clubLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center px-4">
-        <ShieldAlert className="w-12 h-12 text-amber-500 mx-auto" />
+        <ShieldAlert className="w-12 h-12 text-primary mx-auto" />
         <h2 className="text-xl font-bold text-white">Access Denied</h2>
         <p className="text-sm text-neutral-400 max-w-sm">
           You do not have administrative permissions to manage {clubResponse?.club.name || 'this club'}.

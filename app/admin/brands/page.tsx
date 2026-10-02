@@ -56,7 +56,7 @@ import { toast } from 'sonner'
 import { AdminCRUDPopover, CRUDActionBuilders } from '@/components/admin/crud-popover'
 
 const VERIFICATION_COLORS: Record<string, string> = {
-  PENDING: 'bg-amber-100 text-amber-700',
+  PENDING: 'bg-primary/10 text-primary',
   SUBMITTED: 'bg-blue-100 text-blue-700',
   APPROVED: 'bg-green-100 text-green-700',
   REJECTED: 'bg-red-100 text-red-700',
@@ -112,7 +112,7 @@ export default function AdminBrandsPage() {
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-4">
         <StatCard label="Total Brands" value={stats.total} color="text-foreground" />
-        <StatCard label="Pending" value={stats.pending} color="text-amber-600" />
+        <StatCard label="Pending" value={stats.pending} color="text-primary" />
         <StatCard label="Under Review" value={stats.submitted} color="text-blue-600" />
         <StatCard label="Approved" value={stats.approved} color="text-green-600" />
       </div>
@@ -410,7 +410,7 @@ export default function AdminBrandsPage() {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-background border text-xs hover:bg-muted transition-colors"
                       >
-                        <span className="font-mono font-bold text-[10px] text-amber-500 uppercase">
+                        <span className="font-mono font-bold text-[10px] text-primary uppercase">
                           {doc.type}
                         </span>
                         <ExternalLink className="w-3 h-3 text-muted-foreground" />

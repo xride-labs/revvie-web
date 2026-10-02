@@ -41,8 +41,8 @@ export const TAB_CONFIG: Record<
     roles: ['BRAND_OWNER', 'BRAND_ADMIN', 'BRAND_MODERATOR', 'SUPER_ADMIN', 'ADMIN', 'CO_ADMIN'],
     registerHref: '/brand-register',
     registerLabel: 'Register your brand',
-    accentClass: 'from-amber-500 to-orange-500',
-    activeTabClass: 'bg-amber-500/10 border border-amber-500/30 text-amber-400',
+    accentClass: 'from-primary to-primary',
+    activeTabClass: 'bg-primary/10 border border-primary/30 text-primary',
     placeholder: 'brand@company.com',
   },
 }

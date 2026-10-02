@@ -129,7 +129,7 @@ export function MembersTab({
                   <Link
                     key={member.id}
                     href={`/profile/${member.userId}`}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/5 hover:border-primary/30 transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/5 hover:border-brand-red/30 transition-colors"
                   >
                     <Avatar className="w-10 h-10 border border-white/10">
                       <AvatarImage src={member.user.avatar ?? undefined} alt={member.user.name ?? ''} />
@@ -172,7 +172,7 @@ export function MembersTab({
               <Button
                 size="sm"
                 onClick={handleCopyLink}
-                className="gap-1.5 shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                className="gap-1.5 shrink-0 bg-primary hover:bg-brand-red/90 text-primary-foreground font-semibold"
               >
                 {hasCopied ? (
                   <>

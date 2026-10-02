@@ -218,7 +218,7 @@ export function JoinFlowTab({ clubId }: JoinFlowTabProps) {
                   </SelectItem>
                   <SelectItem value="APPLICATION">
                     <div className="flex items-center gap-2">
-                      <FileQuestion className="h-4 w-4 text-amber-400" />
+                      <FileQuestion className="h-4 w-4 text-primary" />
                       <div>
                         <p className="font-semibold text-foreground">Application Required</p>
                         <p className="text-xs text-muted-foreground">
@@ -293,7 +293,7 @@ export function JoinFlowTab({ clubId }: JoinFlowTabProps) {
                     policy === 'OPEN'
                       ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                       : policy === 'APPLICATION'
-                        ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                        ? 'bg-primary/10 text-primary border-primary/20'
                         : 'bg-primary/10 text-primary border-primary/20'
                   }
                 >
@@ -316,7 +316,7 @@ export function JoinFlowTab({ clubId }: JoinFlowTabProps) {
               {policy === 'APPLICATION' && (
                 <div className="space-y-4">
                   {requiresLicense && (
-                    <div className="flex items-center gap-2 text-xs text-amber-400 bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/20">
+                    <div className="flex items-center gap-2 text-xs text-primary bg-primary/10 p-2.5 rounded-lg border border-primary/20">
                       <ShieldCheck className="h-4 w-4 shrink-0" />
                       <span>Valid two-wheeler driving license is strictly required.</span>
                     </div>
@@ -561,7 +561,7 @@ export function JoinFlowTab({ clubId }: JoinFlowTabProps) {
                   ))}
                 </div>
                 {options.length < 2 && (
-                  <p className="text-[11px] text-amber-400">
+                  <p className="text-[11px] text-primary">
                     Add at least 2 options for multiple-choice questions
                   </p>
                 )}

@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'
 import {
   Shield,
   Lock,
-  Mail,
   Eye,
   EyeOff,
   Loader2,
@@ -83,7 +82,7 @@ export function AdminLoginView() {
       description: 'Welcome to the Revvie Admin Command Center.',
     })
     // Hard refresh/navigation so server layout re-evaluates the session cookie
-    window.location.href = '/admin'
+    router.replace('/admin')
   }
 
   // ── Password Submit ────────────────────────────────────────────────────────
@@ -252,7 +251,7 @@ export function AdminLoginView() {
           <h1 className="text-4xl xl:text-5xl font-black text-white leading-[1.1] mb-6 tracking-tight">
             Restricted Admin
             <br />
-            <span className="bg-linear-to-r from-brand-red-light via-rose-500 to-amber-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-brand-red-light via-rose-500 to-primary bg-clip-text text-transparent">
               Command Center.
             </span>
           </h1>
@@ -296,7 +295,7 @@ export function AdminLoginView() {
         {/* Bottom: Warning banner */}
         <div className="relative z-10 pt-6 border-t border-white/[0.06]">
           <div className="flex items-center gap-2 text-xs text-text-secondary/50 font-mono">
-            <AlertCircle className="w-3.5 h-3.5 text-amber-500/80 shrink-0" />
+            <AlertCircle className="w-3.5 h-3.5 text-primary/80 shrink-0" />
             <span>Notice: Unauthorized access attempts are monitored and logged to SIEM.</span>
           </div>
         </div>

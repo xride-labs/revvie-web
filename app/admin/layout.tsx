@@ -1,5 +1,3 @@
-import { redirect } from 'next/navigation'
-
 import { AdminLayout } from '@/components/admin/admin-layout'
 import { getSession } from '@/core/auth/session'
 import { ADMIN_ROLES, hasAnyRole } from '@/core/auth/roles'

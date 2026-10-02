@@ -169,21 +169,21 @@ const CATEGORY_META: Record<
   BusinessCategory,
   { icon: React.ComponentType<{ className?: string }>; label: string; color: string }
 > = {
-  BRAND: { icon: Sparkles, label: 'Brand', color: 'from-amber-500 to-orange-500' },
+  BRAND: { icon: Sparkles, label: 'Brand', color: 'from-primary to-brand-red' },
   GEAR_SELLER: {
     icon: ShoppingBag,
     label: 'Gear Seller',
-    color: 'from-amber-500 to-yellow-500',
+    color: 'from-primary to-brand-red',
   },
   HELMET_SELLER: {
     icon: HardHat,
     label: 'Helmet Seller',
-    color: 'from-amber-600 to-orange-500',
+    color: 'from-primary to-brand-red',
   },
   PARTS_SELLER: {
     icon: Package,
     label: 'Parts Seller',
-    color: 'from-orange-500 to-red-500',
+    color: 'from-primary to-red-500',
   },
   MARKETPLACE_SELLER: {
     icon: ShoppingCart,
@@ -223,7 +223,7 @@ function getNavigation(categories: BusinessCategory[]): {
 }
 
 const VERIFICATION_BADGE: Record<string, string> = {
-  PENDING: 'text-amber-400',
+  PENDING: 'text-primary',
   SUBMITTED: 'text-blue-400',
   APPROVED: 'text-green-400',
   REJECTED: 'text-destructive',
@@ -421,7 +421,7 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
                 className={cn(
                   'flex items-center gap-3 px-4 py-3 rounded-2xl font-medium transition-all duration-300',
                   isActive
-                    ? 'bg-amber-500 text-white'
+                    ? 'bg-primary text-white'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted',
                 )}
               >
@@ -461,7 +461,7 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
             className="flex items-center gap-3 p-2 rounded-2xl hover:bg-muted transition-colors"
           >
             <Avatar>
-              <AvatarFallback className="bg-amber-500 text-white">
+              <AvatarFallback className="bg-primary text-white">
                 {user.name?.charAt(0) || user.email?.charAt(0) || 'B'}
               </AvatarFallback>
             </Avatar>
@@ -536,7 +536,7 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 className={cn(
                   'flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors',
-                  isActive ? 'text-amber-500' : 'text-muted-foreground',
+                  isActive ? 'text-primary' : 'text-muted-foreground',
                 )}
               >
                 <item.icon className={cn('w-5 h-5', isActive && 'stroke-[2.5px]')} />

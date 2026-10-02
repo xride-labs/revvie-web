@@ -358,7 +358,7 @@ export default function AdminApprovalsPage() {
                                       }
                                       className="h-7 px-2.5 bg-[#1c1c1e] hover:bg-neutral-800 border-[#3a3a3c] text-xs gap-1.5"
                                     >
-                                      <span className="font-mono font-bold text-[10px] text-amber-400 uppercase">
+                                      <span className="font-mono font-bold text-[10px] text-primary uppercase">
                                         {doc.type}
                                       </span>
                                       <Eye className="w-3 h-3 text-neutral-400" />

@@ -204,8 +204,8 @@ export default function CreateCampaignPage() {
                   onClick={() => toggleSlot(slot.value)}
                   className={`w-full text-left px-4 py-3 rounded-xl border transition-all ${
                     form.selectedSlots.includes(slot.value)
-                      ? 'border-amber-500 bg-amber-500/10'
-                      : 'border-border hover:border-amber-500/50'
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border hover:border-brand-red/50'
                   }`}
                 >
                   <div className="font-medium text-sm">{slot.label}</div>
@@ -218,7 +218,7 @@ export default function CreateCampaignPage() {
 
         <Button
           type="submit"
-          className="w-full bg-amber-500 hover:bg-amber-600 text-white h-12"
+          className="w-full bg-primary hover:bg-brand-red text-white h-12"
           disabled={loading}
         >
           {loading ? (

@@ -141,7 +141,7 @@ function CreatePostDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {isAnnouncement ? (
-              <Megaphone className="w-5 h-5 text-amber-500" />
+              <Megaphone className="w-5 h-5 text-primary" />
             ) : (
               <Send className="w-5 h-5" />
             )}
@@ -175,7 +175,7 @@ function CreatePostDialog({
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Megaphone className="w-4 h-4 text-amber-500" />
+                  <Megaphone className="w-4 h-4 text-primary" />
                   <div>
                     <p className="text-sm font-medium">Announcement</p>
                     <p className="text-xs text-muted-foreground">
@@ -368,7 +368,7 @@ export default function FeedPage() {
               key={post.id}
               className={cn(
                 'overflow-hidden',
-                post.isAnnouncement && 'border-amber-500/40 bg-amber-500/5',
+                post.isAnnouncement && 'border-primary/40 bg-primary/5',
                 post.isPinned && 'ring-1 ring-primary/30',
               )}
             >
@@ -382,7 +382,7 @@ export default function FeedPage() {
                       </span>
                     )}
                     {post.isAnnouncement && (
-                      <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-500 uppercase tracking-wide">
+                      <span className="flex items-center gap-1 text-[10px] font-semibold text-primary uppercase tracking-wide">
                         <Megaphone className="w-3 h-3" /> Announcement
                       </span>
                     )}
@@ -401,7 +401,7 @@ export default function FeedPage() {
                     className="flex items-start gap-3"
                   >
                     <Avatar className="w-10 h-10">
-                      <AvatarFallback className="bg-linear-to-br from-primary to-amber-500 text-white font-semibold">
+                      <AvatarFallback className="bg-linear-to-br from-primary to-brand-red text-white font-semibold">
                         {(post.author.name ?? post.author.username ?? '?')
                           .split(' ')
                           .map((n) => n[0])

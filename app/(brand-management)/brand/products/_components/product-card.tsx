@@ -65,7 +65,7 @@ export function ProductCard({
         </div>
         {p.isFeatured && (
           <div className="absolute top-2 left-2">
-            <Badge className="bg-amber-500 text-white text-[10px] px-1.5 gap-0.5">
+            <Badge className="bg-primary text-white text-[10px] px-1.5 gap-0.5">
               <Star className="w-2.5 h-2.5 fill-white" /> Featured
             </Badge>
           </div>
@@ -132,7 +132,7 @@ export function ProductCard({
 
         <div className="mt-2 flex items-center justify-between">
           {p.price != null ? (
-            <p className="text-base font-bold text-amber-500">
+            <p className="text-base font-bold text-primary">
               ₹{p.price.toLocaleString('en-IN')}
             </p>
           ) : (

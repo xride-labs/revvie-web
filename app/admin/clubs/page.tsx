@@ -212,11 +212,11 @@ export default function AdminClubsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-100 rounded-lg">
-                <ShieldAlert className="w-5 h-5 text-amber-600" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <ShieldAlert className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-amber-600">{stats.pending}</p>
+                <p className="text-2xl font-bold text-primary">{stats.pending}</p>
                 <p className="text-sm text-muted-foreground">Pending Verification</p>
               </div>
             </div>
@@ -391,7 +391,7 @@ export default function AdminClubsPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <span className="text-amber-500">★</span>
+                        <span className="text-primary">★</span>
                         {club.reputation}
                       </div>
                     </TableCell>

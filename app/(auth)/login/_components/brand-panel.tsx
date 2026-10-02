@@ -25,7 +25,7 @@ export function BrandPanel() {
         <h1 className="text-4xl xl:text-5xl font-black text-white leading-[1.12] mb-6 tracking-tight">
           The portal for
           <br />
-          <span className="bg-linear-to-r from-brand-red-light via-brand-red to-orange-500 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-brand-red-light via-brand-red to-primary bg-clip-text text-transparent">
             riders who build.
           </span>
         </h1>

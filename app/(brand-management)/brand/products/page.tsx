@@ -237,7 +237,7 @@ export default function BrandProductsPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     )
   }
@@ -251,7 +251,7 @@ export default function BrandProductsPage() {
           <p className="text-sm text-muted-foreground mt-0.5">{copy.subtitle}</p>
         </div>
         <Button
-          className="bg-amber-500 hover:bg-amber-600 text-white shrink-0"
+          className="bg-primary hover:bg-brand-red text-white shrink-0"
           onClick={openCreate}
         >
           <Plus className="w-4 h-4 mr-2" /> {copy.addLabel}
@@ -343,7 +343,7 @@ export default function BrandProductsPage() {
               {copy.emptyBody}
             </p>
             <Button
-              className="bg-amber-500 hover:bg-amber-600 text-white"
+              className="bg-primary hover:bg-brand-red text-white"
               onClick={openCreate}
             >
               <Plus className="w-4 h-4 mr-2" /> {copy.addLabel}

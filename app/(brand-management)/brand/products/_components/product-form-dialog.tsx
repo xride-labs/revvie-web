@@ -199,7 +199,7 @@ export function ProductFormDialog({
           {/* Product Photos */}
           <div className="grid gap-2 pt-2 border-t border-border/40">
             <Label className="flex items-center gap-1.5">
-              <ImageIcon className="w-3.5 h-3.5 text-amber-500" />
+              <ImageIcon className="w-3.5 h-3.5 text-primary" />
               Product Photos ({form.images?.length ?? 0}/10)
             </Label>
 
@@ -247,7 +247,7 @@ export function ProductFormDialog({
             Cancel
           </Button>
           <Button
-            className="bg-amber-500 hover:bg-amber-600 text-white"
+            className="bg-primary hover:bg-brand-red text-white"
             onClick={onSave}
             disabled={saving || !form.title.trim()}
           >

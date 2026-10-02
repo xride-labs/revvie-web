@@ -352,12 +352,12 @@ export default function BrandRegisterPage() {
                       {passwordRequirements.map((req) => (
                         <div key={req.label} className="flex items-center gap-2">
                           <div
-                            className={`w-4 h-4 rounded-full flex items-center justify-center ${req.met ? 'bg-amber-500' : 'bg-[#333]'}`}
+                            className={`w-4 h-4 rounded-full flex items-center justify-center ${req.met ? 'bg-primary' : 'bg-[#333]'}`}
                           >
                             {req.met && <Check className="w-2.5 h-2.5 text-white" />}
                           </div>
                           <span
-                            className={`text-xs ${req.met ? 'text-amber-400' : 'text-text-secondary/50'}`}
+                            className={`text-xs ${req.met ? 'text-primary' : 'text-text-secondary/50'}`}
                           >
                             {req.label}
                           </span>
@@ -381,12 +381,12 @@ export default function BrandRegisterPage() {
                       onChange={handleChange}
                       required
                       disabled={isLoading}
-                      className={`h-12 rounded-2xl bg-[#1a1a1a] border-[#444444]/50 text-white placeholder:text-text-secondary/40 ${doPasswordsMatch ? 'border-amber-500/50' : ''}`}
+                      className={`h-12 rounded-2xl bg-[#1a1a1a] border-[#444444]/50 text-white placeholder:text-text-secondary/40 ${doPasswordsMatch ? 'border-primary/50' : ''}`}
                     />
                   </div>
                   <Button
                     type="submit"
-                    className="w-full h-12 rounded-2xl font-bold uppercase tracking-wide bg-linear-to-r from-amber-500 to-orange-500 text-white"
+                    className="w-full h-12 rounded-2xl font-bold uppercase tracking-wide bg-linear-to-r from-primary to-primary text-white"
                     disabled={isLoading}
                   >
                     <span>Continue</span>
