@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
-import { PortalBackdropArt } from '@/components/auth/portal-backdrop-art'
+import { BrandPanel } from '../login/_components/brand-panel'
 import { Eye, EyeOff, Loader2, Check, Shield } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useAuth } from '@/store/features/auth'
@@ -116,29 +116,39 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-canvas relative overflow-hidden p-4 py-12">
-      <PortalBackdropArt />
+    <div className="min-h-screen flex bg-canvas overflow-hidden">
+      <BrandPanel />
 
-      {/* Background decoration */}
-      <motion.div
-        className="absolute top-20 left-10 w-72 h-72 bg-neon-green/6 rounded-full blur-3xl pointer-events-none"
-        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 8, repeat: Infinity }}
-      />
-      <motion.div
-        className="absolute bottom-20 right-10 w-96 h-96 bg-brand-red-light/8 rounded-full blur-3xl pointer-events-none"
-        animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 10, repeat: Infinity }}
-      />
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-8 relative overflow-hidden py-12">
+        {/* Subtle background glow */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-brand-red-light/5 rounded-full blur-3xl" />
+        </div>
 
-      <motion.div
-        className="w-full max-w-md relative z-10"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="rounded-3xl bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/[0.07] shadow-atmospheric overflow-hidden">
-          <div className="h-px bg-linear-to-r from-transparent via-brand-red-light/50 to-transparent" />
+        <motion.div
+          className="w-full max-w-md relative z-10"
+          initial={{ opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Mobile logo */}
+          <div className="lg:hidden text-center mb-8">
+            <Link href="/" className="inline-flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl overflow-hidden border border-border">
+                <img
+                  src="/revvie-logo.png"
+                  alt="Revvie"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <span className="text-lg font-bold text-white tracking-[0.2em] uppercase">
+                Revvie
+              </span>
+            </Link>
+          </div>
+
+          <div className="rounded-3xl bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/[0.07] overflow-hidden shadow-atmospheric">
+            <div className="h-px bg-linear-to-r from-transparent via-brand-red-light/50 to-transparent" />
 
           <div className="p-8">
             {/* Logo */}
@@ -403,7 +413,9 @@ export default function SignupPage() {
             </p>
           </div>
         </div>
+        </div>
       </motion.div>
+      </main>
     </div>
   )
 }

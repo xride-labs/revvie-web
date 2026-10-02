@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PortalBackdropArt } from '@/components/auth/portal-backdrop-art'
+import { BrandPanel } from '../login/_components/brand-panel'
 import { Eye, EyeOff, Loader2, Check, Store, ChevronRight } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useAuth } from '@/store/features/auth'
@@ -188,28 +189,44 @@ export default function BrandRegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-canvas relative overflow-hidden p-4">
-      <PortalBackdropArt />
+    <div className="min-h-screen flex bg-canvas overflow-hidden">
+      <BrandPanel />
 
-      <motion.div
-        className="absolute top-20 right-10 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl"
-        animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 9, repeat: Infinity }}
-      />
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-brand-red-light/5 rounded-full blur-3xl" />
+        </div>
 
-      <motion.div
-        className="w-full max-w-md relative z-10"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="rounded-3xl bg-surface/80 backdrop-blur-xl border border-[#444444]/50 shadow-atmospheric overflow-hidden">
-          <div className="h-1 bg-linear-to-r from-amber-500 via-orange-500 to-amber-400" />
+        <motion.div
+          className="w-full max-w-md relative z-10"
+          initial={{ opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Mobile logo */}
+          <div className="lg:hidden text-center mb-8">
+            <Link href="/" className="inline-flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl overflow-hidden border border-border">
+                <img
+                  src="/revvie-logo.png"
+                  alt="Revvie"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <span className="text-lg font-bold text-white tracking-[0.2em] uppercase">
+                Revvie
+              </span>
+            </Link>
+          </div>
+
+          <div className="rounded-3xl bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/[0.07] overflow-hidden shadow-atmospheric">
+            <div className="h-px bg-linear-to-r from-transparent via-brand-red-light/50 to-transparent" />
 
           <div className="p-8">
             {/* Header */}
             <div className="text-center mb-8">
-              <div className="w-14 h-14 bg-linear-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+              <div className="w-14 h-14 bg-linear-to-br from-brand-red-light to-brand-red rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-[0_0_20px_rgba(255,29,45,0.3)]">
                 <Store className="w-7 h-7 text-white" />
               </div>
               <h1 className="text-2xl font-bold text-white uppercase tracking-wide">
@@ -223,10 +240,10 @@ export default function BrandRegisterPage() {
             {/* Step indicator */}
             <div className="flex items-center gap-2 mb-8">
               <div
-                className={`flex-1 h-1 rounded-full transition-colors ${step === 'account' || step === 'brand' ? 'bg-amber-500' : 'bg-[#333]'}`}
+                className={`flex-1 h-1 rounded-full transition-colors ${step === 'account' || step === 'brand' ? 'bg-brand-red' : 'bg-[#333]'}`}
               />
               <div
-                className={`flex-1 h-1 rounded-full transition-colors ${step === 'brand' ? 'bg-amber-500' : 'bg-[#333]'}`}
+                className={`flex-1 h-1 rounded-full transition-colors ${step === 'brand' ? 'bg-brand-red' : 'bg-[#333]'}`}
               />
             </div>
 
@@ -403,7 +420,7 @@ export default function BrandRegisterPage() {
                         key={cat.value}
                         type="button"
                         onClick={() => setFormData({ ...formData, category: cat.value })}
-                        className={`text-left px-4 py-3 rounded-2xl border transition-all ${formData.category === cat.value ? 'border-amber-500 bg-amber-500/10' : 'border-[#444444]/50 bg-[#1a1a1a] hover:border-[#666]'}`}
+                        className={`text-left px-4 py-3 rounded-2xl border transition-all ${formData.category === cat.value ? 'border-brand-red bg-brand-red/10' : 'border-[#444444]/50 bg-[#1a1a1a] hover:border-[#666]'}`}
                       >
                         <div className="font-medium text-sm text-white">{cat.label}</div>
                         <div className="text-xs text-text-secondary/60 mt-0.5">
@@ -441,7 +458,7 @@ export default function BrandRegisterPage() {
                   </Button>
                   <Button
                     type="submit"
-                    className="flex-1 h-12 rounded-2xl font-bold bg-linear-to-r from-amber-500 to-orange-500 text-white"
+                    className="flex-1 h-12 rounded-2xl font-bold bg-linear-to-r from-brand-red-light to-brand-red text-white hover:opacity-90 transition-opacity"
                     disabled={isLoading}
                   >
                     {isLoading ? (
@@ -458,14 +475,15 @@ export default function BrandRegisterPage() {
               Already registered?{' '}
               <Link
                 href="/login"
-                className="text-amber-400 font-medium hover:text-amber-300 transition-colors"
+                className="text-brand-red-light font-medium hover:text-brand-red transition-colors"
               >
                 Sign in as Brand Owner
               </Link>
             </p>
-          </div>
+        </div>
         </div>
       </motion.div>
+      </main>
     </div>
   )
 }

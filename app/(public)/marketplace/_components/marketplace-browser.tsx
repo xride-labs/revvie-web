@@ -58,7 +58,7 @@ export function MarketplaceBrowser({
             placeholder="Search gear, parts, bikes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-11 h-12 rounded-2xl bg-[#111] border-white/10 text-white placeholder:text-white/30 focus:border-amber-500/50 focus-visible:ring-0 transition-colors"
+            className="pl-11 h-12 rounded-2xl bg-[#111] border-white/10 text-white placeholder:text-white/30 focus:border-brand-red-light/50 focus-visible:ring-0 transition-colors"
           />
         </div>
         <Button
@@ -104,24 +104,24 @@ export function MarketplaceBrowser({
           <p>No listings found. Try adjusting your search.</p>
         </div>
       ) : (
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filteredListings.map((listing) => (
             <Link
               key={listing.id}
               href={`/marketplace/${listing.id}`}
-              className="block break-inside-avoid"
+              className="block h-full"
             >
-              <Card className="group overflow-hidden rounded-3xl border-white/[0.07] bg-[#111] shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(245,158,11,0.15)] hover:border-amber-500/30 relative h-full">
-                {/* Image placeholder */}
-                <div className="relative overflow-hidden bg-[#1a1a1a]">
+              <Card className="group overflow-hidden rounded-3xl border-white/[0.07] bg-[#111] shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(255,29,45,0.15)] hover:border-brand-red-light/30 flex flex-col h-full relative">
+                {/* Image */}
+                <div className="relative overflow-hidden bg-[#1a1a1a] aspect-[4/5] shrink-0">
                   {listing.images[0] ? (
                     <img
                       src={listing.images[0]}
                       alt={listing.title}
-                      className="w-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
                     />
                   ) : (
-                    <div className="aspect-[4/5] flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center">
                       <ImageIcon className="w-12 h-12 text-white/10" />
                     </div>
                   )}
@@ -136,21 +136,21 @@ export function MarketplaceBrowser({
 
                   {/* Price overlay on image */}
                   <div className="absolute bottom-3 left-4">
-                    <div className="text-xl font-black text-amber-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                    <div className="text-xl font-black text-brand-red-light drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                       ₹{listing.price.toLocaleString()}
                     </div>
                   </div>
                 </div>
 
-                <CardContent className="p-4 pt-3">
-                  <h3 className="font-bold text-sm text-white group-hover:text-amber-400 transition-colors line-clamp-2 leading-snug mb-3">
+                <CardContent className="p-4 pt-3 flex-1 flex flex-col">
+                  <h3 className="font-bold text-sm text-white group-hover:text-brand-red-light transition-colors line-clamp-2 leading-snug mb-3">
                     {listing.title}
                   </h3>
 
                   {/* Seller info */}
                   <div className="flex items-center gap-2 mb-3">
                     <Avatar className="w-6 h-6 border border-white/10">
-                      <AvatarFallback className="bg-linear-to-br from-amber-500 to-orange-600 text-white text-[10px] font-bold">
+                      <AvatarFallback className="bg-linear-to-br from-brand-red-light to-brand-red text-white text-[10px] font-bold">
                         {initials(listing.seller.name)}
                       </AvatarFallback>
                     </Avatar>
