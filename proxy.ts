@@ -38,7 +38,6 @@ const PROTECTED_PREFIXES = [
   '/business',
   '/profile',
   '/brand',
-  '/admin',
 ]
 
 /** Signed-in visitors have no reason to see these. */
@@ -91,6 +90,19 @@ export function proxy(request: NextRequest) {
 
   // ── Session gate ───────────────────────────────────────────────────────────
   const signedIn = hasSessionCookie(request)
+
+  // /admin provides its own dedicated auth page when not signed in
+  if (pathname === '/admin' || pathname === '/admin/login') {
+    return NextResponse.next()
+  }
+
+  // Unauthenticated visitors accessing admin sub-routes go to /admin
+  if (!signedIn && pathname.startsWith('/admin/')) {
+    const adminUrl = request.nextUrl.clone()
+    adminUrl.pathname = '/admin'
+    adminUrl.search = ''
+    return NextResponse.redirect(adminUrl)
+  }
 
   if (!signedIn && matchesPrefix(pathname, PROTECTED_PREFIXES)) {
     const loginUrl = request.nextUrl.clone()

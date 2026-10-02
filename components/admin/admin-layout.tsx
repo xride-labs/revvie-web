@@ -76,8 +76,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   // Get user roles from the user object
   const userRoles: string[] = user?.roles || []
-  const hasAdminAccess = hasAnyRole(user, 'ADMIN', 'CO_ADMIN', 'MODERATOR')
-  const isSuperAdmin = userRoles.includes('ADMIN')
+  const hasAdminAccess = hasAnyRole(user, 'SUPER_ADMIN', 'ADMIN', 'CO_ADMIN', 'MODERATOR')
+  const isSuperAdmin = userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN')
   const isCoAdmin = userRoles.includes('CO_ADMIN') && !isSuperAdmin
   const isModerator = userRoles.includes('MODERATOR') && !isSuperAdmin && !isCoAdmin
 
@@ -97,9 +97,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
     if (!hasSession) {
       if (debugAuth) {
-        console.warn('[AdminLayout] no session -> /login')
+        console.warn('[AdminLayout] no session -> /admin')
       }
-      router.push('/login')
+      router.push('/admin')
       return
     }
 
@@ -252,7 +252,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <Button
             variant="ghost"
             className="w-full justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-            onClick={() => signOut().then(() => router.push('/'))}
+            onClick={() => signOut().then(() => router.push('/admin'))}
           >
             <LogOut className="w-4 h-4" />
             Sign Out

@@ -5,31 +5,33 @@ import { PORTAL_FEATURES } from '../_lib/constants'
 /** Left-hand brand identity panel — desktop only, purely static. */
 export function BrandPanel() {
   return (
-    <aside className="hidden lg:flex flex-col w-[400px] shrink-0 min-h-screen bg-[#050505] border-r border-border relative overflow-hidden">
+    <aside className="hidden lg:flex flex-col w-full min-h-screen bg-[#050505] border-r border-white/[0.08] relative overflow-hidden justify-between">
       {/* Atmospheric glow */}
-      <div className="absolute top-1/3 left-0 w-72 h-72 bg-brand-red-light/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-0 w-48 h-48 bg-neon-green/6 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-0 w-96 h-96 bg-brand-red-light/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-0 w-72 h-72 bg-neon-green/8 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="flex flex-col flex-1 items-start justify-center px-12 py-16 relative z-10">
+      <div className="flex flex-col flex-1 items-start justify-center px-12 xl:px-20 py-16 relative z-10 max-w-xl mx-auto w-full">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 mb-16 group">
-          <div className="w-11 h-11 rounded-xl overflow-hidden border border-border">
+        <Link href="/" className="flex items-center gap-3 mb-14 group">
+          <div className="w-12 h-12 rounded-2xl overflow-hidden border border-white/10 shadow-lg">
             <img src="/revvie-logo.png" alt="Revvie" className="w-full h-full object-cover" />
           </div>
-          <span className="text-xl font-bold text-white tracking-[0.2em] uppercase">
+          <span className="text-2xl font-bold text-white tracking-[0.2em] uppercase">
             Revvie
           </span>
         </Link>
 
         {/* Headline */}
-        <h1 className="text-[2.4rem] font-bold text-white leading-[1.15] mb-5 tracking-tight">
+        <h1 className="text-4xl xl:text-5xl font-black text-white leading-[1.12] mb-6 tracking-tight">
           The portal for
           <br />
-          <span className="text-brand-red-light">riders who build.</span>
+          <span className="bg-linear-to-r from-brand-red-light via-brand-red to-orange-500 bg-clip-text text-transparent">
+            riders who build.
+          </span>
         </h1>
-        <p className="text-text-secondary text-[0.95rem] mb-12 leading-relaxed max-w-[280px]">
+        <p className="text-text-secondary text-base mb-10 leading-relaxed max-w-md">
           Manage clubs, run events, track your community, and sell on the marketplace — all
-          from one dashboard.
+          from one unified dashboard.
         </p>
 
         {/* Feature list */}

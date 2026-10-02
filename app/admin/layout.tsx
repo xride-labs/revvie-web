@@ -17,9 +17,11 @@ export default async function AdminRootLayout({
   children: React.ReactNode
 }) {
   const session = await getSession()
+  const isAdmin = session && hasAnyRole(session.user.roles, ...ADMIN_ROLES)
 
-  if (!session) redirect('/login?next=/admin')
-  if (!hasAnyRole(session.user.roles, ...ADMIN_ROLES)) redirect('/home')
+  if (!isAdmin) {
+    return <>{children}</>
+  }
 
   return <AdminLayout>{children}</AdminLayout>
 }

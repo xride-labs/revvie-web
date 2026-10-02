@@ -5,6 +5,7 @@
  * error instead of a silently-failing check.
  */
 export const ROLES = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',
   CO_ADMIN: 'CO_ADMIN',
   MODERATOR: 'MODERATOR',
@@ -17,10 +18,10 @@ export const ROLES = {
 export type Role = (typeof ROLES)[keyof typeof ROLES]
 
 /** Anyone who may open /admin at all. Finer checks live on the individual routes. */
-export const ADMIN_ROLES: Role[] = [ROLES.ADMIN, ROLES.CO_ADMIN, ROLES.MODERATOR]
+export const ADMIN_ROLES: Role[] = [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.CO_ADMIN, ROLES.MODERATOR]
 
 /** Routes reserved for full admins — mirrors AdminLayout's SUPER_ADMIN_ONLY_ROUTES. */
-export const SUPER_ADMIN_ROLES: Role[] = [ROLES.ADMIN]
+export const SUPER_ADMIN_ROLES: Role[] = [ROLES.SUPER_ADMIN, ROLES.ADMIN]
 
 export function hasAnyRole(
   roles: readonly string[] | undefined,

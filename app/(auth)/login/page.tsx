@@ -182,11 +182,11 @@ export default function LoginPage() {
       : 'Sign in to the Revvie portal'
 
   return (
-    <div className="min-h-screen flex bg-canvas overflow-hidden">
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-canvas overflow-hidden">
       <BrandPanel />
 
       {/* ── RIGHT PANEL: auth form ── */}
-      <main className="flex-1 flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
+      <main className="w-full flex items-center justify-center p-6 sm:p-10 xl:p-16 relative overflow-hidden">
         {/* Subtle background glow */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-brand-red-light/5 rounded-full blur-3xl" />

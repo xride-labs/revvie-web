@@ -161,7 +161,7 @@ export async function sendEmailOtp(email: string): Promise<void> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ email }),
+    body: JSON.stringify({ email, type: 'sign-in' }),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))

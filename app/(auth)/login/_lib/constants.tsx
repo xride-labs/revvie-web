@@ -1,8 +1,8 @@
-import { Shield, Users, Store } from 'lucide-react'
+import { Users, Store } from 'lucide-react'
 
 export const PENDING_BRAND_KEY = 'revvie_pending_brand'
 
-export type LoginTab = 'club' | 'brand' | 'admin'
+export type LoginTab = 'club' | 'brand'
 export type AuthMode = 'password' | 'otp'
 export type OtpStep = 'request' | 'verify'
 
@@ -26,7 +26,7 @@ export const TAB_CONFIG: Record<
     icon: Users,
     description: 'For club owners and organizers',
     redirectTo: '/home',
-    roles: ['CLUB_OWNER', 'CLUB_ADMIN', 'CLUB_MODERATOR', 'ADMIN', 'CO_ADMIN', 'MODERATOR'],
+    roles: ['CLUB_OWNER', 'CLUB_ADMIN', 'CLUB_MODERATOR', 'SUPER_ADMIN', 'ADMIN', 'CO_ADMIN', 'MODERATOR'],
     registerHref: '/signup',
     registerLabel: 'Register your club',
     accentClass: 'from-neon-green/80 to-neon-green',
@@ -38,25 +38,12 @@ export const TAB_CONFIG: Record<
     icon: Store,
     description: 'For brands & marketplace sellers',
     redirectTo: '/brand/dashboard',
-    roles: ['BRAND_OWNER', 'BRAND_ADMIN', 'BRAND_MODERATOR', 'ADMIN', 'CO_ADMIN'],
+    roles: ['BRAND_OWNER', 'BRAND_ADMIN', 'BRAND_MODERATOR', 'SUPER_ADMIN', 'ADMIN', 'CO_ADMIN'],
     registerHref: '/brand-register',
     registerLabel: 'Register your brand',
     accentClass: 'from-amber-500 to-orange-500',
     activeTabClass: 'bg-amber-500/10 border border-amber-500/30 text-amber-400',
     placeholder: 'brand@company.com',
-  },
-  admin: {
-    label: 'Admin',
-    icon: Shield,
-    description: 'Platform administrators only',
-    redirectTo: '/admin',
-    roles: ['ADMIN', 'CO_ADMIN'],
-    registerHref: '',
-    registerLabel: '',
-    accentClass: 'from-brand-red-light to-brand-red',
-    activeTabClass:
-      'bg-brand-red-light/10 border border-brand-red-light/30 text-brand-red-light',
-    placeholder: 'admin@revvie.com',
   },
 }
 
