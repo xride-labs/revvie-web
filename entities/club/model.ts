@@ -45,6 +45,8 @@ export const clubMemberSchema = z.object({
 
 export const clubSchema = z.object({
   id: z.string(),
+  slug: z.string().nullable().optional(),
+  organizationId: z.string().nullable().optional(),
   name: z.string(),
   description: z.string().default(''),
   location: z.string().default(''),

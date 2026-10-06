@@ -80,6 +80,6 @@ describe('TenantProvider & useTenantContext', () => {
       expect(result.current.clubId).toBe('club-fetch-1')
     })
 
-    window.location = originalLocation
+    ;(window as any).location = originalLocation
   })
 })
