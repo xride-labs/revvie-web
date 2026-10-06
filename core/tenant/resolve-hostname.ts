@@ -55,14 +55,18 @@ export function extractSubdomain(rawHost: string, rootDomain: string): string | 
   return null
 }
 
-export function resolveHostname(rawHost: string, rootDomain?: string): HostResolution {
-  const root =
-    rootDomain ||
-    process.env.NEXT_PUBLIC_ROOT_DOMAIN ||
-    process.env.ROOT_DOMAIN ||
-    'revvie.xride-labs.in'
+export function detectRootDomain(normHost: string): string {
+  if (process.env.NEXT_PUBLIC_ROOT_DOMAIN) return process.env.NEXT_PUBLIC_ROOT_DOMAIN
+  if (process.env.ROOT_DOMAIN) return process.env.ROOT_DOMAIN
+  if (normHost.endsWith('revvie.app')) return 'revvie.app'
+  if (normHost.endsWith('revvie.xride-labs.in')) return 'revvie.xride-labs.in'
+  if (normHost.endsWith('localhost')) return 'localhost'
+  return 'revvie.xride-labs.in'
+}
 
+export function resolveHostname(rawHost: string, rootDomain?: string): HostResolution {
   const normHost = normalizeHost(rawHost)
+  const root = rootDomain || detectRootDomain(normHost)
   const subdomain = extractSubdomain(normHost, root)
 
   if (!subdomain) {

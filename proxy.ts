@@ -1,36 +1,26 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { resolveHostname } from './core/tenant/resolve-hostname'
+import { fetchTenantBySlug } from './core/tenant/resolve-tenant'
 
 /**
- * Routing-level gate.
+ * Routing-level gate & Hostname-based Multi-tenant Proxy.
  *
- * This is a UX affordance, not a security control. It only checks whether a session
- * cookie is *present* — it cannot verify it, and it knows nothing about roles. Real
- * enforcement happens twice, on the request that reads the data: `requireSession()` /
- * `requireRole()` inside `core/auth/session.ts`, and the backend's own `requireAuth`.
- *
- * Its job is to spare a signed-out visitor a full client render that ends in a redirect.
+ * Establishes tenant context from incoming host/subdomain and routes:
+ * - Consumer: revvie.app (or revvie.xride-labs.in) -> consumer feeds/pages
+ * - Platform Admin: admin.revvie.app -> internal rewrite to /admin
+ * - Club Tenant: {slug}.revvie.app -> internal rewrite to /clubs/[id]
+ * - Brand Tenant: {slug}.revvie.app -> internal rewrite to /brand/dashboard
+ * - Unknown / Suspended: rewrites to /tenant-not-found or /tenant-suspended
  */
 
 const PUBLIC_FILE = /\.[^/]+$/
 
-/**
- * Better Auth names the cookie `<prefix>.session_token`, and browsers add `__Secure-` /
- * `__Host-` over HTTPS. Matching on the suffix survives all three without hardcoding a
- * prefix that a backend config change could invalidate.
- */
 function hasSessionCookie(request: NextRequest): boolean {
   return request.cookies
     .getAll()
     .some(({ name, value }) => name.endsWith('session_token') && value.length > 0)
 }
 
-/**
- * Prefixes that require a signed-in visitor. `/marketplace` and `/events` are
- * deliberately absent — their list/detail pages are public; only the
- * management sub-routes nested under them (`/marketplace/create`,
- * `/events/create`, etc.) require a session, enforced by `AppLayout` itself
- * since those pages still live under `(club-management)`.
- */
 const PROTECTED_PREFIXES = [
   '/home',
   '/clubs',
@@ -40,7 +30,6 @@ const PROTECTED_PREFIXES = [
   '/brand',
 ]
 
-/** Signed-in visitors have no reason to see these. */
 const AUTH_ONLY_PREFIXES = ['/login', '/signup', '/forgot-password', '/reset-password']
 
 function matchesPrefix(pathname: string, prefixes: string[]): boolean {
@@ -75,10 +64,12 @@ function isLaunchGateBypassed(pathname: string): boolean {
   return false
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl
 
-  if (isInfrastructurePath(pathname)) return NextResponse.next()
+  if (isInfrastructurePath(pathname)) {
+    return NextResponse.next()
+  }
 
   // ── Launch gate ────────────────────────────────────────────────────────────
   if (isWebDisabled() && !isLaunchGateBypassed(pathname)) {
@@ -88,12 +79,149 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(launchUrl)
   }
 
-  // ── Session gate ───────────────────────────────────────────────────────────
+  // ── Tenant Resolution via Hostname ─────────────────────────────────────────
+  const host =
+    request.headers.get('x-forwarded-host') ||
+    request.headers.get('host') ||
+    request.nextUrl.host
+
+  const resolved = resolveHostname(host)
   const signedIn = hasSessionCookie(request)
+  const requestHeaders = new Headers(request.headers)
+
+  // 1. Platform Admin Subdomain (admin.*)
+  if (resolved.category === 'PLATFORM') {
+    requestHeaders.set('x-tenant-type', 'PLATFORM')
+    requestHeaders.set('x-tenant-name', 'Revvie Platform')
+
+    const targetPath =
+      pathname === '/'
+        ? '/admin'
+        : pathname.startsWith('/admin')
+          ? pathname
+          : `/admin${pathname}`
+
+    // Unauthenticated visitors accessing admin sub-routes go to /admin
+    if (!signedIn && targetPath.startsWith('/admin/') && targetPath !== '/admin/login') {
+      const adminUrl = request.nextUrl.clone()
+      adminUrl.pathname = '/admin'
+      adminUrl.search = ''
+      return NextResponse.redirect(adminUrl)
+    }
+
+    if (targetPath !== pathname) {
+      const rewriteUrl = request.nextUrl.clone()
+      rewriteUrl.pathname = targetPath
+      return NextResponse.rewrite(rewriteUrl, {
+        request: { headers: requestHeaders },
+      })
+    }
+
+    return NextResponse.next({
+      request: { headers: requestHeaders },
+    })
+  }
+
+  // 2. Tenant Subdomain ({slug}.*)
+  if (resolved.category === 'TENANT' && resolved.subdomain) {
+    const tenant = await fetchTenantBySlug(resolved.subdomain, host)
+
+    if (!tenant) {
+      const notFoundUrl = request.nextUrl.clone()
+      notFoundUrl.pathname = '/tenant-not-found'
+      return NextResponse.rewrite(notFoundUrl)
+    }
+
+    if (tenant.status === 'SUSPENDED' || tenant.status === 'ARCHIVED') {
+      const suspendedUrl = request.nextUrl.clone()
+      suspendedUrl.pathname = '/tenant-suspended'
+      return NextResponse.rewrite(suspendedUrl)
+    }
+
+    // Inject tenant headers for downstream server components and handlers
+    requestHeaders.set('x-tenant-type', tenant.type)
+    requestHeaders.set('x-tenant-id', tenant.organizationId)
+    requestHeaders.set('x-tenant-slug', tenant.slug)
+    requestHeaders.set('x-tenant-name', tenant.name)
+    requestHeaders.set('x-tenant-status', tenant.status)
+    if (tenant.entityId) {
+      requestHeaders.set('x-tenant-entity-id', tenant.entityId)
+    }
+
+    let targetPath = pathname
+
+    if (tenant.type === 'CLUB' && tenant.entityId) {
+      if (pathname === '/' || pathname === '/dashboard') {
+        targetPath = `/clubs/${tenant.entityId}`
+      } else if (pathname === '/manage' || pathname === '/members') {
+        targetPath = `/clubs/${tenant.entityId}/manage`
+      } else if (pathname === '/analytics') {
+        targetPath = `/clubs/${tenant.entityId}/analytics`
+      }
+    } else if (tenant.type === 'BRAND' || tenant.type === 'BUSINESS') {
+      if (pathname === '/' || pathname === '/dashboard') {
+        targetPath = '/brand/dashboard'
+      } else if (
+        [
+          '/products',
+          '/campaigns',
+          '/settings',
+          '/team',
+          '/analytics',
+          '/billing',
+          '/discounts',
+          '/marketplace',
+          '/messages',
+          '/services',
+        ].includes(pathname)
+      ) {
+        targetPath = `/brand${pathname}`
+      }
+    }
+
+    // Session gates on tenant subdomain
+    if (signedIn && matchesPrefix(pathname, AUTH_ONLY_PREFIXES)) {
+      const homeUrl = request.nextUrl.clone()
+      homeUrl.pathname = '/'
+      homeUrl.search = ''
+      return NextResponse.redirect(homeUrl)
+    }
+
+    if (
+      !signedIn &&
+      (matchesPrefix(targetPath, ['/clubs/', '/brand/']) &&
+        (targetPath.endsWith('/manage') ||
+          targetPath.endsWith('/analytics') ||
+          targetPath.startsWith('/brand/')))
+    ) {
+      const loginUrl = request.nextUrl.clone()
+      loginUrl.pathname = '/login'
+      loginUrl.search = ''
+      loginUrl.searchParams.set('next', `${pathname}${request.nextUrl.search}`)
+      return NextResponse.redirect(loginUrl)
+    }
+
+    if (targetPath !== pathname) {
+      const rewriteUrl = request.nextUrl.clone()
+      rewriteUrl.pathname = targetPath
+      return NextResponse.rewrite(rewriteUrl, {
+        request: { headers: requestHeaders },
+      })
+    }
+
+    return NextResponse.next({
+      request: { headers: requestHeaders },
+    })
+  }
+
+  // 3. Consumer Root Domain (revvie.app / revvie.xride-labs.in / localhost)
+  requestHeaders.set('x-tenant-type', 'CONSUMER')
 
   // /admin provides its own dedicated auth page when not signed in
   if (pathname === '/admin' || pathname === '/admin/login') {
-    return NextResponse.next()
+    return NextResponse.next({
+      request: { headers: requestHeaders },
+    })
   }
 
   // Unauthenticated visitors accessing admin sub-routes go to /admin
@@ -108,8 +236,6 @@ export function proxy(request: NextRequest) {
     const loginUrl = request.nextUrl.clone()
     loginUrl.pathname = '/login'
     loginUrl.search = ''
-    // Preserve the destination so sign-in can return the visitor to where they meant
-    // to go, rather than dumping everyone on the feed.
     loginUrl.searchParams.set('next', `${pathname}${request.nextUrl.search}`)
     return NextResponse.redirect(loginUrl)
   }
@@ -121,7 +247,9 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(homeUrl)
   }
 
-  return NextResponse.next()
+  return NextResponse.next({
+    request: { headers: requestHeaders },
+  })
 }
 
 export const config = {
