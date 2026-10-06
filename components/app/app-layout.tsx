@@ -24,10 +24,14 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth, hasAnyRole } from '@/lib/use-auth'
+import { useCan, CLUB_MANAGE_PERMISSION_CODES } from '@/core/auth/use-can'
+import { ADMIN_ROLES, BRAND_PORTAL_ROLES } from '@/core/auth/roles'
+import { useGetClubQuery } from '@/features/clubs/api'
 import { signOut } from '@/lib/auth-client'
 import { useEffect } from 'react'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
 import { useClubContext } from '@/contexts/club-context'
+import { useTenantContext } from '@/contexts/tenant-context'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,31 +59,27 @@ export function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname()
   const router = useRouter()
   const { user, hasSession, isPending, error } = useAuth()
-  const { club: activeClub, clubs, selectClub } = useClubContext()
+  const tenant = useTenantContext()
+  const { club: activeClub, clubs, selectClub, loading: clubsLoading } = useClubContext()
+  // Same details query the club context reads (RTK Query cache is shared by key,
+  // so this subscribes without a second fetch). Needed only to know when the
+  // permission set behind `hasManagerAccess` has settled — redirecting on `[]`
+  // mid-load would bounce legitimate managers to `/`.
+  const { isLoading: clubDetailsLoading, isError: clubDetailsError } = useGetClubQuery(
+    activeClub?.id ?? '',
+    { skip: !activeClub?.id },
+  )
   const debugAuth = process.env.NODE_ENV !== 'production'
 
-  // Check if user has access to club management portal
-  const hasManagerAccess = hasAnyRole(
-    user,
-    'CLUB_OWNER',
-    'CLUB_ADMIN',
-    'CLUB_MODERATOR',
-    'BRAND_OWNER',
-    'BRAND_ADMIN',
-    'BRAND_MODERATOR',
-    'CO_ADMIN',
-    'ADMIN',
-    'MODERATOR',
-  )
-  const isAdmin = hasAnyRole(user, 'ADMIN', 'CO_ADMIN', 'MODERATOR')
-  const hasBrandAccess = hasAnyRole(
-    user,
-    'BRAND_OWNER',
-    'BRAND_ADMIN',
-    'BRAND_MODERATOR',
-    'ADMIN',
-    'CO_ADMIN',
-  )
+  // Permission-code gate: the club portal requires a club manage code on the
+  // active club. Platform `system:admin` passes via useCan, mirroring backend.
+  const hasManagerAccess = useCan(...CLUB_MANAGE_PERMISSION_CODES)
+  // Cross-portal affordance only — no business provider is mounted here, so this
+  // stays a session-role check sourced from roles.ts.
+  const hasBrandAccess = hasAnyRole(user, ...BRAND_PORTAL_ROLES)
+  const isAdmin = hasAnyRole(user, ...ADMIN_ROLES)
+  const gateSettled =
+    !clubsLoading && (!activeClub || !clubDetailsLoading || clubDetailsError)
 
   useEffect(() => {
     if (debugAuth) {
@@ -94,7 +94,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       })
     }
 
-    if (isPending) return
+    if (isPending || !gateSettled) return
 
     if (!hasSession) {
       if (debugAuth) {
@@ -121,7 +121,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       router.push('/')
       return
     }
-  }, [user, hasSession, isPending, router, hasManagerAccess, pathname, error, debugAuth])
+  }, [user, hasSession, isPending, router, hasManagerAccess, gateSettled, pathname, error, debugAuth])
 
   if (isPending || (hasSession && !user)) {
     return (
@@ -180,7 +180,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-bold uppercase tracking-wide leading-tight">
-                  Revvie
+                  {tenant.type === 'CLUB' && tenant.name ? tenant.name : 'Revvie'}
                 </p>
                 <p className="text-[10px] text-muted-foreground">Club Portal</p>
               </div>
@@ -191,7 +191,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Active Club Selector */}
         {clubs.length > 0 && (
           <div className="px-4 py-3 border-b border-border">
-            {clubs.length > 1 ? (
+            {clubs.length > 1 && tenant.type !== 'CLUB' ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-muted hover:bg-muted/80 transition-colors text-left">

@@ -36,10 +36,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuth, hasAnyRole } from '@/lib/use-auth'
+import { useCan } from '@/core/auth/use-can'
+import { ROLES } from '@/core/auth/roles'
+import { useGetBusinessQuery } from '@/features/business/api'
 import { signOut } from '@/lib/auth-client'
 import { useEffect } from 'react'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
 import { useBusinessContext } from '@/contexts/business-context'
+import { useTenantContext } from '@/contexts/tenant-context'
 import type { BusinessCategory } from '@/entities/business/model'
 
 const ONBOARD_PATH = '/brand/onboard'
@@ -233,22 +237,33 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const { user, hasSession, isPending, error } = useAuth()
+  const tenant = useTenantContext()
   const {
     business,
     businesses,
     loading: businessLoading,
     selectBusiness,
   } = useBusinessContext()
+  // Same details query the business context reads (shared RTK Query cache key,
+  // no second fetch). The permission set behind `hasBrandAccess` settles one
+  // query after the list — redirecting on `[]` mid-load would bounce legitimate
+  // owners to onboard.
+  const { isLoading: businessDetailsLoading, isError: businessDetailsError } =
+    useGetBusinessQuery(business?.id ?? '', { skip: !business?.id })
 
-  const hasBrandAccess = hasAnyRole(
-    user,
-    'BRAND_OWNER',
-    'BRAND_ADMIN',
-    'BRAND_MODERATOR',
-    'ADMIN',
-    'CO_ADMIN',
+  // Permission-code gate: the brand portal requires a management/view code on
+  // the active business. Platform `system:admin` passes via useCan.
+  const hasBrandAccess = useCan(
+    'business:manage',
+    'business:manage_settings',
+    'business:manage_members',
+    'business:view_analytics',
   )
-  const isAdmin = hasAnyRole(user, 'ADMIN', 'CO_ADMIN')
+  // Platform affordance (Admin Portal button) — platform roles are global, so
+  // this stays a session-role check sourced from roles.ts.
+  const isAdmin = hasAnyRole(user, ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.CO_ADMIN)
+  const gateSettled =
+    !businessLoading && (!business || !businessDetailsLoading || businessDetailsError)
   const isOnboardPath = pathname === ONBOARD_PATH
   const hasOnboardedBusiness = businesses.some((b) => b.onboardingCompleted)
 
@@ -261,7 +276,7 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
   const CatIcon = catMeta.icon
 
   useEffect(() => {
-    if (isPending || businessLoading) return
+    if (isPending || !gateSettled) return
     if (!hasSession) {
       router.push('/login')
       return
@@ -279,7 +294,7 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
     user,
     hasSession,
     isPending,
-    businessLoading,
+    gateSettled,
     businesses,
     hasBrandAccess,
     hasOnboardedBusiness,
@@ -333,13 +348,15 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
           >
             <CatIcon className="w-4 h-4 text-white" />
           </div>
-          {businesses.length > 1 ? (
+          {businesses.length > 1 &&
+          tenant.type !== 'BRAND' &&
+          tenant.type !== 'BUSINESS' ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex-1 min-w-0 flex items-center gap-1 text-left hover:opacity-80 transition-opacity">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-bold truncate">
-                      {business?.displayName ?? 'Brand Portal'}
+                      {business?.displayName ?? (tenant.name || 'Brand Portal')}
                     </p>
                     <p className="text-[10px] text-muted-foreground">
                       <span
