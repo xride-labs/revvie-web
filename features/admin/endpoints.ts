@@ -39,6 +39,10 @@ export const ADMIN_ENDPOINTS = {
   branding: '/admin/branding',
   brandingUpload: '/admin/branding/upload',
   brandingTestEmail: '/admin/branding/test-email',
+  roles: '/admin/roles',
+  role: (id: string) => `/admin/roles/${id}`,
+  permissions: '/admin/permissions',
+  userRoles: (userId: string) => `/admin/users/${userId}/roles`,
   /** Not under /admin — scoped bulk-action endpoints mounted at the API root. */
   clubManagerBulkAction: '/bulk/club-manager/action',
   brandManagerBulkAction: '/bulk/brand-manager/action',

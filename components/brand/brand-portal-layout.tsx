@@ -290,18 +290,7 @@ export function BrandPortalLayout({ children }: { children: React.ReactNode }) {
     if (!businessLoading && !hasOnboardedBusiness && hasBrandAccess) {
       router.push(ONBOARD_PATH)
     }
-  }, [
-    user,
-    hasSession,
-    isPending,
-    gateSettled,
-    businesses,
-    hasBrandAccess,
-    hasOnboardedBusiness,
-    isOnboardPath,
-    router,
-    error,
-  ])
+  }, [user, hasSession, isPending, gateSettled, businesses, hasBrandAccess, hasOnboardedBusiness, isOnboardPath, router, error, businessLoading])
 
   if (isPending || (hasSession && !user) || businessLoading) {
     return (

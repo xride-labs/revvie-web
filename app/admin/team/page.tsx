@@ -44,9 +44,11 @@ import {
   useUpdateUserRoleMutation,
 } from '@/features/admin/api'
 import type { AdminUserRecord } from '@/entities/admin/model'
+import { ROLES } from '@/core/auth/roles'
 import { toast } from 'sonner'
 
-const TEAM_ROLES = ['ADMIN', 'CO_ADMIN', 'MODERATOR'] as const
+// Platform vocabulary sourced from roles.ts — same values, single source.
+const TEAM_ROLES = [ROLES.ADMIN, ROLES.CO_ADMIN, ROLES.MODERATOR] as const
 type TeamRole = (typeof TEAM_ROLES)[number]
 
 const ROLE_META: Record<

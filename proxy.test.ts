@@ -41,6 +41,18 @@ describe('Next.js Proxy Subdomain Routing', () => {
     expect(rewriteHeader).toContain('/admin/users')
   })
 
+  it('keeps non-route admin prefixes inside the admin namespace', async () => {
+    const req = new NextRequest('http://admin.revvie.app/adminish', {
+      headers: {
+        host: 'admin.revvie.app',
+        cookie: 'revvie.session_token=test-session',
+      },
+    })
+    const res = await proxy(req)
+    const rewriteHeader = res.headers.get('x-middleware-rewrite')
+    expect(rewriteHeader).toContain('/admin/adminish')
+  })
+
   it('rewrites club tenant /dashboard to /clubs/[entityId] with tenant headers', async () => {
     vi.spyOn(resolveTenantModule, 'fetchTenantBySlug').mockResolvedValueOnce({
       organizationId: 'org-club-1',
@@ -109,6 +121,27 @@ describe('Next.js Proxy Subdomain Routing', () => {
     expect(rewriteHeader).toContain('/brand/dashboard')
   })
 
+  it('rewrites nested brand pages into the brand portal', async () => {
+    vi.spyOn(resolveTenantModule, 'fetchTenantBySlug').mockResolvedValueOnce({
+      organizationId: 'org-brand-1',
+      slug: 'ktm',
+      name: 'KTM Official',
+      type: 'BRAND',
+      status: 'ACTIVE',
+      entityId: 'brand-101',
+    })
+
+    const req = new NextRequest('http://ktm.revvie.app/products/create', {
+      headers: {
+        host: 'ktm.revvie.app',
+        cookie: 'revvie.session_token=test-session',
+      },
+    })
+    const res = await proxy(req)
+    const rewriteHeader = res.headers.get('x-middleware-rewrite')
+    expect(rewriteHeader).toContain('/brand/products/create')
+  })
+
   it('works seamlessly on staging domain revvie.xride-labs.in', async () => {
     vi.spyOn(resolveTenantModule, 'fetchTenantBySlug').mockResolvedValueOnce({
       organizationId: 'org-club-stage',
@@ -127,4 +160,3 @@ describe('Next.js Proxy Subdomain Routing', () => {
     expect(rewriteHeader).toContain('/clubs/club-stage-1')
   })
 })
-

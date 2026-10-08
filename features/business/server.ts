@@ -9,10 +9,10 @@ import {
   adCampaignSchema,
   billingStatusSchema,
   businessAnalyticsSchema,
-  businessProfileSchema,
   discountSchema,
   myBusinessesResponseSchema,
 } from './schemas'
+import { businessDetailsSchema } from '@/entities/business/model'
 
 export async function getMyBusinesses() {
   const { cookie } = await authorize()
@@ -30,7 +30,7 @@ export async function getBusiness(businessId: string) {
   return gateway.get({
     path: BUSINESS_ENDPOINTS.detail(businessId),
     cookie,
-    schema: businessProfileSchema,
+    schema: businessDetailsSchema,
   })
 }
 

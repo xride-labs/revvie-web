@@ -39,6 +39,7 @@ import {
 import { formatDate } from '../_lib/constants'
 import type { ClubWithRides } from '../_lib/types'
 import { useToast } from '@/hooks/use-toast'
+import { canManageClub } from '@/core/auth/use-can'
 
 export function ClubHeader({
   club,
@@ -66,13 +67,7 @@ export function ClubHeader({
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false)
   const [reportReason, setReportReason] = useState('')
 
-  const canManage =
-    isOwner ||
-    ['FOUNDER', 'ADMIN', 'OFFICER'].includes(club.viewerRole ?? '') ||
-    (club.viewerPermissions &&
-      club.viewerPermissions.some((p) =>
-        ['club:manage_settings', 'club:manage_members', 'club:manage_roles'].includes(p),
-      ))
+  const canManage = canManageClub(isOwner, club.viewerRole, club.viewerPermissions)
 
   const handleShare = async () => {
     const url = typeof window !== 'undefined' ? window.location.href : ''

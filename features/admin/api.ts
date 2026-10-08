@@ -16,13 +16,17 @@ import type {
   AdminDiscountsResponse,
   AdminListingsResponse,
   AdminNotificationsResponse,
+  AdminPermissionsResponse,
   AdminReportsResponse,
   AdminRidesResponse,
+  AdminRolesResponse,
   AdminUsersResponse,
   BulkActionRequest,
   BulkActionResult,
+  CreateAdminRoleInput,
   CreateAdminUserInput,
   PendingBusinessesResponse,
+  UpdateAdminRoleInput,
   UpdateAdminUserInput,
   UserFilters,
 } from './schemas'
@@ -402,6 +406,49 @@ export const adminApiSlice = adminApi.injectEndpoints({
         body: request,
       }),
     }),
+
+    getAdminRoles: build.query<AdminRolesResponse, void>({
+      query: () => ({ url: ADMIN_ENDPOINTS.roles }),
+      providesTags: [{ type: 'AdminRole', id: 'LIST' }],
+    }),
+
+    getAdminPermissions: build.query<AdminPermissionsResponse, void>({
+      query: () => ({ url: ADMIN_ENDPOINTS.permissions }),
+    }),
+
+    createAdminRole: build.mutation<{ role: unknown }, CreateAdminRoleInput>({
+      query: (body) => ({ url: ADMIN_ENDPOINTS.roles, method: 'POST', body }),
+      invalidatesTags: [{ type: 'AdminRole', id: 'LIST' }],
+    }),
+
+    updateAdminRole: build.mutation<
+      { role: unknown },
+      { roleId: string; data: UpdateAdminRoleInput }
+    >({
+      query: ({ roleId, data }) => ({
+        url: ADMIN_ENDPOINTS.role(roleId),
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: [{ type: 'AdminRole', id: 'LIST' }],
+    }),
+
+    deleteAdminRole: build.mutation<void, string>({
+      query: (roleId) => ({ url: ADMIN_ENDPOINTS.role(roleId), method: 'DELETE' }),
+      invalidatesTags: [{ type: 'AdminRole', id: 'LIST' }],
+    }),
+
+    assignUserRoles: build.mutation<unknown, { userId: string; roleSlugs: string[] }>({
+      query: ({ userId, roleSlugs }) => ({
+        url: ADMIN_ENDPOINTS.userRoles(userId),
+        method: 'POST',
+        body: { roleSlugs },
+      }),
+      invalidatesTags: [
+        { type: 'AdminRole', id: 'LIST' },
+        { type: 'AdminUser', id: 'LIST' },
+      ],
+    }),
   }),
 })
 
@@ -457,4 +504,10 @@ export const {
   usePerformBulkActionMutation,
   usePerformClubManagerBulkActionMutation,
   usePerformBrandManagerBulkActionMutation,
+  useGetAdminRolesQuery,
+  useGetAdminPermissionsQuery,
+  useCreateAdminRoleMutation,
+  useUpdateAdminRoleMutation,
+  useDeleteAdminRoleMutation,
+  useAssignUserRolesMutation,
 } = adminApiSlice

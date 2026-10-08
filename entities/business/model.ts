@@ -215,6 +215,34 @@ export const brandProductSchema = z.object({
 export type BusinessCategory = z.infer<typeof businessCategorySchema>
 export type BusinessVerificationStatus = z.infer<typeof businessVerificationStatusSchema>
 export type BusinessProfile = z.infer<typeof businessProfileSchema>
+
+/**
+ * `GET /business/:id`. Viewer permissions calculated directly by backend
+ * (`business.routes.ts` via `RolesService.getBusinessPermissions`), mirroring
+ * the club details payload (`clubDetailsSchema`). `viewerRole` keeps the
+ * legacy upper-cased slug form (e.g. "OWNER").
+ *
+ * `viewerCustomRole` shape matches the verified wire contract (`id` optional —
+ * the platform-admin/seed-fallback roles carry none — and `icon`, not
+ * `badgeIcon`; see `backend/src/services/roles.service.ts`).
+ */
+export const businessDetailsSchema = businessProfileSchema.extend({
+  viewerRole: z.string().nullable().default(null),
+  viewerPermissions: z.array(z.string()).default([]),
+  viewerCustomRole: z
+    .object({
+      id: z.string().optional(),
+      name: z.string(),
+      slug: z.string(),
+      color: z.string().nullable().optional(),
+      icon: z.string().nullable().optional(),
+      permissions: z.array(z.string()).optional(),
+    })
+    .nullable()
+    .optional(),
+})
+
+export type BusinessDetails = z.infer<typeof businessDetailsSchema>
 export type AdPlacementSlot = z.infer<typeof adPlacementSlotSchema>
 export type AdStatus = z.infer<typeof adStatusSchema>
 export type AdCampaign = z.infer<typeof adCampaignSchema>

@@ -18,6 +18,7 @@ import { useGetMyProfileQuery } from '@/features/user/api'
 import { fileToDataUrl } from '@/lib/media-utils'
 import { useToast } from '@/hooks/use-toast'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
+import { canManageClub } from '@/core/auth/use-can'
 import type { ClubJoinAnswer } from '@/features/clubs/schemas'
 
 import type { GalleryItem } from './_lib/types'
@@ -331,13 +332,7 @@ export default function ClubDetailPage() {
 
   const members = club.members || []
   const rides = club.rides || []
-  const canManage =
-    isOwner ||
-    ['FOUNDER', 'ADMIN', 'OFFICER'].includes(club.viewerRole ?? '') ||
-    (club.viewerPermissions &&
-      club.viewerPermissions.some((p) =>
-        ['club:manage_settings', 'club:manage_members', 'club:manage_roles'].includes(p),
-      ))
+  const canManage = canManageClub(isOwner, club.viewerRole, club.viewerPermissions)
 
   return (
     <div className="min-h-screen">

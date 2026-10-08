@@ -1,6 +1,13 @@
 'use client'
 
 import { useAuth, hasAnyRole } from '@/lib/use-auth'
+import {
+  ADMIN_ROLES,
+  SUPER_ADMIN_ROLES,
+  CLUB_PORTAL_ROLES,
+  BRAND_PORTAL_ROLES,
+  ROLES,
+} from '@/core/auth/roles'
 import { signOut } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -56,7 +63,7 @@ const adminNavigation: AdminNavItem[] = [
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
-const SUPER_ADMIN_ONLY_ROUTES = ['/admin/monitoring', '/admin/settings', '/admin/branding']
+const SUPER_ADMIN_ONLY_ROUTES = ['/admin/monitoring', '/admin/settings', '/admin/branding', '/admin/roles']
 
 function isSuperAdminOnlyRoute(pathname: string): boolean {
   return SUPER_ADMIN_ONLY_ROUTES.some(
@@ -74,12 +81,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname()
   const debugAuth = process.env.NODE_ENV !== 'production'
 
-  // Get user roles from the user object
-  const userRoles: string[] = user?.roles || []
-  const hasAdminAccess = hasAnyRole(user, 'SUPER_ADMIN', 'ADMIN', 'CO_ADMIN', 'MODERATOR')
-  const isSuperAdmin = userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN')
-  const isCoAdmin = userRoles.includes('CO_ADMIN') && !isSuperAdmin
-  const isModerator = userRoles.includes('MODERATOR') && !isSuperAdmin && !isCoAdmin
+  // Platform roles are global by nature, so the admin console keeps session-role
+  // checks — sourced from roles.ts instead of inline literals.
+  const hasAdminAccess = hasAnyRole(user, ...ADMIN_ROLES)
+  const isSuperAdmin = hasAnyRole(user, ...SUPER_ADMIN_ROLES)
+  const isCoAdmin = hasAnyRole(user, ROLES.CO_ADMIN) && !isSuperAdmin
+  const isModerator = hasAnyRole(user, ROLES.MODERATOR) && !isSuperAdmin && !isCoAdmin
 
   useEffect(() => {
     if (debugAuth) {
@@ -113,18 +120,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     }
 
     if (!hasAdminAccess) {
-      const hasManagerAccess = hasAnyRole(
-        user,
-        'CLUB_OWNER',
-        'CLUB_ADMIN',
-        'CLUB_MODERATOR',
-        'BRAND_OWNER',
-        'BRAND_ADMIN',
-        'BRAND_MODERATOR',
-        'CO_ADMIN',
-        'ADMIN',
-        'MODERATOR',
-      )
+      // Redirect target only — which portal (if any) this user belongs to.
+      const hasManagerAccess = hasAnyRole(user, ...CLUB_PORTAL_ROLES, ...BRAND_PORTAL_ROLES)
       if (debugAuth) {
         console.warn('[AdminLayout] user is not admin', {
           hasManagerAccess,

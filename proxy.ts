@@ -32,6 +32,19 @@ const PROTECTED_PREFIXES = [
 
 const AUTH_ONLY_PREFIXES = ['/login', '/signup', '/forgot-password', '/reset-password']
 
+const BRAND_PORTAL_PREFIXES = [
+  '/products',
+  '/campaigns',
+  '/settings',
+  '/team',
+  '/analytics',
+  '/billing',
+  '/discounts',
+  '/marketplace',
+  '/messages',
+  '/services',
+]
+
 function matchesPrefix(pathname: string, prefixes: string[]): boolean {
   return prefixes.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
@@ -97,7 +110,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     const targetPath =
       pathname === '/'
         ? '/admin'
-        : pathname.startsWith('/admin')
+        : pathname === '/admin' || pathname.startsWith('/admin/')
           ? pathname
           : `/admin${pathname}`
 
@@ -161,20 +174,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     } else if (tenant.type === 'BRAND' || tenant.type === 'BUSINESS') {
       if (pathname === '/' || pathname === '/dashboard') {
         targetPath = '/brand/dashboard'
-      } else if (
-        [
-          '/products',
-          '/campaigns',
-          '/settings',
-          '/team',
-          '/analytics',
-          '/billing',
-          '/discounts',
-          '/marketplace',
-          '/messages',
-          '/services',
-        ].includes(pathname)
-      ) {
+      } else if (matchesPrefix(pathname, BRAND_PORTAL_PREFIXES)) {
         targetPath = `/brand${pathname}`
       }
     }

@@ -38,6 +38,7 @@ import {
   useRemoveTeamMemberMutation,
 } from '@/features/business/api'
 import { useBusinessContext } from '@/contexts/business-context'
+import { useCan } from '@/core/auth/use-can'
 import type { BrandTeamMember, BrandMemberRole } from '@/entities/business/model'
 
 const ROLE_BADGE: Record<BrandMemberRole, { label: string; className: string }> = {
@@ -73,8 +74,13 @@ export default function BrandTeamPage() {
 
   const [removeTarget, setRemoveTarget] = useState<BrandTeamMember | null>(null)
 
+  // Team management requires member/role codes on the active business (owner
+  // bypass and platform-admin bypass are in the resolver). Without them the
+  // page is a read-only roster — the backend enforces the same codes.
+  const canManageTeam = useCan('business:manage_members', 'business:manage_roles')
+
   const handleInvite = async () => {
-    if (!businessId || !inviteEmail.trim()) return
+    if (!businessId || !inviteEmail.trim() || !canManageTeam) return
     try {
       await inviteTeamMember({
         businessId,
@@ -95,7 +101,7 @@ export default function BrandTeamPage() {
     member: BrandTeamMember,
     role: Exclude<BrandMemberRole, 'OWNER'>,
   ) => {
-    if (!businessId) return
+    if (!businessId || !canManageTeam) return
     try {
       await updateTeamMemberRole({
         businessId,
@@ -109,7 +115,7 @@ export default function BrandTeamPage() {
   }
 
   const handleRemove = async () => {
-    if (!businessId || !removeTarget) return
+    if (!businessId || !removeTarget || !canManageTeam) return
     try {
       await removeTeamMember({ businessId, userId: removeTarget.userId }).unwrap()
       successToast('Member removed')
@@ -132,6 +138,8 @@ export default function BrandTeamPage() {
         <Button
           className="bg-primary hover:bg-brand-red text-white"
           onClick={() => setInviteOpen(true)}
+          disabled={!canManageTeam}
+          title={canManageTeam ? undefined : 'Requires team management access'}
         >
           <Plus className="w-4 h-4 mr-2" /> Invite Member
         </Button>
@@ -150,9 +158,11 @@ export default function BrandTeamPage() {
               Invite team members to help manage your brand portal, campaigns, and
               customer messages.
             </p>
-            <Button variant="outline" onClick={() => setInviteOpen(true)}>
-              <Plus className="w-4 h-4 mr-2" /> Invite someone
-            </Button>
+            {canManageTeam && (
+              <Button variant="outline" onClick={() => setInviteOpen(true)}>
+                <Plus className="w-4 h-4 mr-2" /> Invite someone
+              </Button>
+            )}
           </CardContent>
         </Card>
       ) : (
@@ -186,7 +196,7 @@ export default function BrandTeamPage() {
                   <Badge variant="outline" className={`text-xs ${badge.className}`}>
                     {badge.label}
                   </Badge>
-                  {m.role !== 'OWNER' && (
+                  {m.role !== 'OWNER' && canManageTeam && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">

@@ -8,8 +8,10 @@ import {
   adminDiscountSchema,
   adminListingRecordSchema,
   adminNotificationRecordSchema,
+  adminPermissionSchema,
   adminReportRecordSchema,
   adminRideRecordSchema,
+  adminRoleSchema,
   adminSettingsSchema,
   adminUserRecordSchema,
   pendingBusinessSchema,
@@ -113,6 +115,38 @@ export const bulkActionRequestSchema = z.object({
   data: z.record(z.string(), z.unknown()).optional(),
 })
 
+export const adminRolesResponseSchema = z.object({
+  roles: z.array(adminRoleSchema),
+})
+
+export const adminPermissionsResponseSchema = z.object({
+  permissions: z.array(adminPermissionSchema),
+})
+
+export const createAdminRoleInputSchema = z.object({
+  name: z.string().min(2),
+  slug: z.string().min(2),
+  description: z.string().optional(),
+  scope: z.string().optional(),
+  color: z.string().optional(),
+  icon: z.string().optional(),
+  priority: z.number().optional(),
+  permissionCodes: z.array(z.string()),
+})
+
+export const updateAdminRoleInputSchema = z.object({
+  name: z.string().min(2).optional(),
+  description: z.string().optional(),
+  color: z.string().optional(),
+  icon: z.string().optional(),
+  priority: z.number().optional(),
+  permissionCodes: z.array(z.string()).optional(),
+})
+
+export type AdminRolesResponse = z.infer<typeof adminRolesResponseSchema>
+export type AdminPermissionsResponse = z.infer<typeof adminPermissionsResponseSchema>
+export type CreateAdminRoleInput = z.infer<typeof createAdminRoleInputSchema>
+export type UpdateAdminRoleInput = z.infer<typeof updateAdminRoleInputSchema>
 export type AdminUsersResponse = z.infer<typeof adminUsersResponseSchema>
 export type AdminRidesResponse = z.infer<typeof adminRidesResponseSchema>
 export type AdminClubsResponse = z.infer<typeof adminClubsResponseSchema>

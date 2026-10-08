@@ -11,7 +11,10 @@ export const ROLES = {
   MODERATOR: 'MODERATOR',
   CLUB_OWNER: 'CLUB_OWNER',
   CLUB_ADMIN: 'CLUB_ADMIN',
+  CLUB_MODERATOR: 'CLUB_MODERATOR',
   BRAND_OWNER: 'BRAND_OWNER',
+  BRAND_ADMIN: 'BRAND_ADMIN',
+  BRAND_MODERATOR: 'BRAND_MODERATOR',
   USER: 'USER',
 } as const
 
@@ -22,6 +25,31 @@ export const ADMIN_ROLES: Role[] = [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.CO_ADM
 
 /** Routes reserved for full admins — mirrors AdminLayout's SUPER_ADMIN_ONLY_ROUTES. */
 export const SUPER_ADMIN_ROLES: Role[] = [ROLES.SUPER_ADMIN, ROLES.ADMIN]
+
+/**
+ * Session roles accepted at the club-portal login tab. Stays session-based: no
+ * permission context exists pre-login, and the portal gate itself (useCan) takes
+ * over once a club is active.
+ */
+export const CLUB_PORTAL_ROLES: Role[] = [
+  ROLES.CLUB_OWNER,
+  ROLES.CLUB_ADMIN,
+  ROLES.CLUB_MODERATOR,
+  ROLES.SUPER_ADMIN,
+  ROLES.ADMIN,
+  ROLES.CO_ADMIN,
+  ROLES.MODERATOR,
+]
+
+/** Session roles accepted at the brand-portal login tab. Same pre-login rationale. */
+export const BRAND_PORTAL_ROLES: Role[] = [
+  ROLES.BRAND_OWNER,
+  ROLES.BRAND_ADMIN,
+  ROLES.BRAND_MODERATOR,
+  ROLES.SUPER_ADMIN,
+  ROLES.ADMIN,
+  ROLES.CO_ADMIN,
+]
 
 export function hasAnyRole(
   roles: readonly string[] | undefined,

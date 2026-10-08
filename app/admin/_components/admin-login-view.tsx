@@ -24,11 +24,10 @@ import { sendEmailOtp, signInWithEmailOtp } from '@/lib/server/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { ADMIN_ROLES } from '@/core/auth/roles'
 
 type AdminAuthMode = 'password' | 'otp'
 type AdminOtpStep = 'request' | 'verify'
-
-const ADMIN_ALLOWED_ROLES = ['SUPER_ADMIN', 'ADMIN', 'CO_ADMIN', 'MODERATOR']
 
 export function AdminLoginView() {
   const router = useRouter()
@@ -63,7 +62,7 @@ export function AdminLoginView() {
     try {
       const result = await fetchMe().unwrap()
       const roles: string[] = (result?.user?.roles || []).map((r: string) => r.toUpperCase())
-      return roles.some((role) => ADMIN_ALLOWED_ROLES.includes(role))
+      return roles.some((role) => (ADMIN_ROLES as readonly string[]).includes(role))
     } catch {
       return false
     }

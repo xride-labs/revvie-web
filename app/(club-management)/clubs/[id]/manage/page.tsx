@@ -27,6 +27,7 @@ import { usePerformClubManagerBulkActionMutation } from '@/features/admin/api'
 import { ChevronLeft, Settings, Users, Shield, ShieldAlert, Bell, BarChart3, FileQuestion } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
+import { canManageClub } from '@/core/auth/use-can'
 
 import type { ClubSettings } from './_lib/constants'
 import { MembersTab } from './_components/members-tab'
@@ -395,12 +396,7 @@ export default function ClubManagePage() {
   const isOwner = clubResponse?.club.isOwner ?? false
   const viewerPermissions = clubResponse?.club.viewerPermissions ?? []
   const viewerRole = clubResponse?.club.viewerRole
-  const canManage =
-    isOwner ||
-    ['FOUNDER', 'ADMIN', 'OFFICER'].includes(viewerRole ?? '') ||
-    viewerPermissions.some((p) =>
-      ['club:manage_settings', 'club:manage_members', 'club:manage_roles'].includes(p),
-    )
+  const canManage = canManageClub(isOwner, viewerRole, viewerPermissions)
 
   if (!canManage && !clubLoading) {
     return (

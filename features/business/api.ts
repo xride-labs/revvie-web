@@ -3,6 +3,7 @@ import type {
   AdCampaign,
   BrandProduct,
   BrandTeamMember,
+  BusinessDetails,
   BusinessProfile,
   Discount,
   ServiceListing,
@@ -37,7 +38,7 @@ export const businessApiSlice = businessApi.injectEndpoints({
       providesTags: [{ type: 'BusinessList', id: 'MINE' }],
     }),
 
-    getBusiness: build.query<BusinessProfile, string>({
+    getBusiness: build.query<BusinessDetails, string>({
       query: (id) => ({ url: BUSINESS_ENDPOINTS.detail(id) }),
       providesTags: (_r, _e, id) => [{ type: 'Business', id }],
     }),

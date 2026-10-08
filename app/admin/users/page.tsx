@@ -12,6 +12,7 @@ import {
   useDeleteUserMutation,
 } from '@/features/admin/api'
 import { useAuth, hasAnyRole } from '@/lib/use-auth'
+import { ROLES } from '@/core/auth/roles'
 
 import {
   EMPTY_FORM,
@@ -31,7 +32,7 @@ import { EditUserDialog } from './_components/edit-user-dialog'
 
 export default function AdminUsersPage() {
   const { user: currentUser } = useAuth()
-  const isSuperAdmin = hasAnyRole(currentUser, 'ADMIN')
+  const isSuperAdmin = hasAnyRole(currentUser, ROLES.ADMIN)
   const assignableRoleOptions: readonly RoleOption[] = isSuperAdmin
     ? ROLE_OPTIONS
     : NON_PRIVILEGED_ROLE_OPTIONS

@@ -484,3 +484,40 @@ export const brandingConfigSchema = z.object({
 })
 
 export type BrandingConfig = z.infer<typeof brandingConfigSchema>
+
+// ── Global roles & permissions — mirrors `backend/src/routes/admin/roles.routes.ts` ──
+// `GET /admin/roles` returns the flattened permission projection
+// ({ code, name, category }), not the full Permission row.
+
+export const adminPermissionSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  name: z.string(),
+  description: z.string().nullable().optional(),
+  category: z.string(),
+  scope: z.string(),
+})
+
+export const adminRolePermissionSchema = z.object({
+  code: z.string(),
+  name: z.string(),
+  category: z.string(),
+})
+
+export const adminRoleSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  slug: z.string(),
+  description: z.string().nullable().optional(),
+  scope: z.string(),
+  scopeId: z.string().nullable().optional(),
+  isSystem: z.boolean(),
+  color: z.string().nullable().optional(),
+  icon: z.string().nullable().optional(),
+  priority: z.number(),
+  userCount: z.number().default(0),
+  permissions: z.array(adminRolePermissionSchema).default([]),
+})
+
+export type AdminPermission = z.infer<typeof adminPermissionSchema>
+export type AdminRole = z.infer<typeof adminRoleSchema>

@@ -40,7 +40,7 @@ import {
 } from '@/features/feed/api'
 import type { Post } from '@/entities/post/model'
 import { useClubContext } from '@/contexts/club-context'
-import { useAuth, hasAnyRole } from '@/lib/use-auth'
+import { useClubManage } from '@/core/auth/use-can'
 import { PhantomLoader } from '@/components/loading/phantom-loader'
 import { cn } from '@/lib/utils'
 
@@ -240,12 +240,12 @@ function CreatePostDialog({
 
 export default function FeedPage() {
   const { club: activeClub } = useClubContext()
-  const { user } = useAuth()
 
   const [localPosts, setLocalPosts] = useState<FeedPost[] | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
 
-  const isClubAdmin = hasAnyRole(user, 'CLUB_OWNER', 'CLUB_ADMIN', 'ADMIN', 'CO_ADMIN')
+  // Announcement/pin toggles for the active club (platform `system:admin` passes).
+  const isClubAdmin = useClubManage()
 
   // `clubId` is accepted by the query for forward-compat but the backend does not filter
   // on it — see the note in features/feed/endpoints.ts. This is always the global feed.
