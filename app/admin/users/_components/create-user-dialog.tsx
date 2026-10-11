@@ -34,14 +34,14 @@ export function CreateUserDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add User</DialogTitle>
-          <DialogDescription>Create a user and assign initial roles</DialogDescription>
+          <DialogDescription>Invite a user by email and assign initial roles. They sign in with an email code or Google.</DialogDescription>
         </DialogHeader>
-        <UserForm form={form} setForm={setForm} includePassword roleOptions={roleOptions} />
+        <UserForm form={form} setForm={setForm} roleOptions={roleOptions} />
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={onCreate} disabled={saving || !form.email || !form.password}>
+          <Button onClick={onCreate} disabled={saving || !form.email }>
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
             Create User
           </Button>

@@ -30,7 +30,7 @@ const PROTECTED_PREFIXES = [
   '/brand',
 ]
 
-const AUTH_ONLY_PREFIXES = ['/login', '/signup', '/forgot-password', '/reset-password']
+const AUTH_ONLY_PREFIXES = ['/login']
 
 const BRAND_PORTAL_PREFIXES = [
   '/products',

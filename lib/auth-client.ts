@@ -40,7 +40,7 @@ export function resolveAuthCallbackURL(path: string): string {
  */
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
   unable_to_link_account:
-    'This Google account could not be linked to your existing account. Try signing in with your password or email code instead.',
+    'This Google account could not be linked to your existing account. Try signing in with an email code instead.',
   email_does_not_match:
     'That Google account uses a different email than the one you started with.',
   account_already_linked_to_different_user:
@@ -54,7 +54,7 @@ export function getAuthErrorMessage(code: string): string {
 }
 
 // Export individual methods for convenience
-export const { signIn, signUp, signOut, useSession, getSession } = authClient
+export const { signIn, signOut, useSession, getSession } = authClient
 
 // Types
 export type Session = Awaited<ReturnType<typeof authClient.getSession>>

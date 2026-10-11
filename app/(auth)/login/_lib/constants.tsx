@@ -1,10 +1,7 @@
 import { Users, Store } from 'lucide-react'
 import { BRAND_PORTAL_ROLES, CLUB_PORTAL_ROLES } from '@/core/auth/roles'
 
-export const PENDING_BRAND_KEY = 'revvie_pending_brand'
-
 export type LoginTab = 'club' | 'brand'
-export type AuthMode = 'password' | 'otp'
 export type OtpStep = 'request' | 'verify'
 
 export const TAB_CONFIG: Record<
@@ -15,8 +12,6 @@ export const TAB_CONFIG: Record<
     description: string
     redirectTo: string
     roles: string[]
-    registerHref: string
-    registerLabel: string
     accentClass: string
     activeTabClass: string
     placeholder: string
@@ -30,8 +25,6 @@ export const TAB_CONFIG: Record<
     // Pre-login there is no permission context — session roles stay the login
     // vocabulary, sourced from roles.ts so a rename is a compile error.
     roles: [...CLUB_PORTAL_ROLES],
-    registerHref: '/signup',
-    registerLabel: 'Register your club',
     accentClass: 'from-neon-green/80 to-neon-green',
     activeTabClass: 'bg-neon-green/10 border border-neon-green/30 text-neon-green',
     placeholder: 'club@revvie.com',
@@ -42,8 +35,6 @@ export const TAB_CONFIG: Record<
     description: 'For brands & marketplace sellers',
     redirectTo: '/brand/dashboard',
     roles: [...BRAND_PORTAL_ROLES],
-    registerHref: '/brand-register',
-    registerLabel: 'Register your brand',
     accentClass: 'from-primary to-primary',
     activeTabClass: 'bg-primary/10 border border-primary/30 text-primary',
     placeholder: 'brand@company.com',

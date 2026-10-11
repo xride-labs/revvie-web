@@ -1,36 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import {
-  authApi,
-  type AuthSession,
-  type RegisterData,
-  type LoginData,
-} from '@/lib/server/auth'
-
-export const registerUser = createAsyncThunk(
-  'auth/register',
-  async (data: RegisterData, { rejectWithValue }) => {
-    try {
-      const session = await authApi.register(data)
-      return session
-    } catch (error) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : 'Registration failed',
-      )
-    }
-  },
-)
-
-export const loginUser = createAsyncThunk(
-  'auth/login',
-  async (data: LoginData, { rejectWithValue }) => {
-    try {
-      const session = await authApi.login(data)
-      return session
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Login failed')
-    }
-  },
-)
+import { authApi, type AuthSession } from '@/lib/server/auth'
 
 export const loginWithGoogle = createAsyncThunk(
   'auth/loginGoogle',
@@ -67,34 +36,6 @@ export const fetchSession = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error instanceof Error ? error.message : 'Failed to fetch session',
-      )
-    }
-  },
-)
-
-export const requestPasswordReset = createAsyncThunk(
-  'auth/forgotPassword',
-  async (email: string, { rejectWithValue }) => {
-    try {
-      const response = await authApi.forgotPassword(email)
-      return response
-    } catch (error) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : 'Failed to request password reset',
-      )
-    }
-  },
-)
-
-export const resetPasswordAction = createAsyncThunk(
-  'auth/resetPassword',
-  async (data: { token: string; password: string }, { rejectWithValue }) => {
-    try {
-      const response = await authApi.resetPassword(data)
-      return response
-    } catch (error) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : 'Failed to reset password',
       )
     }
   },
@@ -142,4 +83,4 @@ export const verifyOtpAction = createAsyncThunk(
   },
 )
 
-export type { AuthSession, RegisterData, LoginData }
+export type { AuthSession }

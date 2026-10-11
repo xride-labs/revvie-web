@@ -5,18 +5,12 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   Shield,
-  Lock,
-  Eye,
-  EyeOff,
   Loader2,
   Terminal,
   CheckCircle2,
   AlertCircle,
-  KeyRound,
-  ArrowRight,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
-import { useAuth } from '@/store/features/auth'
 import { useLazyGetMyProfileQuery } from '@/features/user/api'
 import { useToast } from '@/hooks/use-toast'
 import { signIn as betterAuthSignIn, resolveAuthCallbackURL } from '@/lib/auth-client'
@@ -26,13 +20,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ADMIN_ROLES } from '@/core/auth/roles'
 
-type AdminAuthMode = 'password' | 'otp'
 type AdminOtpStep = 'request' | 'verify'
 
 export function AdminLoginView() {
   const router = useRouter()
   const [fetchMe] = useLazyGetMyProfileQuery()
-  const { login } = useAuth()
   const {
     success: successToast,
     error: errorToast,
@@ -41,10 +33,7 @@ export function AdminLoginView() {
   } = useToast()
 
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [authMode, setAuthMode] = useState<AdminAuthMode>('password')
   const [otpStep, setOtpStep] = useState<AdminOtpStep>('request')
 
   // OTP inputs state
@@ -82,29 +71,6 @@ export function AdminLoginView() {
     })
     // Hard refresh/navigation so server layout re-evaluates the session cookie
     router.replace('/admin')
-  }
-
-  // ── Password Submit ────────────────────────────────────────────────────────
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email || !password) return
-
-    setIsLoading(true)
-    const toastId = loadingToast('Authenticating operator...', {
-      description: 'Verifying credentials against security policy.',
-    })
-
-    try {
-      await login({ email: email.trim(), password })
-      await completeAdminSignIn()
-    } catch (err: unknown) {
-      errorToast(err instanceof Error ? err.message : 'Invalid operator credentials', {
-        description: 'Verify your administrative email and password.',
-      })
-    } finally {
-      dismissToast(toastId)
-      setIsLoading(false)
-    }
   }
 
   // ── OTP Request ───────────────────────────────────────────────────────────
@@ -387,131 +353,18 @@ export function AdminLoginView() {
                     </div>
                     <div className="relative flex justify-center">
                       <span className="bg-[#0a0a0a] px-3 text-[11px] text-text-secondary/50 uppercase tracking-widest font-mono">
-                        or operator credentials
+                        or administrative email
                       </span>
                     </div>
                   </div>
 
-                  {/* Auth Mode Toggle */}
-                  <div className="flex rounded-xl bg-[#111111] p-1 gap-1 mb-5 border border-white/[0.06]">
-                    <button
-                      type="button"
-                      onClick={() => setAuthMode('password')}
-                      className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-semibold tracking-wider uppercase transition-all ${
-                        authMode === 'password'
-                          ? 'bg-brand-red text-white shadow-md'
-                          : 'text-text-secondary/60 hover:text-white'
-                      }`}
-                    >
-                      <Lock className="w-3.5 h-3.5" />
-                      Password
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setAuthMode('otp')}
-                      className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-semibold tracking-wider uppercase transition-all ${
-                        authMode === 'otp'
-                          ? 'bg-brand-red text-white shadow-md'
-                          : 'text-text-secondary/60 hover:text-white'
-                      }`}
-                    >
-                      <KeyRound className="w-3.5 h-3.5" />
-                      Magic Code
-                    </button>
-                  </div>
                 </>
               )}
 
               {/* ── FORMS ── */}
               <AnimatePresence mode="wait">
-                {/* 1. Password Mode */}
-                {authMode === 'password' && otpStep !== 'verify' && (
-                  <motion.form
-                    key="admin-password-form"
-                    onSubmit={handlePasswordSubmit}
-                    className="space-y-4"
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 8 }}
-                    transition={{ duration: 0.16 }}
-                  >
-                    <div className="space-y-1.5">
-                      <Label
-                        htmlFor="admin-email"
-                        className="text-text-secondary/80 text-[11px] font-mono uppercase tracking-wider"
-                      >
-                        Administrative Email
-                      </Label>
-                      <Input
-                        id="admin-email"
-                        type="email"
-                        placeholder="admin@revvie.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled={isLoading}
-                        className="h-11 rounded-xl bg-[#0e0e0e] border border-white/10 text-white placeholder:text-white/20 focus:border-brand-red focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <Label
-                          htmlFor="admin-password"
-                          className="text-text-secondary/80 text-[11px] font-mono uppercase tracking-wider"
-                        >
-                          Password
-                        </Label>
-                        <Link
-                          href="/forgot-password"
-                          className="text-xs text-text-secondary/40 hover:text-white transition-colors underline underline-offset-2"
-                        >
-                          Forgot password?
-                        </Link>
-                      </div>
-                      <div className="relative">
-                        <Input
-                          id="admin-password"
-                          type={showPassword ? 'text' : 'password'}
-                          placeholder="••••••••••••"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                          disabled={isLoading}
-                          className="h-11 rounded-xl bg-[#0e0e0e] border border-white/10 text-white placeholder:text-white/20 focus:border-brand-red focus-visible:ring-0 focus-visible:ring-offset-0 pr-10 transition-colors"
-                        />
-                        <button
-                          type="button"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary/40 hover:text-text-secondary transition-colors"
-                          onClick={() => setShowPassword((v) => !v)}
-                        >
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      disabled={isLoading || !email || !password}
-                      className="w-full h-11 rounded-xl font-bold uppercase tracking-widest text-xs bg-linear-to-r from-brand-red-light to-brand-red text-white hover:opacity-90 transition-all shadow-lg shadow-red-950/50 mt-2"
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Authenticating…
-                        </>
-                      ) : (
-                        <>
-                          <span>Authenticate & Enter</span>
-                          <ArrowRight className="w-4 h-4 ml-2" />
-                        </>
-                      )}
-                    </Button>
-                  </motion.form>
-                )}
-
-                {/* 2. OTP Request Mode */}
-                {authMode === 'otp' && otpStep === 'request' && (
+                {/* 1. OTP Request Mode */}
+                {otpStep === 'request' && (
                   <motion.form
                     key="admin-otp-request-form"
                     onSubmit={handleSendOtp}
@@ -559,7 +412,7 @@ export function AdminLoginView() {
                   </motion.form>
                 )}
 
-                {/* 3. OTP Verify Mode */}
+                {/* 2. OTP Verify Mode */}
                 {otpStep === 'verify' && (
                   <motion.form
                     key="admin-otp-verify-form"

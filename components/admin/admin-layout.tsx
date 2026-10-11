@@ -32,6 +32,7 @@ import {
   Store,
   UserCog,
   Palette,
+  LifeBuoy,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -51,6 +52,7 @@ const adminNavigation: AdminNavItem[] = [
   { name: 'Approvals', href: '/admin/approvals', icon: CheckSquare, highlight: true },
   { name: 'Launch Interest', href: '/admin/launch-interest', icon: Inbox },
   { name: 'Users', href: '/admin/users', icon: Users },
+  { name: 'Recovery', href: '/admin/recovery', icon: LifeBuoy },
   { name: 'Clubs', href: '/admin/clubs', icon: Shield },
   { name: 'Rides', href: '/admin/rides', icon: MapPin },
   { name: 'Brands', href: '/admin/brands', icon: Store },
@@ -185,9 +187,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     return null
   }
 
-  const navigationItems = isSuperAdmin
-    ? adminNavigation
-    : adminNavigation.filter((item) => !isSuperAdminOnlyRoute(item.href))
+  const navigationItems = (
+    isSuperAdmin
+      ? adminNavigation
+      : adminNavigation.filter((item) => !isSuperAdminOnlyRoute(item.href))
+  ).filter((item) => !(isModerator && item.href === '/admin/recovery'))
 
   return (
     <div className="min-h-screen bg-background">

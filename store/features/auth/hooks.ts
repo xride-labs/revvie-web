@@ -5,7 +5,7 @@ import {
   selectUserLoading,
   selectUserError,
 } from './selectors'
-import { authApi, type LoginData, type RegisterData } from '@/lib/server/auth'
+import { authApi } from '@/lib/server/auth'
 
 export const useAuth = () => {
   const user = useAppSelector(selectUser)
@@ -18,8 +18,6 @@ export const useAuth = () => {
     isAuthenticated,
     isLoading,
     error,
-    login: (data: LoginData) => authApi.login(data),
-    register: (data: RegisterData) => authApi.register(data),
     logout: () => authApi.logout(),
   }
 }

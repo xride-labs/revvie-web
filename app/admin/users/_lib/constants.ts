@@ -18,7 +18,6 @@ export function normalizeRolesForForm(roles: readonly string[]): RoleOption[] {
 
 export type UserFormData = {
   email: string
-  password: string
   name: string
   username: string
   phone: string
@@ -29,7 +28,6 @@ export type UserFormData = {
 
 export const EMPTY_FORM: UserFormData = {
   email: '',
-  password: '',
   name: '',
   username: '',
   phone: '',

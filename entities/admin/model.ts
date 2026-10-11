@@ -521,3 +521,69 @@ export const adminRoleSchema = z.object({
 
 export type AdminPermission = z.infer<typeof adminPermissionSchema>
 export type AdminRole = z.infer<typeof adminRoleSchema>
+
+/**
+ * Assisted account recovery — the review queue for riders who lost every sign-in
+ * factor. Mirrors `backend/src/routes/admin/admin.recovery.routes.ts`.
+ *
+ * The backend never returns OTPs, receipt tokens, or the rider's previous factor
+ * values, and these schemas deliberately declare none of them: Zod strips unknown
+ * keys, so a future server leak still cannot reach the UI.
+ */
+
+export const recoveryStatusSchema = z.enum([
+  'PENDING_REVIEW',
+  'NEEDS_INFO',
+  'REJECTED',
+  'APPROVED',
+  'CANCELLED',
+  'PROCESSING',
+  'COMPLETED',
+  'EXPIRED',
+])
+
+export const recoveryFactorSchema = z.enum(['EMAIL', 'PHONE', 'OAUTH', 'PASSKEY'])
+
+export const recoveryDestinationChannelSchema = z.enum(['EMAIL', 'PHONE'])
+
+export const adminRecoveryCaseSchema = z.object({
+  id: z.string(),
+  status: recoveryStatusSchema,
+  destinationChannel: recoveryDestinationChannelSchema,
+  /** The new destination the requester already proved they control via OTP. */
+  destinationValue: z.string(),
+  explanation: z.string().nullable().optional(),
+  reviewerNote: z.string().nullable().optional(),
+  retireFactors: z.array(recoveryFactorSchema).default([]),
+  approvedAt: z.string().nullable().optional(),
+  /** End of the seven-day hold; set server-side at approval. */
+  releaseAt: z.string().nullable().optional(),
+  completedAt: z.string().nullable().optional(),
+  cancelledAt: z.string().nullable().optional(),
+  rejectedAt: z.string().nullable().optional(),
+  expiresAt: z.string().nullable().optional(),
+  lastError: z.string().nullable().optional(),
+  createdAt: z.string(),
+  /** Null when no account matched the request — such a case cannot be approved. */
+  user: z
+    .object({ id: z.string(), name: z.string().nullable(), username: z.string().nullable() })
+    .nullable(),
+  reviewer: z.object({ id: z.string(), name: z.string().nullable() }).nullable().optional(),
+})
+
+export const adminRecoveryEventSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  actorUserId: z.string().nullable().optional(),
+  createdAt: z.string(),
+})
+
+export const adminRecoveryDetailSchema = adminRecoveryCaseSchema.extend({
+  events: z.array(adminRecoveryEventSchema).default([]),
+})
+
+export type RecoveryStatus = z.infer<typeof recoveryStatusSchema>
+export type RecoveryFactor = z.infer<typeof recoveryFactorSchema>
+export type AdminRecoveryCase = z.infer<typeof adminRecoveryCaseSchema>
+export type AdminRecoveryEvent = z.infer<typeof adminRecoveryEventSchema>
+export type AdminRecoveryDetail = z.infer<typeof adminRecoveryDetailSchema>

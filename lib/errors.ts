@@ -37,7 +37,7 @@ const CODE_MAPPINGS: Record<string, { title: string; message: string }> = {
   // Authentication & Session
   UNAUTHORIZED: { title: 'Sign In Required', message: 'Your session has expired. Please sign in again.' },
   AUTHENTICATION_FAILED: { title: 'Authentication Failed', message: 'Unable to authenticate your account.' },
-  INVALID_CREDENTIALS: { title: 'Incorrect Credentials', message: 'Invalid email or password. Please try again.' },
+  INVALID_CREDENTIALS: { title: 'Incorrect Credentials', message: 'That code is invalid or has expired. Please request a new one.' },
   TOKEN_EXPIRED: { title: 'Session Expired', message: 'Your session has expired. Please sign in again.' },
   SESSION_EXPIRED: { title: 'Session Expired', message: 'Your session has expired. Please sign in again.' },
   ACCOUNT_LOCKED: { title: 'Account Locked', message: 'Your account is temporarily locked. Contact support.' },

@@ -117,7 +117,6 @@ export default function AdminUsersPage() {
     setSelectedUserId(user.id)
     setForm({
       email: user.email ?? '',
-      password: '',
       name: user.name ?? '',
       username: user.username ?? '',
       phone: user.phone ?? '',
@@ -129,7 +128,7 @@ export default function AdminUsersPage() {
   }
 
   async function handleCreateUser() {
-    if (!form.email || !form.password) return
+    if (!form.email) return
 
     if (!isSuperAdmin && hasPrivilegedAdminRole(form.roles)) {
       alert('Only super admins can assign ADMIN or CO_ADMIN roles.')
@@ -138,7 +137,6 @@ export default function AdminUsersPage() {
 
     await createUserMutation({
       email: form.email,
-      password: form.password,
       name: form.name || undefined,
       username: form.username || undefined,
       phone: form.phone || undefined,

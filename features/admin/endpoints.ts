@@ -43,6 +43,11 @@ export const ADMIN_ENDPOINTS = {
   role: (id: string) => `/admin/roles/${id}`,
   permissions: '/admin/permissions',
   userRoles: (userId: string) => `/admin/users/${userId}/roles`,
+  recoveries: '/admin/account-recoveries',
+  recovery: (id: string) => `/admin/account-recoveries/${id}`,
+  recoveryRequestInfo: (id: string) => `/admin/account-recoveries/${id}/request-info`,
+  recoveryReject: (id: string) => `/admin/account-recoveries/${id}/reject`,
+  recoveryApprove: (id: string) => `/admin/account-recoveries/${id}/approve`,
   /** Not under /admin — scoped bulk-action endpoints mounted at the API root. */
   clubManagerBulkAction: '/bulk/club-manager/action',
   brandManagerBulkAction: '/bulk/brand-manager/action',

@@ -101,7 +101,7 @@ export function CTASection() {
               className="text-lg px-8 py-6 rounded-full bg-white text-brand-red hover:bg-white/90"
               asChild
             >
-              <Link href="/signup">
+              <Link href="/login">
                 Get Started Free
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Link>

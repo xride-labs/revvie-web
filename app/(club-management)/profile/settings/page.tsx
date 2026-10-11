@@ -361,15 +361,6 @@ export default function ProfileSettingsPage() {
         {/* Account Tab */}
         <TabsContent value="account">
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Password</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline">Change Password</Button>
-              </CardContent>
-            </Card>
-
             <Card className="border-red-200">
               <CardHeader>
                 <CardTitle className="text-red-600">Danger Zone</CardTitle>

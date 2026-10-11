@@ -1,5 +1,7 @@
 import { adminApi } from '@/core/store/api/services'
 import type {
+  AdminRecoveryCase,
+  AdminRecoveryDetail,
   AdminSettings,
   AdminStats,
   AdminUserDetails,
@@ -18,6 +20,8 @@ import type {
   AdminNotificationsResponse,
   AdminPermissionsResponse,
   AdminReportsResponse,
+  ApproveRecoveryInput,
+  ApproveRecoveryResult,
   AdminRidesResponse,
   AdminRolesResponse,
   AdminUsersResponse,
@@ -26,6 +30,8 @@ import type {
   CreateAdminRoleInput,
   CreateAdminUserInput,
   PendingBusinessesResponse,
+  RecoveryFilters,
+  RecoveryNoteInput,
   UpdateAdminRoleInput,
   UpdateAdminUserInput,
   UserFilters,
@@ -59,6 +65,55 @@ export const adminApiSlice = adminApi.injectEndpoints({
     createUser: build.mutation<AdminUserRecord, CreateAdminUserInput>({
       query: (body) => ({ url: ADMIN_ENDPOINTS.users, method: 'POST', body }),
       invalidatesTags: [{ type: 'AdminUser', id: 'LIST' }],
+    }),
+
+    getRecoveries: build.query<AdminRecoveryCase[], RecoveryFilters | void>({
+      query: (filters) => ({ url: ADMIN_ENDPOINTS.recoveries, params: filters ?? {} }),
+      providesTags: [{ type: 'AdminRecovery', id: 'LIST' }],
+    }),
+
+    getRecovery: build.query<AdminRecoveryDetail, string>({
+      query: (id) => ({ url: ADMIN_ENDPOINTS.recovery(id) }),
+      providesTags: (_r, _e, id) => [{ type: 'AdminRecovery', id }],
+    }),
+
+    requestRecoveryInfo: build.mutation<void, { id: string } & RecoveryNoteInput>({
+      query: ({ id, ...body }) => ({
+        url: ADMIN_ENDPOINTS.recoveryRequestInfo(id),
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (_r, _e, { id }) => [
+        { type: 'AdminRecovery', id: 'LIST' },
+        { type: 'AdminRecovery', id },
+      ],
+    }),
+
+    rejectRecovery: build.mutation<void, { id: string } & RecoveryNoteInput>({
+      query: ({ id, ...body }) => ({
+        url: ADMIN_ENDPOINTS.recoveryReject(id),
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (_r, _e, { id }) => [
+        { type: 'AdminRecovery', id: 'LIST' },
+        { type: 'AdminRecovery', id },
+      ],
+    }),
+
+    approveRecovery: build.mutation<
+      ApproveRecoveryResult,
+      { id: string } & ApproveRecoveryInput
+    >({
+      query: ({ id, ...body }) => ({
+        url: ADMIN_ENDPOINTS.recoveryApprove(id),
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (_r, _e, { id }) => [
+        { type: 'AdminRecovery', id: 'LIST' },
+        { type: 'AdminRecovery', id },
+      ],
     }),
 
     updateUser: build.mutation<
@@ -510,4 +565,9 @@ export const {
   useUpdateAdminRoleMutation,
   useDeleteAdminRoleMutation,
   useAssignUserRolesMutation,
+  useGetRecoveriesQuery,
+  useGetRecoveryQuery,
+  useRequestRecoveryInfoMutation,
+  useRejectRecoveryMutation,
+  useApproveRecoveryMutation,
 } = adminApiSlice

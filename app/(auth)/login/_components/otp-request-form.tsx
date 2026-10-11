@@ -50,7 +50,7 @@ export function OtpRequestForm({
         />
       </div>
       <p className="text-xs text-text-secondary/40 leading-relaxed">
-        We&apos;ll send a 6-digit sign-in code. No password needed.
+        We&apos;ll send a 6-digit sign-in code.
       </p>
       <Button
         type="submit"
@@ -63,7 +63,7 @@ export function OtpRequestForm({
             Sending…
           </>
         ) : (
-          'Send Sign-In Code'
+          'Send Code'
         )}
       </Button>
     </motion.form>

@@ -82,6 +82,7 @@ export const adminApi = createApi({
     'AdminApproval',
     'AdminBranding',
     'AdminRole',
+    'AdminRecovery',
   ],
   endpoints: () => ({}),
 })

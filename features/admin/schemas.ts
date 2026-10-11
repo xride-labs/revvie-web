@@ -12,8 +12,11 @@ import {
   adminReportRecordSchema,
   adminRideRecordSchema,
   adminRoleSchema,
+  adminRecoveryCaseSchema,
   adminSettingsSchema,
   adminUserRecordSchema,
+  recoveryFactorSchema,
+  recoveryStatusSchema,
   pendingBusinessSchema,
   pendingClubRequestSchema,
   pendingClubSchema,
@@ -61,7 +64,6 @@ export const userFiltersSchema = z.object({
 
 export const createAdminUserInputSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
   name: z.string().optional(),
   username: z.string().optional(),
   phone: z.string().optional(),
@@ -143,6 +145,32 @@ export const updateAdminRoleInputSchema = z.object({
   permissionCodes: z.array(z.string()).optional(),
 })
 
+export const adminRecoveriesResponseSchema = z.array(adminRecoveryCaseSchema)
+
+export const recoveryFiltersSchema = z.object({
+  status: recoveryStatusSchema.optional(),
+  limit: z.number().int().positive().optional(),
+})
+
+export const recoveryNoteInputSchema = z.object({
+  note: z.string().max(1000).optional(),
+})
+
+export const approveRecoveryInputSchema = recoveryNoteInputSchema.extend({
+  retireFactors: z.array(recoveryFactorSchema).min(1),
+})
+
+export const approveRecoveryResultSchema = z.object({
+  id: z.string(),
+  status: recoveryStatusSchema,
+  releaseAt: z.string().nullable(),
+})
+
+export type AdminRecoveriesResponse = z.infer<typeof adminRecoveriesResponseSchema>
+export type RecoveryFilters = z.infer<typeof recoveryFiltersSchema>
+export type RecoveryNoteInput = z.infer<typeof recoveryNoteInputSchema>
+export type ApproveRecoveryInput = z.infer<typeof approveRecoveryInputSchema>
+export type ApproveRecoveryResult = z.infer<typeof approveRecoveryResultSchema>
 export type AdminRolesResponse = z.infer<typeof adminRolesResponseSchema>
 export type AdminPermissionsResponse = z.infer<typeof adminPermissionsResponseSchema>
 export type CreateAdminRoleInput = z.infer<typeof createAdminRoleInputSchema>

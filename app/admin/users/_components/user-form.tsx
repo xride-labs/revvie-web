@@ -6,12 +6,10 @@ import type { RoleOption, UserFormData } from '../_lib/constants'
 export function UserForm({
   form,
   setForm,
-  includePassword = false,
   roleOptions,
 }: {
   form: UserFormData
   setForm: Dispatch<SetStateAction<UserFormData>>
-  includePassword?: boolean
   roleOptions: readonly RoleOption[]
 }) {
   return (
@@ -52,16 +50,6 @@ export function UserForm({
           onChange={(event) => setForm((prev) => ({ ...prev, bio: event.target.value }))}
         />
       </div>
-      {includePassword ? (
-        <Input
-          type="password"
-          placeholder="Temporary Password"
-          value={form.password}
-          onChange={(event) =>
-            setForm((prev) => ({ ...prev, password: event.target.value }))
-          }
-        />
-      ) : null}
       <div>
         <p className="text-sm font-medium mb-2">Roles</p>
         <div className="grid grid-cols-2 gap-2">

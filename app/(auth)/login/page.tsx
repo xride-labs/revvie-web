@@ -3,27 +3,22 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Mail, Lock } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
-import { useAuth } from '@/store/features/auth'
 import { useLazyGetMyProfileQuery } from '@/features/user/api'
 import { useToast } from '@/hooks/use-toast'
 import { signIn as betterAuthSignIn, resolveAuthCallbackURL } from '@/lib/auth-client'
 import { sendEmailOtp, signInWithEmailOtp } from '@/lib/server/auth'
 import { useAuthErrorToast } from '@/hooks/use-auth-error-toast'
-import { useCreateBusinessMutation } from '@/features/business/api'
 import { BrandPanel } from './_components/brand-panel'
 import { GoogleSignInButton } from './_components/google-signin-button'
-import { PasswordForm } from './_components/password-form'
 import { OtpRequestForm } from './_components/otp-request-form'
 import { OtpVerifyForm } from './_components/otp-verify-form'
-import { PENDING_BRAND_KEY, TAB_CONFIG } from './_lib/constants'
-import type { LoginTab, AuthMode, OtpStep } from './_lib/constants'
+import { TAB_CONFIG } from './_lib/constants'
+import type { LoginTab, OtpStep } from './_lib/constants'
 
 export default function LoginPage() {
   const router = useRouter()
   const [fetchMe] = useLazyGetMyProfileQuery()
-  const { login } = useAuth()
   const {
     success: successToast,
     error: errorToast,
@@ -32,12 +27,8 @@ export default function LoginPage() {
   } = useToast()
   const [activeTab, setActiveTab] = useState<LoginTab>('club')
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [authMode, setAuthMode] = useState<AuthMode>('password')
   const [otpStep, setOtpStep] = useState<OtpStep>('request')
-  const [createBusiness] = useCreateBusinessMutation()
 
   useAuthErrorToast()
 
@@ -52,36 +43,8 @@ export default function LoginPage() {
     }
   }
 
-  const completePendingBrandSetup = async (): Promise<boolean> => {
-    if (typeof window === 'undefined') return false
-    const raw = localStorage.getItem(PENDING_BRAND_KEY)
-    if (!raw) return false
-    try {
-      const data = JSON.parse(raw)
-      await createBusiness(data).unwrap()
-      localStorage.removeItem(PENDING_BRAND_KEY)
-      return true
-    } catch {
-      localStorage.removeItem(PENDING_BRAND_KEY)
-      return false
-    }
-  }
-
-  const switchMode = (mode: AuthMode) => {
-    setAuthMode(mode)
-    setOtpStep('request')
-  }
-
   const finishSignIn = async () => {
-    const completedBrandSetup = await completePendingBrandSetup()
     const roles = await fetchUserRoles()
-    if (completedBrandSetup) {
-      successToast('Brand setup complete!', {
-        description: 'Welcome to your brand portal.',
-      })
-      router.push('/brand/dashboard?onboarding=1')
-      return
-    }
     const hasAccess = roles.some((r) => tab.roles.includes(r))
     if (!hasAccess) {
       errorToast('Access denied', { description: `${tab.label} account required.` })
@@ -89,26 +52,6 @@ export default function LoginPage() {
     }
     successToast('Welcome back')
     router.push(tab.redirectTo)
-  }
-
-  // ── Password sign-in ───────────────────────────────────────────────────────
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    const toastId = loadingToast('Signing you in...', {
-      description: 'Verifying credentials and loading your role access.',
-    })
-    try {
-      await login({ email, password })
-      await finishSignIn()
-    } catch (err) {
-      errorToast(err instanceof Error ? err.message : 'Invalid email or password', {
-        description: 'Please try again.',
-      })
-    } finally {
-      dismissToast(toastId)
-      setIsLoading(false)
-    }
   }
 
   // ── OTP: send code ─────────────────────────────────────────────────────────
@@ -269,51 +212,9 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Auth mode toggle */}
-              <div className="flex rounded-xl bg-canvas p-1 gap-1 mb-5">
-                {(['password', 'otp'] as AuthMode[]).map((mode) => (
-                  <button
-                    key={mode}
-                    type="button"
-                    onClick={() => switchMode(mode)}
-                    className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-all ${
-                      authMode === mode
-                        ? 'bg-[#161616] text-white border border-white/10 shadow-sm'
-                        : 'text-text-secondary/50 hover:text-text-secondary'
-                    }`}
-                  >
-                    {mode === 'password' ? (
-                      <>
-                        <Lock className="w-3.5 h-3.5" />
-                        Password
-                      </>
-                    ) : (
-                      <>
-                        <Mail className="w-3.5 h-3.5" />
-                        Magic Code
-                      </>
-                    )}
-                  </button>
-                ))}
-              </div>
-
               {/* ── Forms ── */}
               <AnimatePresence mode="wait">
-                {authMode === 'password' && (
-                  <PasswordForm
-                    activeTab={activeTab}
-                    email={email}
-                    onEmailChange={setEmail}
-                    password={password}
-                    onPasswordChange={setPassword}
-                    showPassword={showPassword}
-                    onToggleShowPassword={() => setShowPassword((v) => !v)}
-                    isLoading={isLoading}
-                    onSubmit={handlePasswordSubmit}
-                  />
-                )}
-
-                {authMode === 'otp' && otpStep === 'request' && (
+                {otpStep === 'request' && (
                   <OtpRequestForm
                     activeTab={activeTab}
                     email={email}
@@ -323,7 +224,7 @@ export default function LoginPage() {
                   />
                 )}
 
-                {authMode === 'otp' && otpStep === 'verify' && (
+                {otpStep === 'verify' && (
                   <OtpVerifyForm
                     activeTab={activeTab}
                     email={email}
@@ -334,18 +235,6 @@ export default function LoginPage() {
                   />
                 )}
               </AnimatePresence>
-
-              {tab.registerHref && (
-                <p className="text-center text-xs text-text-secondary/40 mt-6">
-                  New here?{' '}
-                  <Link
-                    href={tab.registerHref}
-                    className="text-white/60 hover:text-white transition-colors underline underline-offset-2"
-                  >
-                    {tab.registerLabel}
-                  </Link>
-                </p>
-              )}
             </div>
           </div>
 
