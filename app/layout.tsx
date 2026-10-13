@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Josefin_Sans } from 'next/font/google'
 import { Providers } from '@/components/providers'
+import { AiCoPilot } from '@/components/ai/AiCoPilot'
 import './globals.css'
 
 const josefinSans = Josefin_Sans({
@@ -59,7 +60,10 @@ export default function RootLayout({
         className={`${josefinSans.variable} antialiased min-h-screen bg-background text-foreground flex flex-col selection:bg-primary selection:text-white`}
       >
         <div className="flex-1 relative w-full max-w-[1920px] mx-auto border-x border-border shadow-2xl bg-canvas">
-          <Providers>{children}</Providers>
+          <Providers>
+            {children}
+            <AiCoPilot />
+          </Providers>
         </div>
       </body>
     </html>
