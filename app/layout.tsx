@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Josefin_Sans } from 'next/font/google'
 import { Providers } from '@/components/providers'
 import { AiCoPilot } from '@/components/ai/AiCoPilot'
+import { PinwrenWidget } from '@/components/feedback/pinwren-widget'
 import './globals.css'
 
 const josefinSans = Josefin_Sans({
@@ -63,6 +64,7 @@ export default function RootLayout({
           <Providers>
             {children}
             <AiCoPilot />
+            <PinwrenWidget />
           </Providers>
         </div>
       </body>
