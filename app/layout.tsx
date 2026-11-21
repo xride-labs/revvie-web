@@ -1,15 +1,9 @@
 import type { Metadata, Viewport } from 'next'
-import { Josefin_Sans } from 'next/font/google'
+import '@fontsource-variable/josefin-sans'
 import { Providers } from '@/components/providers'
 import { AiCoPilot } from '@/components/ai/AiCoPilot'
 import { PinwrenWidget } from '@/components/feedback/pinwren-widget'
 import './globals.css'
-
-const josefinSans = Josefin_Sans({
-  variable: '--font-josefin',
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-})
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://revvie.xride-labs.in'
 
@@ -57,9 +51,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${josefinSans.variable} antialiased min-h-screen bg-background text-foreground flex flex-col selection:bg-primary selection:text-white`}
-      >
+      <body className="antialiased min-h-screen bg-background text-foreground flex flex-col selection:bg-primary selection:text-white">
         <div className="flex-1 relative w-full max-w-[1920px] mx-auto border-x border-border shadow-2xl bg-canvas">
           <Providers>
             {children}

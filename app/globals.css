@@ -82,6 +82,7 @@
 }
 
 :root {
+  --font-josefin: 'Josefin Sans Variable', sans-serif;
   /* Night Rider - 24px base radius */
   --radius: 1.5rem;
   /* Canvas - Near-Black */
