@@ -1,40 +1,117 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Send, Sparkles, CheckCircle2, Loader2, Maximize2, Minimize2 } from "lucide-react";
+import {
+  X,
+  Send,
+  Sparkles,
+  CheckCircle2,
+  Loader2,
+  Maximize2,
+  Minimize2,
+  Square,
+  SquarePen,
+} from "lucide-react";
 import axios from "axios";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { authClient } from "@/lib/auth-client";
+import { RidePreviewCard } from "./RidePreviewCard";
+import { ChatBlocks } from "./ChatBlocks";
+import { ChatHttpError, streamChat, type ChatBlock } from "./chat-types";
 
 // The co-pilot talks to the Revvie API directly (cookie session), not the Next server.
 const AI_API = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "").replace(/\/api$/, "") + "/api/ai";
-import { RidePreviewCard } from "./RidePreviewCard";
 
 interface Message {
   id: string;
   sender: "user" | "assistant";
   text: string;
+  blocks?: ChatBlock[];
   toolPills?: Array<{ tool: string; title?: string }>;
   rideCards?: any[];
 }
 
+const WELCOME: Message = {
+  id: "welcome",
+  sender: "assistant",
+  text: "Hey rider! I'm your Revvie Co-Pilot and garage mechanic. Ask me about any bike — specs, servicing, faults — or tell me to plan a ride.",
+};
+
+const STARTERS = [
+  "🔧 My bike vibrates at 60 kph",
+  "📖 Service schedule for a Royal Enfield Classic 350",
+  "🏍️ Create a breakfast ride to Nandi Hills tomorrow 6 AM",
+  "🔍 Find upcoming rides",
+];
+
+const MAX_STORED = 40;
+
+const Markdown = ({ children }: { children: string }) => (
+  <div className="space-y-2 [&_a]:text-[#ff4d57] [&_a]:underline [&_code]:rounded [&_code]:bg-black/40 [&_code]:px-1 [&_h1]:text-sm [&_h1]:font-bold [&_h2]:text-[13px] [&_h2]:font-bold [&_h3]:font-semibold [&_hr]:border-[#3a3a3c] [&_li]:ml-4 [&_ol]:list-decimal [&_ul]:list-disc [&_strong]:text-white">
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        a: (props) => <a {...props} target="_blank" rel="noopener noreferrer" />,
+        table: (props) => (
+          <div className="overflow-x-auto">
+            <table {...props} className="w-full border-collapse text-[11px]" />
+          </div>
+        ),
+        th: (props) => <th {...props} className="border border-[#3a3a3c] bg-black/30 px-2 py-1 text-left" />,
+        td: (props) => <td {...props} className="border border-[#3a3a3c] px-2 py-1 align-top" />,
+      }}
+    >
+      {children}
+    </ReactMarkdown>
+  </div>
+);
+
 export const AiCoPilot: React.FC = () => {
   const { data: session } = authClient.useSession();
+  const userId = (session as any)?.user?.id as string | undefined;
+  const storageKey = userId ? `revvie-copilot:${userId}` : null;
+
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      sender: "assistant",
-      text: "Hey rider! I'm your Revvie Co-Pilot. You can tell me in plain English to plan rides, check your garage, or find upcoming group routes.",
-    },
-  ]);
-
+  const [messages, setMessages] = useState<Message[]>([WELCOME]);
   const [credits, setCredits] = useState<{ remaining: number; limit: number } | null>(null);
 
+  // Live (in-flight) assistant turn.
+  const [status, setStatus] = useState<string>("");
+  const [liveText, setLiveText] = useState("");
+  const [liveBlocks, setLiveBlocks] = useState<ChatBlock[]>([]);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const hydrated = useRef(false);
+
+  // Restore the conversation for this rider.
+  useEffect(() => {
+    if (!storageKey) return;
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) {
+        const saved = JSON.parse(raw) as Message[];
+        if (Array.isArray(saved) && saved.length) setMessages(saved);
+      }
+    } catch {
+      // storage unavailable or corrupt: start fresh
+    }
+    hydrated.current = true;
+  }, [storageKey]);
+
+  useEffect(() => {
+    if (!storageKey || !hydrated.current) return;
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(messages.slice(-MAX_STORED)));
+    } catch {
+      // quota/private mode: persistence is a nicety only
+    }
+  }, [messages, storageKey]);
 
   useEffect(() => {
     if (isOpen) {
@@ -51,73 +128,114 @@ export const AiCoPilot: React.FC = () => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isLoading]);
+  }, [messages, isLoading, liveText, liveBlocks, status]);
+
+  const newChat = useCallback(() => {
+    abortRef.current?.abort();
+    setMessages([WELCOME]);
+    setInput("");
+    setLiveText("");
+    setLiveBlocks([]);
+    setStatus("");
+    setIsLoading(false);
+  }, []);
 
   const handleSend = async (textToSend?: string) => {
-    const query = textToSend || input;
-    if (!query.trim() || isLoading) return;
+    const query = (textToSend ?? input).trim();
+    if (!query || isLoading) return;
 
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      sender: "user",
-      text: query,
-    };
+    const history = messages
+      .filter((m) => m.id !== "welcome")
+      .map((m) => ({ role: m.sender === "user" ? "user" : "assistant", content: m.text }));
 
-    setMessages((prev) => [...prev, userMsg]);
-    if (!textToSend) setInput("");
+    setMessages((prev) => [...prev, { id: Date.now().toString(), sender: "user", text: query }]);
+    if (textToSend === undefined) setInput("");
     setIsLoading(true);
+    setStatus("Thinking");
+    setLiveText("");
+    setLiveBlocks([]);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+    let streamed = "";
+    let finished = false;
 
     try {
-      const res = await axios.post(
-        `${AI_API}/chat`,
-        {
-          message: query,
-          history: messages
-            .slice(1)
-            .map((m) => ({ role: m.sender === "user" ? "user" : "assistant", content: m.text })),
-        },
-        { withCredentials: true },
-      );
-      const data = res.data;
-
-      if (data.credits) {
-        setCredits(data.credits);
+      for await (const ev of streamChat(`${AI_API}/chat/stream`, { message: query, history }, controller.signal)) {
+        if (ev.event === "status") setStatus(ev.data.text);
+        else if (ev.event === "delta") {
+          streamed += ev.data.text;
+          setLiveText(streamed);
+          setStatus("");
+        } else if (ev.event === "reset") {
+          streamed = "";
+          setLiveText("");
+        } else if (ev.event === "blocks") setLiveBlocks(ev.data.blocks);
+        else if (ev.event === "done") {
+          finished = true;
+          const d = ev.data as any;
+          if (d.credits) setCredits(d.credits);
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: (Date.now() + 1).toString(),
+              sender: "assistant",
+              text: d.reply || "Done!",
+              blocks: d.blocks?.length ? d.blocks : undefined,
+              toolPills: d.tools?.length ? d.tools : undefined,
+              rideCards: d.rides?.length ? d.rides : undefined,
+            },
+          ]);
+        } else if (ev.event === "error") {
+          finished = true;
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: (Date.now() + 1).toString(),
+              sender: "assistant",
+              text: ev.data.message || "Sorry, something went wrong. Please try again.",
+            },
+          ]);
+        }
       }
-
-      const toolPills = (data.toolCallsExecuted || []).map((t: any) => ({
-        tool: t.tool,
-        title: t.result?.title || t.args?.title || t.tool,
-      }));
-
-      const rideCards = (data.toolCallsExecuted || [])
-        .filter((t: any) => t.tool === "create_ride" && t.result?.rideId)
-        .map((t: any) => t.result);
-
-      const botMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        sender: "assistant",
-        text: data.reply || "Done!",
-        toolPills: toolPills.length ? toolPills : undefined,
-        rideCards: rideCards.length ? rideCards : undefined,
-      };
-
-      setMessages((prev) => [...prev, botMsg]);
+      if (!finished) {
+        // Stream ended without a terminal event (network drop): keep what we got.
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 1).toString(),
+            sender: "assistant",
+            text: streamed || "The connection dropped before I could answer. Please try again.",
+          },
+        ]);
+      }
     } catch (err: any) {
-      if (err.response?.data?.remainingCredits !== undefined) {
-        setCredits({ remaining: err.response.data.remainingCredits, limit: err.response.data.dailyLimit });
+      if (controller.signal.aborted) {
+        if (streamed) {
+          setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), sender: "assistant", text: streamed }]);
+        }
+      } else {
+        if (err instanceof ChatHttpError && err.body.remainingCredits !== undefined) {
+          setCredits({ remaining: err.body.remainingCredits, limit: err.body.dailyLimit ?? 0 });
+        }
+        const text =
+          err instanceof ChatHttpError
+            ? err.body.error || err.body.message || "Sorry, I had trouble connecting to the AI brain."
+            : "Sorry, I had trouble connecting to the AI brain. Please try again.";
+        setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), sender: "assistant", text }]);
       }
-      const errorMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        sender: "assistant",
-        text: err.response?.data?.error || "Sorry, I had trouble connecting to the AI brain. Please try again.",
-      };
-      setMessages((prev) => [...prev, errorMsg]);
     } finally {
+      abortRef.current = null;
       setIsLoading(false);
+      setStatus("");
+      setLiveText("");
+      setLiveBlocks([]);
     }
   };
 
   if (!session) return null; // the assistant acts on the rider's account, so signed-in only
+
+  const lastIndex = messages.length - 1;
 
   return (
     <>
@@ -149,8 +267,10 @@ export const AiCoPilot: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className={`fixed bottom-6 right-6 z-50 flex flex-col rounded-2xl border border-[#3a3a3c] bg-[#0d0d0f]/95 shadow-2xl backdrop-blur-2xl transition-all ${
-              isExpanded ? "h-[85vh] w-[90vw] md:w-[700px]" : "h-[560px] w-[380px] sm:w-[420px]"
+            className={`fixed z-50 flex flex-col border border-[#3a3a3c] bg-[#0d0d0f]/95 shadow-2xl backdrop-blur-2xl transition-all ${
+              isExpanded
+                ? "inset-2 rounded-2xl sm:inset-6"
+                : "bottom-6 right-6 h-[560px] w-[380px] rounded-2xl sm:w-[420px]"
             }`}
           >
             {/* Header */}
@@ -165,6 +285,14 @@ export const AiCoPilot: React.FC = () => {
                 )}
               </div>
               <div className="flex items-center gap-1.5">
+                <button
+                  onClick={newChat}
+                  className="rounded-lg p-1.5 text-[#aaaaaa] hover:bg-[#1c1c1e] hover:text-white cursor-pointer"
+                  aria-label="New chat"
+                  title="New chat"
+                >
+                  <SquarePen className="h-4 w-4" />
+                </button>
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
                   className="rounded-lg p-1.5 text-[#aaaaaa] hover:bg-[#1c1c1e] hover:text-white cursor-pointer"
@@ -183,71 +311,86 @@ export const AiCoPilot: React.FC = () => {
             </div>
 
             {/* Message Feed */}
-            <div className="flex-1 space-y-3.5 overflow-y-auto p-4 text-xs">
-              {messages.map((m) => (
-                <div
-                  key={m.id}
-                  className={`flex flex-col ${m.sender === "user" ? "items-end" : "items-start"}`}
-                >
-                  <div
-                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 leading-relaxed ${
-                      m.sender === "user"
-                        ? "bg-[#ff1d2d] text-white"
-                        : "border border-[#3a3a3c] bg-[#1c1c1e] text-[#dddddd]"
-                    }`}
-                  >
-                    {m.text}
-                  </div>
-
-                  {/* Tool execution badge */}
-                  {m.toolPills?.map((p, idx) => (
+            <div className="flex-1 overflow-y-auto p-4 text-xs">
+              <div className={`mx-auto space-y-3.5 ${isExpanded ? "max-w-3xl" : ""}`}>
+                {messages.map((m, idx) => (
+                  <div key={m.id} className={`flex flex-col ${m.sender === "user" ? "items-end" : "items-start"}`}>
                     <div
-                      key={idx}
-                      className="mt-1.5 flex items-center gap-1.5 rounded-full bg-[#ff1d2d]/10 px-2.5 py-0.5 text-[10px] text-[#ff4d57]"
+                      className={`max-w-[92%] rounded-2xl px-3.5 py-2.5 leading-relaxed ${
+                        m.sender === "user"
+                          ? "bg-[#ff1d2d] text-white"
+                          : "border border-[#3a3a3c] bg-[#1c1c1e] text-[#dddddd]"
+                      }`}
                     >
-                      <CheckCircle2 className="h-3 w-3" />
-                      <span>
-                        {p.tool}: {p.title}
-                      </span>
+                      {m.sender === "assistant" ? <Markdown>{m.text}</Markdown> : m.text}
                     </div>
-                  ))}
 
-                  {/* Render Ride Cards if any */}
-                  {m.rideCards?.map((r, idx) => (
-                    <div key={idx} className="w-full max-w-[85%]">
-                      <RidePreviewCard
-                        rideId={r.rideId}
-                        title={r.title}
-                        startLocation={r.startLocation}
-                        endLocation={r.endLocation}
-                        scheduledAt={r.scheduledAt}
+                    {m.blocks && m.blocks.length > 0 && (
+                      <ChatBlocks
+                        blocks={m.blocks}
+                        interactive={idx === lastIndex && !isLoading}
+                        onChoose={(v) => handleSend(v)}
                       />
-                    </div>
-                  ))}
-                </div>
-              ))}
+                    )}
 
-              {isLoading && (
-                <div className="flex items-center gap-2 text-[#aaaaaa]">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-[#ff1d2d]" />
-                  <span>Planning route & thinking...</span>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
+                    {/* Tool execution badge */}
+                    {m.toolPills?.map((p, i) => (
+                      <div
+                        key={i}
+                        className="mt-1.5 flex items-center gap-1.5 rounded-full bg-[#ff1d2d]/10 px-2.5 py-0.5 text-[10px] text-[#ff4d57]"
+                      >
+                        <CheckCircle2 className="h-3 w-3" />
+                        <span>
+                          {p.tool}: {p.title}
+                        </span>
+                      </div>
+                    ))}
+
+                    {m.rideCards?.map((r, i) => (
+                      <div key={i} className="w-full max-w-[85%]">
+                        <RidePreviewCard
+                          rideId={r.rideId}
+                          title={r.title}
+                          startLocation={r.startLocation}
+                          endLocation={r.endLocation}
+                          scheduledAt={r.scheduledAt}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ))}
+
+                {/* In-flight turn: progress, streamed text, early blocks */}
+                {isLoading && (
+                  <div className="flex flex-col items-start">
+                    {liveText && (
+                      <div className="max-w-[92%] rounded-2xl border border-[#3a3a3c] bg-[#1c1c1e] px-3.5 py-2.5 leading-relaxed text-[#dddddd]">
+                        <Markdown>{liveText}</Markdown>
+                      </div>
+                    )}
+                    {liveBlocks.length > 0 && (
+                      <ChatBlocks blocks={liveBlocks} interactive={false} onChoose={() => {}} />
+                    )}
+                    {status && (
+                      <div className="mt-2 flex items-center gap-2 text-[#aaaaaa]" aria-live="polite">
+                        <Loader2 className="h-3.5 w-3.5 animate-spin text-[#ff1d2d]" />
+                        <span>{status}…</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
             </div>
 
             {/* Quick Starters */}
-            {messages.length <= 2 && (
-              <div className="flex gap-1.5 overflow-x-auto px-4 pb-2">
-                {[
-                  "🏍️ Create a breakfast ride to Nandi Hills tomorrow 6 AM",
-                  "🔍 Find upcoming rides",
-                  "🔧 Check my garage",
-                ].map((q, i) => (
+            {messages.length <= 1 && !isLoading && (
+              <div className="flex flex-wrap gap-1.5 px-4 pb-2">
+                {STARTERS.map((q, i) => (
                   <button
                     key={i}
                     onClick={() => handleSend(q)}
-                    className="whitespace-nowrap rounded-full border border-[#3a3a3c] bg-[#1c1c1e] px-2.5 py-1 text-[10px] text-[#aaaaaa] transition-colors hover:border-[#ff1d2d] hover:text-white cursor-pointer"
+                    className="rounded-full border border-[#3a3a3c] bg-[#1c1c1e] px-2.5 py-1 text-[10px] text-[#aaaaaa] transition-colors hover:border-[#ff1d2d] hover:text-white cursor-pointer"
                   >
                     {q}
                   </button>
@@ -263,22 +406,33 @@ export const AiCoPilot: React.FC = () => {
               }}
               className="border-t border-[#3a3a3c] p-3"
             >
-              <div className="flex items-center gap-2 rounded-xl border border-[#3a3a3c] bg-[#1c1c1e] px-3 py-1.5 focus-within:border-[#ff1d2d]">
+              <div className={`mx-auto flex items-center gap-2 rounded-xl border border-[#3a3a3c] bg-[#1c1c1e] px-3 py-1.5 focus-within:border-[#ff1d2d] ${isExpanded ? "max-w-3xl" : ""}`}>
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask Revvie AI or create a ride..."
+                  placeholder="Ask about any bike, a fault, or plan a ride..."
                   className="w-full bg-transparent text-xs text-white placeholder-[#8e8e93] outline-none"
                 />
-                <button
-                  type="submit"
-                  disabled={!input.trim() || isLoading}
-                  className="rounded-lg p-1.5 text-[#ff1d2d] transition-colors hover:bg-[#ff1d2d]/20 disabled:opacity-40 cursor-pointer"
-                  aria-label="Send message"
-                >
-                  <Send className="h-4 w-4" />
-                </button>
+                {isLoading ? (
+                  <button
+                    type="button"
+                    onClick={() => abortRef.current?.abort()}
+                    className="rounded-lg p-1.5 text-[#ff1d2d] transition-colors hover:bg-[#ff1d2d]/20 cursor-pointer"
+                    aria-label="Stop"
+                  >
+                    <Square className="h-4 w-4 fill-current" />
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={!input.trim()}
+                    className="rounded-lg p-1.5 text-[#ff1d2d] transition-colors hover:bg-[#ff1d2d]/20 disabled:opacity-40 cursor-pointer"
+                    aria-label="Send message"
+                  >
+                    <Send className="h-4 w-4" />
+                  </button>
+                )}
               </div>
             </form>
           </motion.div>

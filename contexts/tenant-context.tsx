@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import type { TenantContext, TenantType } from '@/core/tenant/types'
+import type { TenantContext } from '@/core/tenant/types'
 import { resolveHostname } from '@/core/tenant/resolve-hostname'
 
 export interface TenantContextValue extends TenantContext {

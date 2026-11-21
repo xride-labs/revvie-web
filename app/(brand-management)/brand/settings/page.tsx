@@ -9,7 +9,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import {
-  Upload,
   CheckCircle2,
   Clock,
   AlertCircle,
@@ -19,7 +18,6 @@ import {
   ImageIcon,
   FileText,
   ExternalLink,
-  Trash2,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import {
