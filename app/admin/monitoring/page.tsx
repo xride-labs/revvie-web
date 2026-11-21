@@ -7,11 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
 import {
-  AlertCircle,
-  CheckCircle2,
   ExternalLink,
   RefreshCw,
-  Server,
   Bug,
   Activity,
   Radio,
@@ -19,7 +16,6 @@ import {
   Clock,
   Cpu,
   Layers,
-  Flame,
   Database,
   ArrowUpRight,
   ShieldAlert,
@@ -40,7 +36,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/+$/, '').replace(/\/api$/, '')
 const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN || ''
 const SENTRY_ORG = process.env.NEXT_PUBLIC_SENTRY_ORG || ''
 const SENTRY_PROJECT = process.env.NEXT_PUBLIC_SENTRY_PROJECT || ''
@@ -120,6 +116,7 @@ export default function AdminMonitoringPage() {
     try {
       // 1. Fetch system metrics endpoint
       const res = await fetch(`${API_URL}/api/analytics/system-metrics`, {
+        credentials: 'include',
         signal: AbortSignal.timeout(6000),
       })
       if (res.ok) {
@@ -720,7 +717,7 @@ export default function AdminMonitoringPage() {
             <CardHeader>
               <CardTitle className="text-base">Prometheus Metrics Endpoint</CardTitle>
               <CardDescription>
-                Direct link to scrape your production backend on Render, or feed into Fly.io / Grafana Cloud
+                Configure your scraper to send the backend metrics bearer token.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -734,8 +731,8 @@ export default function AdminMonitoringPage() {
 
               <div className="flex items-center gap-3">
                 <Button variant="default" size="sm" asChild>
-                  <a href={`${API_URL}/metrics`} target="_blank" rel="noreferrer">
-                    View Live /metrics Output
+                  <a href="https://grafana.com/docs/grafana-cloud/send-data/metrics/metrics-prometheus/prometheus-config-examples/integration-guide/" target="_blank" rel="noreferrer">
+                    Grafana setup guide
                     <ArrowUpRight className="ml-1.5 w-4 h-4" />
                   </a>
                 </Button>
