@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import {
   X,
@@ -12,6 +14,7 @@ import {
   Minimize2,
   Square,
   SquarePen,
+  ArrowUpRight,
 } from "lucide-react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
@@ -69,6 +72,7 @@ const Markdown = ({ children }: { children: string }) => (
 );
 
 export const AiCoPilot: React.FC = () => {
+  const pathname = usePathname();
   const { data: session } = authClient.useSession();
   const userId = (session as any)?.user?.id as string | undefined;
   const storageKey = userId ? `revvie-copilot:${userId}` : null;
@@ -233,6 +237,10 @@ export const AiCoPilot: React.FC = () => {
     }
   };
 
+  // The full-page co-pilot at /chat already is this assistant; the floating
+  // launcher would just cover its composer.
+  if (pathname?.startsWith("/chat")) return null;
+
   if (!session) return null; // the assistant acts on the rider's account, so signed-in only
 
   const lastIndex = messages.length - 1;
@@ -285,6 +293,14 @@ export const AiCoPilot: React.FC = () => {
                 )}
               </div>
               <div className="flex items-center gap-1.5">
+                <Link
+                  href="/chat"
+                  className="rounded-lg p-1.5 text-[#aaaaaa] hover:bg-[#1c1c1e] hover:text-white cursor-pointer"
+                  aria-label="Open full-page chat"
+                  title="Open full-page chat"
+                >
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
                 <button
                   onClick={newChat}
                   className="rounded-lg p-1.5 text-[#aaaaaa] hover:bg-[#1c1c1e] hover:text-white cursor-pointer"
