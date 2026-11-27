@@ -18,6 +18,7 @@ import {
   ExternalLink,
   Calendar,
   Receipt,
+  Sparkles,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -43,6 +44,7 @@ import { ChevronDown } from 'lucide-react'
 
 const navigation = [
   { name: 'Feed', href: '/home', icon: Home },
+  { name: 'Revvie AI', href: '/chat', icon: Sparkles },
   { name: 'Clubs', href: '/clubs', icon: Users },
   { name: 'Events', href: '/events', icon: Calendar },
   { name: 'Expenses', href: '/expenses', icon: Receipt },

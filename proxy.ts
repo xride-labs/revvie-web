@@ -23,6 +23,7 @@ function hasSessionCookie(request: NextRequest): boolean {
 
 const PROTECTED_PREFIXES = [
   '/home',
+  '/chat',
   '/clubs',
   '/rides',
   '/business',

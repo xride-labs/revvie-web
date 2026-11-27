@@ -34,6 +34,16 @@ export type StreamEvent =
         reply: string;
         blocks: ChatBlock[];
         credits: { remaining: number; limit: number } | null;
+        /** Tools the agent ran this turn, as the backend reports them. */
+        tools?: Array<{ tool: string; title?: string }>;
+        /** Rides the agent created this turn, for the preview card. */
+        rides?: Array<{
+          rideId: string;
+          title: string;
+          startLocation: string;
+          endLocation?: string;
+          scheduledAt: string;
+        }>;
       };
     }
   | { event: "error"; data: { error: string; message?: string } };
